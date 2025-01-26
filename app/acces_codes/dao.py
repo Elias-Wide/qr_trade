@@ -3,7 +3,7 @@ from sqlalchemy import select
 from app.acces_codes.exceptions import AccessCodeException
 from app.acces_codes.models import Acces_Codes
 from app.dao.base import BaseDAO
-from app.database import async_session_maker
+from app.core.database import async_session_maker
 
 class Acces_CodesDAO(BaseDAO):
     """Crud-операции класса кода доступа к боту."""

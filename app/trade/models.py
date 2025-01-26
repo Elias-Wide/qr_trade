@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Integer, String
+from datetime import datetime
+from sqlalchemy import Column, Date, Integer, String
 from sqlalchemy.orm import relationship
 
 
-from app.database import Base
+from app.core.database import Base
+from app.users.constants import MOSCOW_TZ
 
 
 class Trades(Base):
@@ -12,3 +14,4 @@ class Trades(Base):
     """
     user = relationship("users", back_populates="trade")
     point = relationship("Points", back_populates='trade')
+    created_at = Column(Date, default=datetime.now)
