@@ -1,3 +1,5 @@
-from app.core.config import settings
+from app.users.models import Users
 
-BOT_TOKEN = settings.B
+BOT_TOKEN = 'gdgdfgd'
+
+print(BOT_TOKEN)

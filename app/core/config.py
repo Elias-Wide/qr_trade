@@ -10,7 +10,7 @@ class ConfigBase(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
-class AppConfig(ConfigBase):
+class AuthConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="app_")
 
     admin_email: str
@@ -60,10 +60,11 @@ class DatabaseConfig(ConfigBase):
 class Settings(BaseSettings):
     telegram: TelegramConfig = Field(default_factory=TelegramConfig)
     db: DatabaseConfig = Field(default_factory=DatabaseConfig)
-    app: AppConfig = Field(default_factory=AppConfig)
+    auth: AuthConfig = Field(default_factory=AuthConfig)
 
     @classmethod
     def load(cls) -> "Config":
         return cls()
 
 settings = Settings.load()
+
