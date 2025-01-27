@@ -6,4 +6,5 @@ from app.users.models import Users
 
 class UsersDAO(BaseDAO):
     """Класс CRUD-операций с пользователями."""
+
     model = Users

@@ -12,4 +12,4 @@ class Sale_Codes(Base):
     hashed_value = Column(String, nullable=False)
     user_id = Column(ForeignKey("users.id"))
     actual_date = Column(Date, default=datetime.now)
-    user = relationship("Users", back_populates='code')
+    user = relationship("Users", back_populates="code")

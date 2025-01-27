@@ -10,6 +10,7 @@ class ConfigBase(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
+
 class AuthConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="app_")
 
@@ -27,6 +28,7 @@ class AuthConfig(ConfigBase):
     def refresh_secret_key(self):
         self.secret_key = Fernet.generate_key()
 
+
 class TelegramConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="tg_")
 
@@ -34,6 +36,7 @@ class TelegramConfig(ConfigBase):
     admin_id: int
     webhook_host: str
     webhook_mode: bool
+
 
 class DatabaseConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="db_")
@@ -66,5 +69,5 @@ class Settings(BaseSettings):
     def load(cls) -> "Config":
         return cls()
 
-settings = Settings.load()
 
+settings = Settings()

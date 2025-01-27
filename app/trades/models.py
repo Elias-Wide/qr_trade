@@ -12,8 +12,9 @@ class Trades(Base):
     Обеспечивает связь записей между пользователями и пунктами,
     на которые сделаны заказы.
     """
+
     user_id = Column(ForeignKey("users.id"))
     point_id = Column(ForeignKey("points.id"))
     user = relationship("Users", back_populates="trade")
-    point = relationship("Points", back_populates='trade')
+    point = relationship("Points", back_populates="trade")
     created_at = Column(Date, default=datetime.now)

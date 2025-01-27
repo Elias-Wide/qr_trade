@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 from app.core.database import Base
 from app.core.config import settings
 
+
 class Points(Base):
     """Модель офиса."""
 

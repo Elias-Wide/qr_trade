@@ -18,6 +18,7 @@ class Users(Base):
         point: пункт менеджера
         hashed_code: хэшированный код подтверждения
     """
+
     tg_user_id = Column(Integer, nullable=False)
     hashed_wb_id = Column(String, nullable=False)
     point_id = Column(Integer, nullable=True)
@@ -27,4 +28,3 @@ class Users(Base):
     code = relationship("Sale_Codes", back_populates="user")
     point = relationship("Points", back_populates="user")
     trades = relationship("Trades", back_populates="user")
-    
