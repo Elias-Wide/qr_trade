@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, Date, Integer, String
+from sqlalchemy import Column, Date, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 
@@ -12,6 +12,8 @@ class Trades(Base):
     Обеспечивает связь записей между пользователями и пунктами,
     на которые сделаны заказы.
     """
-    user = relationship("users", back_populates="trade")
+    user_id = Column(ForeignKey("users.id"))
+    point_id = Column(ForeignKey("points.id"))
+    user = relationship("Users", back_populates="trade")
     point = relationship("Points", back_populates='trade')
     created_at = Column(Date, default=datetime.now)

@@ -8,7 +8,7 @@ from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 key = settings.auth.secret_key
-id = 567890
+
 
 def encode_data(data: bytes, key: bytes) -> str:
     bytes_data = str(data).encode()

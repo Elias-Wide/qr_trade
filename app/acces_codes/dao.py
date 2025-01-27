@@ -1,14 +1,13 @@
 from sqlalchemy import select
 
-from app.acces_codes.exceptions import AccessCodeException
 from app.acces_codes.models import Acces_Codes
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
 
+
 class Acces_CodesDAO(BaseDAO):
     """Crud-операции класса кода доступа к боту."""
     model = Acces_Codes
-
 
     @classmethod
     async def check_acces(cls, acces_code: str) -> bool:
@@ -21,8 +20,8 @@ class Acces_CodesDAO(BaseDAO):
         async with async_session_maker() as session:
             code_object = await session.execute(
                 select(Acces_Codes).filter_by(
-                Acces_Codes.value == acces_code,
-                Acces_Codes.limit > 0
+                    Acces_Codes.value == acces_code,
+                    Acces_Codes.limit > 0
                 )
             ).scalar_one_or_none()
 

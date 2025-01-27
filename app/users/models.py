@@ -21,7 +21,10 @@ class Users(Base):
     tg_user_id = Column(Integer, nullable=False)
     hashed_wb_id = Column(String, nullable=False)
     point_id = Column(Integer, nullable=True)
-    employee_id = Column(String, nullable=False)
+    manager_id = Column(Integer, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)
+    ban = Column(bool, default=False)
+    code = relationship("Sale_Codes", back_populates="user")
     point = relationship("Points", back_populates="user")
-    hashed_code = relationship("Codes", back_populates="user")
+    trades = relationship("Trades", back_populates="user")
+    
