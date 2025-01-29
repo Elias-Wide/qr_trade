@@ -1,9 +1,13 @@
+from pathlib import Path
 from typing import Optional
 
 from cryptography.fernet import Fernet
 from pydantic import Field, SecretStr, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = BASE_DIR / 'static'
 
 class ConfigBase(BaseSettings):
     model_config = SettingsConfigDict(
@@ -33,6 +37,7 @@ class TelegramConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="tg_")
 
     bot_token: SecretStr
+    admin_username: str
     admin_id: int
     webhook_host: str
     webhook_mode: bool
@@ -54,7 +59,7 @@ class DatabaseConfig(ConfigBase):
         if v is None:
             return (
                 f"postgresql+asyncpg://{values.data['user']}:"
-                f"{values.data['password']}@{values.data['host']}:"
+                f"{values.data['password'].get_secret_value()}@{values.data['host']}:"
                 f"{values.data['port']}/{values.data['name']}"
             )
         return v
