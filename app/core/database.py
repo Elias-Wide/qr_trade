@@ -1,3 +1,4 @@
+from typing import AsyncGenerator
 from sqlalchemy import Column, Integer
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker
@@ -19,8 +20,18 @@ class PreBase:
 print(settings.db.url)
 engine = create_async_engine(settings.db.url)
 
-async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+async_session_maker = sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
+
+async def get_async_session() -> AsyncGenerator:
+    """Получение асинхронной сессии."""
+    async with async_session_maker() as async_session:
+        yield async_session
 
 class Base(DeclarativeBase, PreBase):
     pass
+

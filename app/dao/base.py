@@ -1,7 +1,8 @@
-from typing import TypeVar
+from typing import Generic, Type, TypeVar
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import insert, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import Base, async_session_maker
 
@@ -10,75 +11,77 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class BaseDAO:
-    """Базовый класс CRUD операций БД."""
+class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+    """Класс базовых операций создания, чтения, обновления и удаления."""
 
-    model = None
+    def __init__(self, model: Type[ModelType]) -> None:
+        self.model = model
 
-    @classmethod
     async def get(
-        cls,
+        self,
         obj_id: int,
-    ):
+        session: AsyncSession,
+    ) -> ModelType | None:
         """Возвращает объект по заданному id."""
-        async with async_session_maker() as session:
-            db_obj = await session.execute(
-                select(cls.model).where(cls.model.id == obj_id),
-            )
+        db_obj = await session.execute(
+            select(self.model).where(self.model.id == obj_id),
+        )
         return db_obj.scalars().first()
 
-    async def get_multi(cls):
+    async def get_multi(self, session: AsyncSession):
         """Возврацает все объекты."""
-        async with async_session_maker() as session:
-            db_objs = await session.execute(select(cls.model))
-            return db_objs.scalars().all()
+        db_objs = await session.execute(select(self.model))
+        return db_objs.scalars().all()
 
-    @classmethod
-    async def create(cls, obj: ModelType) -> ModelType:
+    @staticmethod
+    async def create(
+        obj: ModelType,
+        session: AsyncSession,
+    ) -> ModelType:
         """Создает объект."""
-        async with async_session_maker() as session:
-            session.add(obj)
-            await session.commit()
-            await session.refresh(obj)
-            return obj
+        session.add(obj)
+        await session.commit()
+        await session.refresh(obj)
+        return obj
 
-    @classmethod
+    @staticmethod
     async def update(
-        cls,
         db_obj: ModelType,
         obj_in: UpdateSchemaType,
+        session: AsyncSession,
     ) -> ModelType:
         """Обновляет объект."""
-        async with async_session_maker() as session:
-            obj_data = jsonable_encoder(db_obj)
-            update_data = obj_in.model_dump(exclude_unset=True)
+        obj_data = jsonable_encoder(db_obj)
+        update_data = obj_in.model_dump(exclude_unset=True)
 
-            for field in obj_data:
-                if field in update_data:
-                    setattr(db_obj, field, update_data[field])
-            session.add(db_obj)
-            await session.commit()
-            await session.refresh(db_obj)
-            return db_obj
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+        session.add(db_obj)
+        await session.commit()
+        await session.refresh(db_obj)
+        return db_obj
 
-    @classmethod
-    async def remove(cls, db_obj: ModelType) -> ModelType:
+    @staticmethod
+    async def remove(
+        db_obj: ModelType,
+        session: AsyncSession,
+    ) -> ModelType:
         """Удаляет объект."""
-        async with async_session_maker() as session:
-            await session.delete(db_obj)
-            await session.commit()
-            return db_obj
+        await session.delete(db_obj)
+        await session.commit()
+        return db_obj
 
     async def get_by_attribute(
-        cls,
+        self,
         attr_name: str,
         attr_value: str,
+        session: AsyncSession,
     ) -> ModelType | None:
         """Возвращает объект по заданому атрибуту."""
-        async with async_session_maker() as session:
-            db_obj = await session.execute(
-                select(cls.model).where(
-                    getattr(cls.model, attr_name) == attr_value,
-                ),
-            )
-            return db_obj.scalars().first()
+        db_obj = await session.execute(
+            select(self.model).where(
+                getattr(self.model, attr_name) == attr_value,
+            ),
+        )
+        return db_obj.scalars().first()

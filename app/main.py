@@ -73,6 +73,7 @@
 
 import asyncio
 import logging
+from fastapi_sqlalchemy import DBSessionMiddleware
 import uvicorn
 from contextlib import asynccontextmanager
 from app.bot.create_bot import bot, dp, stop_bot, start_bot
@@ -102,9 +103,8 @@ async def lifespan(app: FastAPI):
     logging.info("Webhook deleted")
 
     
-# Инициализация FastAPI с методом жизненного цикла
 app = FastAPI(lifespan=lifespan)
-
+app.add_middleware(DBSessionMiddleware, db_url=settings.db.url)
 
 # Маршрут для обработки вебхуков
 @app.post("/webhook")

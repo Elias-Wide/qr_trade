@@ -19,14 +19,3 @@ def encode_data(data: bytes, key: bytes) -> str:
 def decode_data(value: bytes, key: bytes) -> int:
     """Декодирование id"""
     return int(Fernet(key).decrypt(value))
-
-
-x = encode_data(id, key)
-print(type(x), x)
-x = decode_data(x, key)
-print(type(x), x)
-# print(Fernet.generate_key())
-
-# print(key)
-# def verify_password(plain_password: str, hashed_password: str) -> bool:
-#     return pwd_context.verify(plain_password, hashed_password)

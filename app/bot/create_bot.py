@@ -1,15 +1,17 @@
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from fastapi_sqlalchemy import DBSessionMiddleware
 
 from app.core.config import settings
+from app.core.database import async_session_maker
 bot = Bot(token=settings.telegram.bot_token.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher()
+dp.update.middleware(DBSessionMiddleware(session_pool=async_session_maker))
 
 
 async def start_bot():
     try:
-        print(settings.telegram.bot_token.get_secret_value())
         await bot.send_message(settings.telegram.admin_id, f'Я запущен🥳.')
     except:
         print('СОБЩЕНИЕ НЕ ОТПРАВЛЕНО')
