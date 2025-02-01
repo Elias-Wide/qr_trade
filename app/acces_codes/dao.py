@@ -16,7 +16,7 @@ class Acces_CodesDAO(BaseDAO):
         cls,
         acces_code: str,
         session: AsyncSession,
-        ) -> bool:
+    ) -> bool:
         """Проверить доступ.
         Принимает код, проверяет наличие его в бд
         и есть ли еще у него активации.

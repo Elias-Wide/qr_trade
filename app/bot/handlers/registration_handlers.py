@@ -16,8 +16,25 @@ from aiogram.types import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.bot.constants import (CLIENT_ID, CONFIRM, INTRO_SURVEY_TEXT, INVALID_DATA_TYPE, INVALID_ID_MESSAGE, MANAGER_ID, POINT_ID, REGISTRATION_CANCELED, REGISTRATION_CONFIRMED, REGISTRATION_DONE, SurveyQuestions)
-from app.bot.filters import ClientIdFilter, ManagerIdFilter, PointIdFilter, UserTgIdFilter
+from app.bot.constants import (
+    CLIENT_ID,
+    CONFIRM,
+    INTRO_SURVEY_TEXT,
+    INVALID_DATA_TYPE,
+    INVALID_ID_MESSAGE,
+    MANAGER_ID,
+    POINT_ID,
+    REGISTRATION_CANCELED,
+    REGISTRATION_CONFIRMED,
+    REGISTRATION_DONE,
+    SurveyQuestions,
+)
+from app.bot.filters import (
+    ClientIdFilter,
+    ManagerIdFilter,
+    PointIdFilter,
+    UserTgIdFilter,
+)
 from app.bot.keyboards.registration_kb import create_registration_kb
 from app.users.dao import UsersDAO
 
@@ -49,7 +66,7 @@ async def begin_registration(
         username=message.from_user.first_name,
     )
     await message.answer(
-        text=f'{INTRO_SURVEY_TEXT}{SurveyQuestions.CONSENT}',
+        text=f"{INTRO_SURVEY_TEXT}{SurveyQuestions.CONSENT}",
         reply_markup=await create_registration_kb(),
     )
     await state.set_state(RegistrationStates.consent_confirm)
@@ -66,7 +83,9 @@ async def handle_survey_cancel(
     await return_to_main_menu(callback_query.message, state, session)
 
 
-@registration_router.callback_query(RegistrationStates.consent_confirm, F.data == REGISTRATION_CONFIRMED)
+@registration_router.callback_query(
+    RegistrationStates.consent_confirm, F.data == REGISTRATION_CONFIRMED
+)
 async def ask_manager_id(
     callback_query: CallbackQuery,
     state: FSMContext,
@@ -76,11 +95,11 @@ async def ask_manager_id(
     await state.set_state(RegistrationStates.manager_id_question)
 
 
-@registration_router.callback_query(RegistrationStates.manager_id_question, F.data.is_digit(), ManagerIdFilter())
+@registration_router.callback_query(
+    RegistrationStates.manager_id_question, F.data.is_digit(), ManagerIdFilter()
+)
 async def ask_client_id(
-    callback_query: CallbackQuery,
-    state: FSMContext,
-    value: int
+    callback_query: CallbackQuery, state: FSMContext, value: int
 ) -> None:
     """Сохранение manager id в state. Вопрос про client id."""
     await state.update_data(manager_id=callback_query.data)
@@ -88,11 +107,11 @@ async def ask_client_id(
     await state.set_state(RegistrationStates.client_id_question)
 
 
-@registration_router.callback_query(RegistrationStates.client_id_question, F.data.is_digit(), ClientIdFilter())
+@registration_router.callback_query(
+    RegistrationStates.client_id_question, F.data.is_digit(), ClientIdFilter()
+)
 async def ask_point_id(
-    callback_query: CallbackQuery,
-    state: FSMContext,
-    value: int
+    callback_query: CallbackQuery, state: FSMContext, value: int
 ) -> None:
     """Сохранение client id в state. Вопрос про point id."""
     await state.update_data(client_id=callback_query.data)
@@ -126,36 +145,30 @@ async def finish_registration(
     # await process_start_command(message, state, session)
 
 
-
 @registration_router.message(RegistrationStates.manager_id_question)
 async def handle_invalid_manager_id(message: Message, value: Any) -> None:
     """Сообщение о введенном невалидном manager id."""
     await send_ivalid_data_type_message(MANAGER_ID, message)
-    
+
 
 @registration_router.message(RegistrationStates.client_id_question)
 async def handle_invalid_client_id(message: Message, value: Any) -> None:
     """Сообщение о введенном невалидном client id."""
     await send_ivalid_data_type_message(CLIENT_ID, message)
-    
+
 
 @registration_router.message(RegistrationStates.point_id_question)
 async def handle_invalid_client_id(message: Message, value: Any) -> None:
     """Сообщение о введенном невалидном point id."""
     await send_ivalid_data_type_message(POINT_ID, message)
-    
-
-
-
 
 
 async def send_ivalid_data_type_message(data_type: str, message: Message):
     if not message.text.is_digit():
-        text=INVALID_DATA_TYPE
+        text = INVALID_DATA_TYPE
     else:
-        text=INVALID_ID_MESSAGE[data_type]
+        text = INVALID_ID_MESSAGE[data_type]
     await message.answer(text=text)
-
 
 
 @router.message(CommandStart(), ~UserTgIdFilter())

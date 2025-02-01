@@ -15,8 +15,8 @@ UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     """Класс базовых операций создания, чтения, обновления и удаления."""
-    model = None
 
+    model = None
 
     @classmethod
     async def get(
@@ -49,15 +49,13 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             await session.commit()
         except (SQLAlchemyError, Exception) as error:
             if isinstance(error, SQLAlchemyError):
-                message = 'Database Exception'
+                message = "Database Exception"
             elif isinstance(error, Exception):
-                message = 'Unknown Exception'
-            message += ': Не удается добавить данные.'
+                message = "Unknown Exception"
+            message += ": Не удается добавить данные."
 
             logger.error(
-                message,
-                extra={'table': cls.model.__tablename__},
-                exc_info=True
+                message, extra={"table": cls.model.__tablename__}, exc_info=True
             )
             return None
 

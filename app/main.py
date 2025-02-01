@@ -50,7 +50,7 @@
 #         )
 #         # logger.info('URL = %s', WEBHOOK_URL)
 #     except Exception as e:
-        
+
 #         print(f"Can't set webhook - {e}")
 #     yield
 #     await bot.delete_webhook()
@@ -82,19 +82,24 @@ from app.core.config import settings
 from aiogram.types import Update
 from fastapi import FastAPI, Request
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
-WEBHOOK_PATH = f'/bot/{settings.telegram.bot_token.get_secret_value()}'
-WEBHOOK_URL = f'{settings.telegram.webhook_host}/webhook'
+WEBHOOK_PATH = f"/bot/{settings.telegram.bot_token.get_secret_value()}"
+WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logging.info("Starting bot setup...")
     dp.include_router(router)
     await start_bot()
-    await bot.set_webhook(url=WEBHOOK_URL,
-                          allowed_updates=dp.resolve_used_update_types(),
-                          drop_pending_updates=True)
+    await bot.set_webhook(
+        url=WEBHOOK_URL,
+        allowed_updates=dp.resolve_used_update_types(),
+        drop_pending_updates=True,
+    )
     logging.info(f"Webhook set to {WEBHOOK_URL}")
     yield
     logging.info("Shutting down bot...")
@@ -102,9 +107,10 @@ async def lifespan(app: FastAPI):
     await stop_bot()
     logging.info("Webhook deleted")
 
-    
+
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(DBSessionMiddleware, db_url=settings.db.url)
+
 
 # Маршрут для обработки вебхуков
 @app.post("/webhook")
@@ -115,10 +121,12 @@ async def webhook(request: Request) -> None:
     await dp.feed_update(bot, update)
     logging.info("Update processed")
 
+
 async def main():
     config = uvicorn.Config("main:app", port=5000, log_level="info", reload=True)
     server = uvicorn.Server(config)
     await server.serve()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

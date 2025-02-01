@@ -12,8 +12,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from app.bot.constants import CONFIRM, DEFAULT_KEYBOARD_SIZE
 
 
-
-
 async def create_registration_kb(
     items: Iterable[str],
     callback_datas: Iterable[str | None] = (None,),
@@ -26,4 +24,3 @@ async def create_registration_kb(
             InlineKeyboardButton(text=text, callback_data=callback_datas),
         )
     return keyboard.adjust(*size).as_markup()
-

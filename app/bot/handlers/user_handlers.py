@@ -22,13 +22,13 @@ async def process_start_command(
 ) -> None:
     """После завершения анкетирования. Начало самого бота."""
     user = await UsersDAO.get_by_attribute(
-        'telegram_id',
+        "telegram_id",
         message.chat.id,
         session,
     )
     media, reply_markup = await get_menu_content(
         level=0,
-        menu_name='main',
+        menu_name="main",
         user=user,
         session=session,
     )
@@ -48,7 +48,7 @@ async def user_menu(
 ) -> None:
     """Обработка нажатия кнопок меню."""
     user = await user_crud.get_by_attribute(
-        'telegram_id',
+        "telegram_id",
         str(callback.from_user.id),
         session,
     )
@@ -66,7 +66,7 @@ async def user_menu(
             chat_id=callback.message.chat.id,
             bot=callback.bot,
         ):
-            await callback.answer(text='Загрузка...', show_alert=True)
+            await callback.answer(text="Загрузка...", show_alert=True)
             await callback.message.edit_media(
                 media=media,
                 reply_markup=reply_markup,

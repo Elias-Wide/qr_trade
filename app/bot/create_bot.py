@@ -5,23 +5,28 @@ from fastapi_sqlalchemy import DBSessionMiddleware
 
 from app.core.config import settings
 from app.core.database import async_session_maker
-bot = Bot(token=settings.telegram.bot_token.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+
+bot = Bot(
+    token=settings.telegram.bot_token.get_secret_value(),
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+)
 dp = Dispatcher()
 dp.update.middleware(DBSessionMiddleware(session_pool=async_session_maker))
 
 
 async def start_bot():
     try:
-        await bot.send_message(settings.telegram.admin_id, f'Я запущен🥳.')
+        await bot.send_message(settings.telegram.admin_id, f"Я запущен🥳.")
     except:
-        print('СОБЩЕНИЕ НЕ ОТПРАВЛЕНО')
+        print("СОБЩЕНИЕ НЕ ОТПРАВЛЕНО")
 
 
 async def stop_bot():
     try:
-        await bot.send_message(settings.telegram.admin_id, 'Бот остановлен. За что?😔')
+        await bot.send_message(settings.telegram.admin_id, "Бот остановлен. За что?😔")
     except:
         pass
+
 
 async def critical_message_to_admin(message: str):
     try:
