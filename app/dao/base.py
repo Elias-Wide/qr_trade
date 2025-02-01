@@ -1,9 +1,11 @@
-from typing import Generic, Type, TypeVar
+from typing import Generic, Optional, Type, TypeVar
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import insert, select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core import logger
 from app.core.database import Base, async_session_maker
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -11,40 +13,55 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     """Класс базовых операций создания, чтения, обновления и удаления."""
+    model = None
 
-    def __init__(self, model: Type[ModelType]) -> None:
-        self.model = model
 
+    @classmethod
     async def get(
-        self,
+        cls,
         obj_id: int,
         session: AsyncSession,
     ) -> ModelType | None:
         """Возвращает объект по заданному id."""
         db_obj = await session.execute(
-            select(self.model).where(self.model.id == obj_id),
+            select(cls.model).where(cls.model.id == obj_id),
         )
         return db_obj.scalars().first()
 
-    async def get_multi(self, session: AsyncSession):
+    @classmethod
+    async def get_multi(cls, session: AsyncSession):
         """Возврацает все объекты."""
-        db_objs = await session.execute(select(self.model))
+        db_objs = await session.execute(select(cls.model))
         return db_objs.scalars().all()
 
-    @staticmethod
+    @classmethod
     async def create(
-        obj: ModelType,
+        cls,
+        data: dict[Optional[int, str, bool]],
         session: AsyncSession,
     ) -> ModelType:
         """Создает объект."""
-        session.add(obj)
-        await session.commit()
-        await session.refresh(obj)
-        return obj
+        try:
+            query = insert(cls.model).values(**data)
+            await session.execute(query)
+            await session.commit()
+        except (SQLAlchemyError, Exception) as error:
+            if isinstance(error, SQLAlchemyError):
+                message = 'Database Exception'
+            elif isinstance(error, Exception):
+                message = 'Unknown Exception'
+            message += ': Не удается добавить данные.'
 
-    @staticmethod
+            logger.error(
+                message,
+                extra={'table': cls.model.__tablename__},
+                exc_info=True
+            )
+            return None
+
+    @classmethod
     async def update(
         db_obj: ModelType,
         obj_in: UpdateSchemaType,

@@ -11,6 +11,7 @@ class Users(Base):
 
     Args:
         tg_user_id: user_id в телеграмме
+        username: имя пользователя в телеграмме
         hashed_wb_id: кодированный клиентский wb_id
         employee_id: рабочий id
         point: id пункта менеджера
@@ -20,7 +21,8 @@ class Users(Base):
     """
 
     tg_user_id = Column(Integer, nullable=False)
-    hashed_wb_id = Column(String, nullable=False)
+    username = Column(String, nullable=False)
+    wb_id = Column(Integer, nullable=False)
     point_id = Column(Integer, nullable=True)
     manager_id = Column(Integer, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)

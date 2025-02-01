@@ -1,8 +1,8 @@
 from sqlalchemy import insert
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
-from app.users.models import Users
+from app.points.models import Points
 
 
-class UsersDAO(BaseDAO):
-    model = Users
+class PointsDAO(BaseDAO):
+    model = Points
