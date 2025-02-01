@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import BOOLEAN, Column, Integer, String
 from sqlalchemy.orm import relationship
 
 
@@ -26,7 +26,7 @@ class Users(Base):
     point_id = Column(Integer, nullable=True)
     manager_id = Column(Integer, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)
-    ban = Column(bool, default=False)
+    ban = Column(BOOLEAN , default=False)
     code = relationship("Sale_Codes", back_populates="user")
     point = relationship("Points", back_populates="user")
     trades = relationship("Trades", back_populates="user")

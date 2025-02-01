@@ -5,9 +5,13 @@ from posixpath import abspath, dirname
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.core.config import settings
-from app.core.database import Base
-
+from app.acces_codes.models import Acces_Codes # noqa
+from app.core.config import settings # noqa
+from app.core.database import Base # noqa
+from app.points.models import Points # noqa
+from app.sale_codes.models import Sale_Codes # noqa
+from app.trades.models import Trades # noqa
+from app.users.models import Users # noqa
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
