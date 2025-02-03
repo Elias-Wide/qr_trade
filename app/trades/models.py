@@ -15,6 +15,8 @@ class Trades(Base):
 
     user_id = Column(ForeignKey("users.id"))
     point_id = Column(ForeignKey("points.id"))
-    user = relationship("Users", back_populates="trade")
-    point = relationship("Points", back_populates="trade")
+    users = relationship("Users", back_populates="trades")
+    point = relationship("Points", back_populates="trades")
     created_at = Column(Date, default=datetime.now)
+    
+

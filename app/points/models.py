@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -11,3 +12,5 @@ class Points(Base):
 
     point_id = Column(Integer, nullable=False, unique=True)
     addres = Column(String, nullable=False)
+    trades = relationship("Trades", back_populates="point")
+    managers = relationship("Users", back_populates="points")

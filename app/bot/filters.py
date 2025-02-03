@@ -19,15 +19,14 @@ class BaseUserFilter(BaseFilter):
     async def __call__(
         self,
         message: Message,
-        session: AsyncSession,
     ) -> bool | dict[str, int]:
-        value = int(message.text.strip())
+        print('ПРОВЕРКА!!')
+        
         if not await UsersDAO.get_by_attribute(
             attr_name=self.model_attr,
-            attr_value=value,
-            session=session,
+            attr_value=message.from_user.id,
         ):
-            return {self.model_attr: value}
+            return {self.model_attr: message.from_user.id}
         return False
 
 
@@ -58,17 +57,16 @@ class PointIdFilter(BaseFilter):
     def __init__(self) -> None:
         self.model_attr = "point_id"
 
-    def __call__(
+    async def __call__(
         self,
         message: Message,
-        session: AsyncSession,
     ) -> bool:
         value = int(message.text.strip())
         if not value:
             value = None
         is_point_exist = await PointsDAO.get_by_attribute(
-            attr_name="id", attr_value=value, session=session
+            attr_name="id", attr_value=value
         )
         if not is_point_exist:
             return False
-        return {self.model_attr: value}
+        return True

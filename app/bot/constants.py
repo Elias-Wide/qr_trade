@@ -1,3 +1,6 @@
+from sqlalchemy import Enum
+
+
 CONFIRM = (
     ("YES", "Да"),
     ("NO", "Нет"),
@@ -9,7 +12,7 @@ class Button(str):
 
 
 DEFAULT_KEYBOARD_SIZE = (2,)
-
+FMT_JPG = '.jpg'
 MAIN_MENU = "main"
 
 MAIN_MENU_COMMANDS = {

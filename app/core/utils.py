@@ -10,12 +10,12 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 key = settings.auth.secret_key
 
 
-def encode_data(data: bytes, key: bytes) -> str:
+async def encode_data(data: bytes, key: bytes) -> str:
     bytes_data = str(data).encode()
     """Кодирование id"""
     return str((Fernet(key).encrypt(bytes_data)).decode())
 
 
-def decode_data(value: bytes, key: bytes) -> int:
+async def decode_data(value: bytes, key: bytes) -> int:
     """Декодирование id"""
     return int(Fernet(key).decrypt(value))

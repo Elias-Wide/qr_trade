@@ -27,11 +27,5 @@ async_session_maker = sessionmaker(
 )
 
 
-async def get_async_session() -> AsyncGenerator:
-    """Получение асинхронной сессии."""
-    async with async_session_maker() as async_session:
-        yield async_session
-
-
 class Base(DeclarativeBase, PreBase):
     pass

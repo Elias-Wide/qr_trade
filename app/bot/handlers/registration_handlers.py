@@ -9,6 +9,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import (
     CallbackQuery,
+    InlineKeyboardMarkup,
+    InputMediaPhoto,
     KeyboardButton,
     Message,
     ReplyKeyboardMarkup,
@@ -16,6 +18,7 @@ from aiogram.types import (
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.bot.banners import Captions, Images
 from app.bot.constants import (
     CLIENT_ID,
     CONFIRM,
@@ -54,19 +57,19 @@ async def return_to_main_menu(
     # await process_start_command(message, state, session)
 
 
-@registration_router.message(default_state, CommandStart(), UserTgIdFilter())
+@registration_router.message(CommandStart(), UserTgIdFilter())
 async def begin_registration(
     message: Message,
     state: FSMContext,
-    telegram_id: int,
 ) -> None:
     """Приветствие и согласие ответить на вопросы."""
     await state.update_data(
-        telegram_id=telegram_id,
+        telegram_id=message.from_user.id,
         username=message.from_user.first_name,
     )
-    await message.answer(
-        text=f"{INTRO_SURVEY_TEXT}{SurveyQuestions.CONSENT}",
+    await message.answer_photo(
+        photo=await Images.get_img('registration_start'),
+        caption=Captions.registration_start,
         reply_markup=await create_registration_kb(),
     )
     await state.set_state(RegistrationStates.consent_confirm)
@@ -76,11 +79,10 @@ async def begin_registration(
 async def handle_survey_cancel(
     callback_query: CallbackQuery,
     state: FSMContext,
-    session: AsyncSession,
 ) -> None:
     """Отказ от регистрации."""
     await state.set_state(RegistrationStates.finished)
-    await return_to_main_menu(callback_query.message, state, session)
+    await return_to_main_menu(callback_query.message, state)
 
 
 @registration_router.callback_query(
@@ -171,7 +173,7 @@ async def send_ivalid_data_type_message(data_type: str, message: Message):
     await message.answer(text=text)
 
 
-@router.message(CommandStart(), ~UserTgIdFilter())
+@registration_router.message(CommandStart(), ~UserTgIdFilter())
 async def handle_existing_user(
     message: Message,
     state: FSMContext,

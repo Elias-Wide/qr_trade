@@ -1,9 +1,12 @@
-from sqlalchemy import BOOLEAN, Column, Integer, String
+from sqlalchemy import BOOLEAN, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 
 from app.users.constants import MOSCOW_TZ
 from app.core.database import Base
+from app.points.models import Points
+from app.sale_codes.models import Sale_Codes
+from app.trades.models import Trades
 
 
 class Users(Base):
@@ -23,10 +26,10 @@ class Users(Base):
     tg_user_id = Column(Integer, nullable=False)
     username = Column(String, nullable=False)
     wb_id = Column(Integer, nullable=False)
-    point_id = Column(Integer, nullable=True)
+    point_id = Column(ForeignKey("points.id"), nullable=True)
     manager_id = Column(Integer, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)
     ban = Column(BOOLEAN , default=False)
     code = relationship("Sale_Codes", back_populates="user")
-    point = relationship("Points", back_populates="user")
-    trades = relationship("Trades", back_populates="user")
+    points = relationship("Points", back_populates="managers")
+    trades = relationship("Trades", back_populates="users")
