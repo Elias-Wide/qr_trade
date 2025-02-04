@@ -44,13 +44,6 @@ class ManagerIdFilter(BaseUserFilter):
         self.model_attr = "manager_id"
 
 
-class ClientIdFilter(BaseUserFilter):
-    """Фильтрация по client id."""
-
-    def __init__(self) -> None:
-        self.model_attr = "client_id"
-
-
 class PointIdFilter(BaseFilter):
     """Фильтрация по point id."""
 
@@ -70,3 +63,11 @@ class PointIdFilter(BaseFilter):
         if not is_point_exist:
             return False
         return True
+
+
+class AccesCodeFilter(BaseFilter):
+    
+    async def __call__(self, message: Message) -> bool:
+        if message.text.strip() == 'wb123':
+            return True
+        return False

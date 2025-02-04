@@ -18,5 +18,6 @@ class Trades(Base):
     users = relationship("Users", back_populates="trades")
     point = relationship("Points", back_populates="trades")
     created_at = Column(Date, default=datetime.now)
-    
+    file_name = Column(String, nullable=False)
 
+# ^\d{6,}_\d{5}

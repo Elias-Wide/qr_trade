@@ -7,7 +7,7 @@ from aiogram.types import FSInputFile, InputMediaPhoto
 from app.bot.constants import FMT_JPG
 from app.core.config import STATIC_DIR
 
-
+BANNERS_DIR = STATIC_DIR / "banners"
 class Captions():
     registration_start = (
         "<b>Привет!  Я - бот обмена QR-кодами между менеджерами 😊</b>\n\n"
@@ -20,4 +20,4 @@ class Images():
 
     @staticmethod
     async def get_img(menu_name: str, level: int = 0) -> FSInputFile:
-        return FSInputFile(STATIC_DIR.joinpath(menu_name + FMT_JPG))
+        return FSInputFile(BANNERS_DIR.joinpath(menu_name + FMT_JPG))

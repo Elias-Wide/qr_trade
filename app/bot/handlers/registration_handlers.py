@@ -33,7 +33,7 @@ from app.bot.constants import (
     SurveyQuestions,
 )
 from app.bot.filters import (
-    ClientIdFilter,
+    AccesCodeFilter,
     ManagerIdFilter,
     PointIdFilter,
     UserTgIdFilter,
@@ -65,7 +65,7 @@ async def begin_registration(
     """Приветствие и согласие ответить на вопросы."""
     await state.update_data(
         telegram_id=message.from_user.id,
-        username=message.from_user.first_name,
+        username=message.from_user.username,
     )
     await message.answer_photo(
         photo=await Images.get_img('registration_start'),
@@ -86,7 +86,20 @@ async def handle_survey_cancel(
 
 
 @registration_router.callback_query(
-    RegistrationStates.consent_confirm, F.data == REGISTRATION_CONFIRMED
+    RegistrationStates.consent_confirm,
+    F.data == REGISTRATION_CONFIRMED
+)
+async def ask_access_code(
+    callback_query: CallbackQuery,
+    state: FSMContext,
+) -> None:
+    """Запрос кода доступа к боту."""
+    await callback_query.message.edit_text(text=SurveyQuestions.ACCESS_CODE)
+    await state.set_state(RegistrationStates.access_code)
+
+
+@registration_router.callback_query(
+    RegistrationStates.access_code, AccesCodeFilter()
 )
 async def ask_manager_id(
     callback_query: CallbackQuery,
@@ -100,23 +113,11 @@ async def ask_manager_id(
 @registration_router.callback_query(
     RegistrationStates.manager_id_question, F.data.is_digit(), ManagerIdFilter()
 )
-async def ask_client_id(
-    callback_query: CallbackQuery, state: FSMContext, value: int
-) -> None:
-    """Сохранение manager id в state. Вопрос про client id."""
-    await state.update_data(manager_id=callback_query.data)
-    await callback_query.message.edit_text(text=SurveyQuestions.CLIENT_ID)
-    await state.set_state(RegistrationStates.client_id_question)
-
-
-@registration_router.callback_query(
-    RegistrationStates.client_id_question, F.data.is_digit(), ClientIdFilter()
-)
 async def ask_point_id(
     callback_query: CallbackQuery, state: FSMContext, value: int
 ) -> None:
     """Сохранение client id в state. Вопрос про point id."""
-    await state.update_data(client_id=callback_query.data)
+    await state.update_data(manager_id=callback_query.data)
     await callback_query.message.edit_text(text=SurveyQuestions.POINT_ID)
     await state.set_state(RegistrationStates.point_id_question)
 
@@ -145,6 +146,11 @@ async def finish_registration(
     )
     await state.set_state(RegistrationStates.finished)
     # await process_start_command(message, state, session)
+
+@registration_router.message(RegistrationStates.access_code)
+async def handle_invalid_acces_code(message: Message, value: Any) -> None:
+    """Сообщение о введенном невалидном manager id."""
+    await message.answer(text='🔴Неверный код доступа🔴')
 
 
 @registration_router.message(RegistrationStates.manager_id_question)
