@@ -22,13 +22,12 @@ class Users(Base):
         hashed_code: хэшированный код подтверждения
     """
 
-    tg_user_id = Column(Integer, nullable=False)
+    tg_user_id = Column(Integer, unique=True, nullable=False)
     username = Column(String, nullable=False)
     point_id = Column(ForeignKey("points.id"), nullable=True)
-    manager_id = Column(Integer, nullable=False)
+    manager_id = Column(Integer, unique=True, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)
-    sale_code_id = Column(ForeignKey("sale_codes.id"))
+    # sale_code_id = Column(ForeignKey("sale_codes.id"), nullable=True)
     ban = Column(BOOLEAN , default=False)
-    code = relationship("Sale_Codes", back_populates="user")
     points = relationship("Points", back_populates="managers")
     trades = relationship("Trades", back_populates="users")

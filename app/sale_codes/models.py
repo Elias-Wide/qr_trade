@@ -8,11 +8,10 @@ from app.users.constants import MOSCOW_TZ
 
 
 class Sale_Codes(Base):
-    """Модель Sale_Codes.
+    """
+    Модель Sale_Codes.
     Коды подтверждения продаж.
     """
-
-    user_id = Column(ForeignKey("users.id"))
-    trades = relationship("Trades", back_populates="trades")
+    user_id = Column(ForeignKey("users.id"), nullable=False)
     created_at = Column(Date, default=datetime.now)
     file_name = Column(String, nullable=False)

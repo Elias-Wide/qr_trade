@@ -33,7 +33,3 @@ def delete_files_in_folder(folder_path: str):
                 os.remove(file_path)
         except Exception as e:
             logger.error(f'Ошибка при удалении файла {file_path}. {e}')
-
-
-print(create_qr('hi888888', 'hiname.png'))
-delete_files_in_folder(STATIC_DIR / "trades")

@@ -8,40 +8,36 @@ from app.points.dao import PointsDAO
 from app.users.dao import UsersDAO
 
 
-class BaseUserFilter(BaseFilter):
+class UserTgIdFilter(BaseFilter):
     """Базовый класс фильтрации пользователя по параметрам."""
-
-    model_attr = None
 
     def __init__(self) -> None:
         pass
 
     async def __call__(
         self,
-        message: Message,
-    ) -> bool | dict[str, int]:
-        print('ПРОВЕРКА!!')
-        
-        if not await UsersDAO.get_by_attribute(
-            attr_name=self.model_attr,
-            attr_value=message.from_user.id,
-        ):
-            return {self.model_attr: message.from_user.id}
+        message: Message
+    ) -> bool:
+        if not await UsersDAO.get_by_id(message.from_user.id):
+            return True
         return False
 
 
-class UserTgIdFilter(BaseUserFilter):
-    """Фильтрация по телеграмм id."""
-
-    def __init__(self) -> None:
-        self.model_attr = "tg_user_id"
-
-
-class ManagerIdFilter(BaseUserFilter):
+class ManagerIdFilter(BaseFilter):
     """Фильтрация по manager id."""
 
-    def __init__(self) -> None:
+    def __init__(self, *args) -> None:
         self.model_attr = "manager_id"
+    
+    async def __call__(self, message: Message):
+        id = int(message.text.strip())
+        if not await UsersDAO.get_by_attribute(
+            attr_name=self.model_attr,
+            attr_value=id
+        ):
+            return True
+        return False
+        
 
 
 class PointIdFilter(BaseFilter):
@@ -56,7 +52,7 @@ class PointIdFilter(BaseFilter):
     ) -> bool:
         value = int(message.text.strip())
         if not value:
-            value = None
+            value = 1
         is_point_exist = await PointsDAO.get_by_attribute(
             attr_name="id", attr_value=value
         )
@@ -68,6 +64,8 @@ class PointIdFilter(BaseFilter):
 class AccesCodeFilter(BaseFilter):
     
     async def __call__(self, message: Message) -> bool:
+        print(message.text)
         if message.text.strip() == 'wb123':
+            print('УСПЕШНО!Ц!')
             return True
         return False

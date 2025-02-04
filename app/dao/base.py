@@ -18,7 +18,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     model = None
 
     @classmethod
-    async def get(
+    async def get_by_id(
         cls,
         obj_id: int,
     ) -> ModelType | None:
@@ -45,16 +45,16 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         async with async_session_maker() as session:
             try:
                 query = insert(cls.model).values(**data)
-                await session.execute(query)
+                object = await session.execute(query)
                 await session.commit()
+                return object.scalars().all()
             except (SQLAlchemyError, Exception) as error:
                 if isinstance(error, SQLAlchemyError):
                     message = "Database Exception"
                 elif isinstance(error, Exception):
                     message = "Unknown Exception"
                 message += ": Не удается добавить данные."
-
-                return None
+            
 
     @classmethod
     async def update(
