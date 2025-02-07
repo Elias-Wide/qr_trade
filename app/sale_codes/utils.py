@@ -9,10 +9,16 @@ from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 
+
 async def generate_filename() -> str:
     """Генерирует рандомное имя для файла."""
-    filename = [random.choice(string.ascii_lowercase + string.digits if i != 5 else string.ascii_uppercase) for i in range(10)]
-    return ''.join(filename)
+    filename = [
+        random.choice(
+            string.ascii_lowercase + string.digits if i != 5 else string.ascii_uppercase
+        )
+        for i in range(10)
+    ]
+    return "".join(filename)
 
 
 def create_qr(data: str, file_name: str):
@@ -32,4 +38,4 @@ def delete_files_in_folder(folder_path: str):
             if os.path.isfile(file_path):
                 os.remove(file_path)
         except Exception as e:
-            logger.error(f'Ошибка при удалении файла {file_path}. {e}')
+            logger.error(f"Ошибка при удалении файла {file_path}. {e}")

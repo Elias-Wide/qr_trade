@@ -9,4 +9,3 @@ class TradesDAO(BaseDAO):
     """Класс CRUD-операций с моделью обменов кодами."""
 
     model = Trades
-

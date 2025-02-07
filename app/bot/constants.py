@@ -1,5 +1,6 @@
 from sqlalchemy import Enum
 
+from app.core.config import settings
 
 CONFIRM = (
     ("YES", "Да"),
@@ -7,13 +8,13 @@ CONFIRM = (
 )
 
 
-class Button(str):
+class Button:
     MAIN_MENU = "menu"
 
 
 DEFAULT_KEYBOARD_SIZE = (2,)
-FMT_JPG = '.jpg'
-MAIN_MENU = "main"
+FMT_JPG = ".jpg"
+MAIN_MENU = "main_menu"
 
 MAIN_MENU_COMMANDS = {
     "/start": "Перезапуск бота",
@@ -49,7 +50,7 @@ INTRO_SURVEY_TEXT = (
     "Давай пройдем простенькую регистрацию для нашей работы."
     "\n😜\n"
 )
-MANAGER_ID, CLIENT_ID, POINT_ID = "manager_id", "client_id", "point_id"
+MANAGER_ID, POINT_ID = "manager_id", "point_id"
 
 INVALID_DATA_TYPE = "Неверный формат введенных данных!"
 INVALID_ID_MESSAGE = {
@@ -58,9 +59,12 @@ INVALID_ID_MESSAGE = {
         "Если вы сменили телеграмм аккаунт - обратитесь "
         "в поддержку."
     ),
-    CLIENT_ID: "Введенный клиентский id уже занят. \n",
-    POINT_ID: "Пункт с данным id отсутствует в бд.",
+    POINT_ID: (
+        f"Пункт с данным id отсутствует в бд. \n\n"
+        f"Обратитесь к админу @{settings.telegram.admin_username}"
+    ),
 }
+
 REGISTRATION_DONE = (
     "Регистрацияуспешно пройдена! \n"
     "В разделе FAQ вы можете ознакомиться с возможностями бота."

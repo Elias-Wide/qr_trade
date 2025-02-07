@@ -54,7 +54,6 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 elif isinstance(error, Exception):
                     message = "Unknown Exception"
                 message += ": Не удается добавить данные."
-            
 
     @classmethod
     async def update(

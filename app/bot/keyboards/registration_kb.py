@@ -29,8 +29,5 @@ async def create_back_to_menu_kb(
 ) -> InlineKeyboardMarkup | ReplyKeyboardMarkup:
     """Создать клавиутуру вступительной анкеты."""
     keyboard = InlineKeyboardBuilder()
-    keyboard.add(
-        InlineKeyboardButton(text="ЗА РАБОТУ!!!!", callback_data=MAIN_MENU)
-        )
+    keyboard.add(InlineKeyboardButton(text="ЗА РАБОТУ!!!!", callback_data="/start"))
     return keyboard.adjust(*size).as_markup()
-    

@@ -9,6 +9,5 @@ class RegistrationStates(StatesGroup):
     consent_confirm = State()
     access_code = State()
     manager_id_question = State()
-    client_id_question = State()
     point_id_question = State()
     finished = State()

@@ -22,5 +22,3 @@ async def encode_data(data: bytes, key: bytes) -> str:
 async def decode_data(value: bytes, key: bytes) -> int:
     """Декодирование id"""
     return str(Fernet(key).decrypt(value))
-
-

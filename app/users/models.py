@@ -13,7 +13,7 @@ class Users(Base):
     """Модель пользователя.
 
     Args:
-        tg_user_id: user_id в телеграмме
+        telegram_id: user_id в телеграмме
         username: имя пользователя в телеграмме
         employee_id: рабочий id
         point: id пункта менеджера
@@ -22,12 +22,12 @@ class Users(Base):
         hashed_code: хэшированный код подтверждения
     """
 
-    tg_user_id = Column(Integer, unique=True, nullable=False)
+    telegram_id = Column(Integer, unique=True, nullable=False)
     username = Column(String, nullable=False)
     point_id = Column(ForeignKey("points.id"), nullable=True)
     manager_id = Column(Integer, unique=True, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)
     # sale_code_id = Column(ForeignKey("sale_codes.id"), nullable=True)
-    ban = Column(BOOLEAN , default=False)
+    ban = Column(BOOLEAN, default=False)
     points = relationship("Points", back_populates="managers")
     trades = relationship("Trades", back_populates="users")
