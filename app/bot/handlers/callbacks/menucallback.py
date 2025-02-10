@@ -12,7 +12,7 @@ class MenuCallBack(CallbackData, prefix="menu"):
     menu_name :: название меню.
     """
 
-    level: int
+    level: int = 0
     menu_name: str
     user_id: int | None = None
     point_addres: str | None = None

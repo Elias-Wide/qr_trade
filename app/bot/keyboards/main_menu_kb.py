@@ -19,7 +19,7 @@ from app.bot.constants import (
     NO_IMAGE,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import BACK_BTN, FAQ_MENU, MAIN_MENU_BUTTONS, PROFILE
+from app.bot.keyboards.buttons import BACK_BTN, FAQ_MENU, FAQ_MENU_BTNS, MAIN_MENU_BUTTONS, PROFILE
 from app.core.config import settings
 from app.users.models import Users
 
@@ -57,7 +57,7 @@ async def set_main_menu(bot: Bot) -> None:
 
 async def get_side_menu_btns(
     *,
-    level: int = 1,
+    level: int = 0,
     size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
     btns_data: dict[str],
     user_id: int | None = None,
@@ -103,29 +103,3 @@ async def get_image_and_kb(
     return (image, await get_side_menu_btns(btns_data=btns_data, user_id=user_id))
 
 
-async def get_faq_kb(
-    user_id: int,
-    size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
-) -> KeyboardMarkup:
-    """
-    Получить изображение, описание и клавитуру для меню.
-    Передаются имя меню, описание (опционально) и данные для кнопок.
-    """
-
-    keyboard = InlineKeyboardBuilder()
-    keyboard.add(
-        InlineKeyboardButton(
-            text="Админ", url=f"tg://user?id={settings.telegram.admin_id}"
-        ),
-    )
-    keyboard.add(
-        InlineKeyboardButton(
-            text=BACK_BTN,
-            callback_data=MenuCallBack(
-                user_id=user_id,
-                level=0,
-                menu_name=MAIN_MENU,
-            ).pack(),
-        )
-    )
-    return keyboard.adjust(*size).as_markup()

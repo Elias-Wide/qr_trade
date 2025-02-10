@@ -7,10 +7,36 @@ import os
 
 from aiogram.types import FSInputFile, InputMediaPhoto
 
-from app.bot.constants import FAQ_DESCRIPTION, FMT_JPG, NO_IMAGE
+from app.bot.constants import FMT_JPG, NO_IMAGE
 from app.core.config import STATIC_DIR
 
 BANNERS_DIR = STATIC_DIR / "banners"
+
+
+async def get_img(
+    menu_name: str, level: int = 0, caption: str = None
+) -> InputMediaPhoto:
+    """
+    Получить изображение.
+    В функцию передаются имя меню, уровень меню и описание,
+    если описания нет, то оно берется из класса Captions.
+    Если нет необходимого изображения, то берется картинка 'no_image'.
+    """
+    
+    if caption is None:
+        caption = getattr(captions, menu_name)
+    if not await is_file_in_dir(f"{menu_name}.jpg", BANNERS_DIR):
+        menu_name = NO_IMAGE
+    image = FSInputFile(BANNERS_DIR.joinpath(menu_name + FMT_JPG))
+    return InputMediaPhoto(media=image, caption=caption)
+
+
+async def is_file_in_dir(name, path):
+    """Проверить, если ли необходимое изображение в директории."""
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return True
+        return False
 
 
 class Captions:
@@ -30,32 +56,36 @@ class Captions:
     no_qr_today = "Нет загруженных QR кодов на сегодня. \n"
     qr_today = "На сегодня загружено QR кодов: {f_qr} "
     qr_menu = "На сегодня загружено QR кодов: {f_qr} "
-    faq = "FAQ_DESCRIPTION"
-
-
-async def get_img(
-    menu_name: str, level: int = 0, caption: str = None
-) -> InputMediaPhoto:
-    """
-    Получить изображение.
-    В функцию передаются имя меню, уровень меню и описание,
-    если описания нет, то оно берется из класса Captions.
-    Если нет необходимого изображения, то берется картинка 'no_image'.
-    """
-    if caption is None:
-        caption = getattr(captions, menu_name)
-    if not await is_file_in_dir(f"{menu_name}.jpg", BANNERS_DIR):
-        menu_name = NO_IMAGE
-    image = FSInputFile(BANNERS_DIR.joinpath(menu_name + FMT_JPG))
-    return InputMediaPhoto(media=image, caption=caption)
-
-
-async def is_file_in_dir(name, path):
-    """Проверить, если ли необходимое изображение в директории."""
-    for root, dirs, files in os.walk(path):
-        if name in files:
-            return True
-        return False
-
+    faq = (
+        "Приветствую тебя в qr_trade боте\n\n"
+        "Бот создан для быстрого обмена qr-кодами между менеджерами "
+        "пунктов выдачи с целью поддержания рейтинга в идеальном состоянии.\n"
+        "Выберите раздел, про который хотите узнать. \n\n"
+        "P.S. Код писал на коленке, возможны косяки, баги. "
+        "Если есть жалобы, пожелания, благодарности, проклятия - писать админу =)"
+    )
+    faq_profile = (
+        "В меню профиля ты можешь посмотреть свои личные данные. "
+        "При желании сменить пункт или вовсе его удалит, настроить график работы\n"
+        "Можно включить уведомления по графику, в таком случае, "
+        "Вам будут приходить сообщения о доступных кодах на ваш пункт только в "
+        "те дни, когда вы работаете.\n"
+        "Вы можете и вовсе отключить уведомления, запросить актуальный код можно "
+        "будет через меню QR.\n\n"
+    )
+    faq_qr =  (
+        "В данном разделе вы можете загрузить/удалить ваши QR коды, а после "
+        "отправить их на целевые пункты.\n"
+        "Кнопка 'Проверить QR' делает запрос и проверяет, есть ли актуальные коды "
+        "на ваш пункт.\n Если у вас назначен рабочий пункт - можно настроить "
+        "уведолмения по графику работы. В таком случае, в тот момент, когда "
+        "кто-то  загружает код для вашего пункта - менеджер, работающий в этот "
+        "день, получает уведомление б этом.\n"
+        "Кнопка 'Отправить QR' - открывает раздел поиска пункта выдачи. \n"
+        "Вы можете выбрать поиск по адресу или по id пункта\n"
+        "Кнопка 'Удалить QR' - удаление загруженного Вами кода, используйте, "
+        "если загрузили код со старыми данными.\n\n"
+        "Обратите внимание на скрин выше. Обрезайте перед отправкой ваш скриншот."
+    )
 
 captions = Captions()

@@ -1,9 +1,8 @@
 from aiogram.types import FSInputFile, InlineKeyboardMarkup, InputMediaPhoto
 
-from app.bot.constants import FAQ_DESCRIPTION, NO_IMAGE
+from app.bot.constants import NO_IMAGE
 from app.bot.keyboards.buttons import PROFILE, PROFILE_MENU_BTNS
 from app.bot.keyboards.main_menu_kb import (
-    get_faq_kb,
     get_image_and_kb,
     get_main_menu_btns,
     get_side_menu_btns,
@@ -30,12 +29,3 @@ async def get_profile_menu(
         btns_data=PROFILE_MENU_BTNS,
         caption=user_data,
     )
-
-
-async def get_faq_menu(
-    level: int,
-    menu_name: str,
-    user_id: int,
-) -> tuple[str, InlineKeyboardMarkup]:
-    """Получить пользовательское меню."""
-    return (FAQ_DESCRIPTION, await get_faq_kb(user_id=user_id))

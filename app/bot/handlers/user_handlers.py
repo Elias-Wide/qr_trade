@@ -59,11 +59,8 @@ async def user_menu(
         menu_name=callback_data.menu_name,
         user_id=callback_data.user_id,
     )
-    if type(media) == InputMediaPhoto:
-        await callback.message.edit_media(
-            media=media,
-            reply_markup=reply_markup,
-        )
-    else:
-        await callback.message.answer(text=media, reply_markup=reply_markup)
+    await callback.message.edit_media(
+        media=media,
+        reply_markup=reply_markup,
+    )
     await callback.answer()
