@@ -1,6 +1,17 @@
-# from aiogram.types import FSInputFile, InputMediaPhoto
+from app.users.dao import UsersDAO
+from app.users.models import Users
 
-# from app.core.config import STATIC_DIR
+
+async def get_user_data(user_id: int) -> str:
+    user = await UsersDAO.get_user_full_data(user_id)
+    print(user)
+    return (
+        f"Ваши данные 📂: \n\n"
+        f"Юзернэйм 📱:    {user.username}\n"
+        f"Рабочий id 🔮:    {user.manager_id}\n"
+        f"Адрес пункта 🏚:    {user.addres}\n"
+        f"Помогли другим 💟:   0\n"
+    )
 
 
 # async def get_img(

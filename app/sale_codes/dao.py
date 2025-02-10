@@ -1,11 +1,11 @@
 from datetime import datetime
-from sqlalchemy import insert, select
+from sqlalchemy import and_, insert, select
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
 from app.sale_codes.models import Sale_Codes
 from app.sale_codes.utils import generate_filename
 from app.trades.models import Trades
-from app.users.constants import MOSCOW_TZ
+from app.users.constants import MOSCOW_TZ, TIMEZONE_RU
 from app.users.models import Users
 
 
@@ -20,7 +20,20 @@ class Sale_CodesDAO(BaseDAO):
             query = insert(cls.model).values(
                 user_id=user_id,
                 file_name=file_name,
-                created_at=datetime.now(tz=MOSCOW_TZ),
+                created_at=datetime.now().date(),
             )
             await session.execute(query)
             await session.commit()
+
+    @classmethod
+    async def get_user_qr(cls, user_id: int):
+        async with async_session_maker() as session:
+            get_user = await session.execute(
+                select(cls.model.__table__.columns).where(
+                    and_(
+                        cls.model.user_id == user_id,
+                        cls.model.created_at == datetime.now().date(),
+                    )
+                )
+            )
+            return get_user.mappings().all()

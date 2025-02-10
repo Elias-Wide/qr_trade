@@ -17,9 +17,8 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
     ReplyKeyboardRemove,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.bot.banners import Captions, Images
+from app.bot.banners import Captions, get_img
 from app.bot.constants import (
     CONFIRM,
     INTRO_SURVEY_TEXT,
@@ -72,7 +71,7 @@ async def begin_registration(
         username=message.from_user.username,
     )
     await message.answer_photo(
-        photo=await Images.get_img("registration_start"),
+        photo=await get_img("registration_start"),
         caption=Captions.registration_start,
         reply_markup=await create_registration_kb(),
     )
@@ -85,8 +84,11 @@ async def handle_survey_cancel(
     state: FSMContext,
 ) -> None:
     """Отказ от регистрации."""
-    await state.set_state(RegistrationStates.finished)
-    await return_to_main_menu(callback_query.message, state)
+    await state.set_state(default_state)
+    await callback_query.message.answer_photo(
+        photo=await get_img("no_registr"),
+        caption=Captions.no_registr,
+    )
 
 
 @registration_router.callback_query(
@@ -101,7 +103,9 @@ async def ask_access_code(
     await state.set_state(RegistrationStates.access_code)
 
 
-@registration_router.message(RegistrationStates.access_code, AccesCodeFilter())
+@registration_router.message(
+    RegistrationStates.access_code, F.content_type == "text", AccesCodeFilter()
+)
 async def ask_manager_id(
     message: Message,
     state: FSMContext,
@@ -141,10 +145,7 @@ async def finish_registration(
     )
     registration_data = await state.get_data()
     await UsersDAO.create(registration_data),
-    await message.answer_photo(
-        photo=await Images.get_img("registration_done"),
-        caption=Captions.registration_done,
-    )
+    await message.answer_photo(await get_img(menu_name="registration_done"))
 
     await state.set_state(RegistrationStates.finished)
     await process_start_command(message, state)
@@ -160,10 +161,18 @@ async def handle_ivalid_data_type(message: Message):
     await send_ivalid_data_type_message(message)
 
 
-@registration_router.message(RegistrationStates.access_code, ~AccesCodeFilter())
+@registration_router.message(
+    RegistrationStates.access_code, F.content_type == "text", ~AccesCodeFilter()
+)
 async def handle_invalid_acces_code(message: Message) -> None:
     """Сообщение о введенном невалидном manager id."""
     await message.answer(text="🔴Неверный код доступа🔴")
+
+
+@registration_router.message(RegistrationStates.access_code)
+async def handle_invalid_acces_code_type(message: Message):
+    """Сообщение а невалидном типе данных при обработке кода доступа."""
+    await send_ivalid_data_type_message(message)
 
 
 @registration_router.message(

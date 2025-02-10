@@ -11,7 +11,7 @@ import uvicorn
 from contextlib import asynccontextmanager
 from app.bot.create_bot import bot, dp, stop_bot, start_bot
 from app.bot.handlers.registration_handlers import registration_router
-from app.bot.handlers.user_handlers import main_router
+from app.bot.handlers.user_handlers import menu_router
 from app.core.config import settings
 from aiogram.types import Update
 from fastapi import FastAPI, Request
@@ -30,7 +30,7 @@ WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
 async def lifespan(app: FastAPI):
     logging.info("Starting bot setup...")
     dp.include_router(registration_router)
-    dp.include_router(main_router)
+    dp.include_router(menu_router)
     await start_bot()
     await bot.set_webhook(
         url=WEBHOOK_URL,

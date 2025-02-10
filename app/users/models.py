@@ -27,7 +27,7 @@ class Users(Base):
     point_id = Column(ForeignKey("points.id"), nullable=True)
     manager_id = Column(Integer, unique=True, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)
-    # sale_code_id = Column(ForeignKey("sale_codes.id"), nullable=True)
     ban = Column(BOOLEAN, default=False)
+    # sale_codes = relationship("Sale_codes", back_populates="managers")
     points = relationship("Points", back_populates="managers")
     trades = relationship("Trades", back_populates="users")
