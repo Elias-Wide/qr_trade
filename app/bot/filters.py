@@ -77,8 +77,14 @@ class PointExistFilter(UserExistFilter):
 
 
 class AccesCodeFilter(BaseFilter):
-
+    """Класс валидации кода доступа к боту."""
     async def __call__(self, message: Message) -> bool:
         if message.text.strip() == "wb123":
             return True
         return False
+
+class ImgValidationFilter(BaseFilter):
+    """Класс валидации загруженного пользователем изображения!"""
+    
+    async def __call__(self, message: Message) -> bool:
+        return True

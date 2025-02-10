@@ -73,15 +73,22 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             await session.refresh(db_obj)
             return db_obj
 
-    @staticmethod
-    async def remove(
-        db_obj: ModelType,
-    ) -> ModelType:
-        """Удаляет объект."""
+    @classmethod
+    async def delete_object(cls, **kwargs):
+        """Удаляет объект из БД."""
         async with async_session_maker() as session:
-            await session.delete(db_obj)
-            await session.commit()
-            return db_obj
+            try:
+                query = select(cls.model).filter_by(**kwargs)
+                result = await session.execute(query)
+                result = result.scalar()
+
+                if not result:
+                    raise None
+                await session.delete(result)
+                await session.commit()
+                return True
+            except:
+                return None
 
     @classmethod
     async def get_by_attribute(

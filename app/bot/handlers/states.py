@@ -11,3 +11,9 @@ class RegistrationStates(StatesGroup):
     manager_id_question = State()
     point_id_question = State()
     finished = State()
+    
+
+class MenuQRStates(StatesGroup):
+    """Класс состояний меню qr-кодов."""
+
+    add_qr = State()

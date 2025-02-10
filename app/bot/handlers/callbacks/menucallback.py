@@ -15,6 +15,7 @@ class MenuCallBack(CallbackData, prefix="menu"):
     level: int = 0
     menu_name: str
     user_id: int | None = None
-    point_addres: str | None = None
+    point_id: int | None = None
+    code_id: int | None = None
     ok: str | None = None
     yes_no: str | None = None

@@ -89,7 +89,7 @@ async def get_side_menu_btns(
 
 
 async def get_image_and_kb(
-    menu_name: str, user_id: int, btns_data: dict[str], caption: str = None
+    menu_name: str, user_id: int, btns_data: dict[str], level: int = 0, caption: str = None
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """
     Получить изображение, описание и клавитуру для меню.
@@ -100,6 +100,20 @@ async def get_image_and_kb(
         image = await get_img(menu_name=menu_name, caption=caption)
     except Exception:
         image = await get_img(menu_name=NO_IMAGE, caption=caption)
-    return (image, await get_side_menu_btns(btns_data=btns_data, user_id=user_id))
+    return (image, await get_side_menu_btns(btns_data=btns_data, user_id=user_id, level=level))
 
 
+async def get_back_kb(menu_name: str, user_id: int, level: int = 1, size: tuple[int] = DEFAULT_KEYBOARD_SIZE,) -> KeyboardMarkup:
+    """Получить клавиатуру лишь с кнопкой Назад."""
+    keyboard = InlineKeyboardBuilder()
+    keyboard.add(
+        InlineKeyboardButton(
+            text=BACK_BTN,
+            callback_data=MenuCallBack(
+                user_id=user_id,
+                level=level - 1,
+                menu_name=menu_name,
+            ).pack(),
+        )
+    )
+    return keyboard.adjust(*size).as_markup()

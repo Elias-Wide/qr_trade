@@ -10,13 +10,13 @@ CONFIRM = (
 
 class Button:
     MAIN_MENU = "menu"
+DELETE_CODE = "delete_code"
+DELETE_QR_SIZE: tuple[int] = (1,)
+DEFAULT_KEYBOARD_SIZE: tuple[int] = (2,)
+FMT_JPG: str = ".jpg"
+MAIN_MENU: str = "main_menu"
 
-
-DEFAULT_KEYBOARD_SIZE = (2,)
-FMT_JPG = ".jpg"
-MAIN_MENU = "main_menu"
-
-MAIN_MENU_COMMANDS = {
+MAIN_MENU_COMMANDS: dict[str] = {
     "/start": "Перезапуск бота",
     "/help": "Справка",
 }
@@ -51,9 +51,9 @@ INTRO_SURVEY_TEXT = (
     "\n😜\n"
 )
 MANAGER_ID, POINT_ID = "manager_id", "point_id"
-
-NO_IMAGE = "no_image"
-INVALID_DATA_TYPE = "Неверный формат введенных данных!"
+NO_CAPTION = ''
+NO_IMAGE: str = "no_image"
+INVALID_DATA_TYPE: str = "Неверный формат введенных данных!"
 INVALID_ID_MESSAGE = {
     MANAGER_ID: (
         "Введенный id менеджера уже кем-то занят.\n"
@@ -73,6 +73,8 @@ REGISTRATION_DONE = (
 
 REGISTRATION_CONFIRMED, REGISTRATION_CANCELED = dict(CONFIRM).keys()
 
+DELETE_ERROR = "Ошибка удаления."
+SUCCESS_DELETE = "✅ QR код УСПЕШНО удален ✅"
 # FAQ_MENU = (
 #     "Приветствую тебя в qr_trade боте\n"
 #     "Бот создан для быстрого обмена qr-кодами между менеджерами "

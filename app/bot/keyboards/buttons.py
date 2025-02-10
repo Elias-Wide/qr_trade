@@ -4,6 +4,9 @@
 потом сложные - dict, tuple.
 """
 
+from app.bot.constants import MAIN_MENU
+
+
 ADD_POINT = "add_point"
 ADD_QR = "add_qr"
 CHECK_QR = "check_qr"
@@ -29,6 +32,7 @@ MAIN_MENU_BUTTONS = {
     FAQ_MENU: "FAQ 📚",
     QR_MENU: "QR меню 📨",
 }
+MAIN_MENU_PAGES: tuple[str] = (MAIN_MENU, QR_MENU, CHECK_QR, DELETE_QR, FAQ_MENU, FAQ_PROFILE, FAQ_QR, PROFILE)
 
 PROFILE_MENU_BTNS = {
     ADD_POINT: "Сменить пункт",

@@ -39,10 +39,7 @@ from app.bot.filters import (
     UserExistFilter,
 )
 from app.bot.handlers.user_handlers import process_start_command
-from app.bot.keyboards.registration_kb import (
-    create_back_to_menu_kb,
-    create_registration_kb,
-)
+from app.bot.keyboards.registration_kb import create_registration_kb
 from app.users.dao import UsersDAO
 
 from app.bot.handlers.states import RegistrationStates
