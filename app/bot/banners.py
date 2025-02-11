@@ -14,7 +14,7 @@ BANNERS_DIR = STATIC_DIR / "banners"
 
 
 async def get_img(
-    menu_name: str, level: int = 0, caption: str = None
+    menu_name: str, file_dir: str = BANNERS_DIR, caption: str = None
 ) -> InputMediaPhoto:
     """
     Получить изображение.
@@ -25,9 +25,11 @@ async def get_img(
 
     if caption is None:
         caption = getattr(captions, menu_name)
-    if not await is_file_in_dir(f"{menu_name}.jpg", BANNERS_DIR):
+    print("FILED DIID", file_dir)
+    if not await is_file_in_dir(f"{menu_name}.jpg", file_dir):
+        print("NO FILE IN DIR")
         menu_name = NO_IMAGE
-    image = FSInputFile(BANNERS_DIR.joinpath(menu_name + FMT_JPG))
+    image = FSInputFile(file_dir.joinpath(menu_name + FMT_JPG))
     return InputMediaPhoto(media=image, caption=caption)
 
 
@@ -67,8 +69,7 @@ class Captions:
         "Вы не назначили Ваш пункт. \n" "Это можно сделать в разделе Профиль"
     )
     del_qr = (
-        "Выберите код для удаления. \n"
-        "Они отсортированы по времени добавления сверху вниз."
+        "Загруженные вам коды. \n"
     )
     faq = (
         "Приветствую тебя в qr_trade боте\n\n"
@@ -102,5 +103,8 @@ class Captions:
         "если загрузили код со старыми данными.\n\n"
     )
 
+    def __getattr__(self, name):
+        return self.no_caption
+        return getattr(self, 'no_caption')
 
 captions = Captions()

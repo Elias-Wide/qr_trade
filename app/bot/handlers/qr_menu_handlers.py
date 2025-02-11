@@ -10,6 +10,7 @@ from app.bot.constants import (
     SUCCES_DNWLD,
     SUCCESS_DELETE,
 )
+from app.core.config import QR_DIR
 from app.bot.filters import ImgValidationFilter, UserExistFilter
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.handlers.registration_handlers import send_ivalid_data_type_message
@@ -90,12 +91,14 @@ async def process_check_qr(
 ) -> None:
     print(callback_data)
     print("CHECKR QR MENU HANDLER")
-    codes_to_point = await TradesDAO.get_by_attribute(
-        attr_name="point_id", attr_value=callback_data.point_id
-    )
+    codes_to_point = await TradesDAO.get_trades_by_point(callback_data.point_id)
     if codes_to_point:
+        codes = []
         for code in codes_to_point:
-            callback.message.answer_photo(photo=await get_img(QR_MENU))
+            print(code.file_name)
+            codes.append(await get_img(menu_name=code.file_name, file_dir=QR_DIR))
+            # image = await get_img(menu_name=callback_data.menu_name, file_dir=QR_DIR)
+            await callback.message.answer_media_group(codes)
     else:
         if callback_data.point_id == 1:
             caption = captions.no_user_point

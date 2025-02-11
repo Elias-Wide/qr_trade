@@ -11,8 +11,7 @@ async def get_faq_menu(
     user_id: int,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """Получить пользовательское меню."""
-    image = await get_img(menu_name=menu_name, level=level)
-    print(level)
+    image = await get_img(menu_name=menu_name)
     match level:
         case 0:
             keyboard = await get_faq_kb(user_id=user_id, level=level)

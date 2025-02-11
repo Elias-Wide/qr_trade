@@ -3,7 +3,7 @@ from sqlalchemy import and_, insert, select
 from app.dao.base import BaseDAO, ModelType
 from app.core.database import async_session_maker
 from app.sale_codes.models import Sale_Codes
-from app.sale_codes.utils import generate_filename
+from app.bot.utils import generate_filename
 from app.trades.models import Trades
 from app.users.constants import MOSCOW_TZ, TIMEZONE_RU
 from app.users.models import Users

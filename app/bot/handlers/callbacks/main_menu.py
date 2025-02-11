@@ -17,6 +17,6 @@ async def get_main_menu(
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """Возвращает главное меню."""
     return (
-        await get_img(menu_name, level),
+        await get_img(menu_name=menu_name),
         await get_main_menu_btns(user_id=user_id, level=level),
     )

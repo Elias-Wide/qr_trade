@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import Generic, Optional, Type, TypeVar
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy import insert, select
+from sqlalchemy import and_, insert, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -104,3 +105,25 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 ),
             )
             return db_obj.scalars().first()
+
+    @classmethod
+    async def get_actual_objs(
+        cls,
+        attr_name: str,
+        attr_value: int | str
+    ) -> list[ModelType]:
+        """
+        Получить актуальные объекты моделей БД.
+        Возвращает список объектом переданой модели,
+        созданные в день запроса.
+        """
+        async with async_session_maker() as session:
+            get_objs = await session.execute(
+                select(cls.model.__table__.columns).where(
+                    and_(
+                        getattr(cls.model, attr_name) == attr_value,
+                        cls.model.created_at == datetime.now().date(),
+                    )
+                )
+            )
+            return get_objs.mappings().all()

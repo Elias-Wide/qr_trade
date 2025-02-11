@@ -19,8 +19,7 @@ FMT_JPG: str = ".jpg"
 MAIN_MENU: str = "main_menu"
 
 MAIN_MENU_COMMANDS: dict[str] = {
-    "/start": "Перезапуск бота",
-    "/help": "Справка",
+    "/start": "Перезапуск бота/открыть меню",
 }
 
 

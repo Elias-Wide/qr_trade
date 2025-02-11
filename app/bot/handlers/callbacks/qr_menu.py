@@ -27,11 +27,13 @@ async def get_qr_menu(
             )
         case 1:
             if menu_name == DELETE_QR:
-                user_codes = await Sale_CodesDAO.get_by_attribute("user_id", user_id)
+                user_codes = await Sale_CodesDAO.get_actual_objs(
+                    attr_name="user_id", attr_value=user_id
+                    )
                 if not user_codes:
                     caption = captions.no_qr_today
                 else:
-                    caption = captions.no_caption
+                    caption = captions.del_qr
                 return (
                     await get_img(menu_name, caption=caption),
                     await get_qr_delete_kb(user_id=user_id, level=level),
