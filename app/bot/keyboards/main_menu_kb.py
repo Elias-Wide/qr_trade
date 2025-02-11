@@ -19,9 +19,8 @@ from app.bot.constants import (
     NO_IMAGE,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import BACK_BTN, FAQ_MENU, FAQ_MENU_BTNS, MAIN_MENU_BUTTONS, PROFILE
-from app.core.config import settings
-from app.users.models import Users
+from app.bot.keyboards.buttons import BACK_BTN, MAIN_MENU_BUTTONS
+
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
 
@@ -60,6 +59,7 @@ async def get_side_menu_btns(
     level: int = 0,
     size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
     btns_data: dict[str],
+    point_id: int | None = None,
     user_id: int | None = None,
 ) -> KeyboardMarkup:
     """Создание клавиатуры для дополнительных меню."""
@@ -72,6 +72,7 @@ async def get_side_menu_btns(
                     level=level + 1,
                     menu_name=menu_name,
                     user_id=user_id,
+                    point_id=point_id,
                 ).pack(),
             ),
         )
@@ -82,6 +83,7 @@ async def get_side_menu_btns(
                 user_id=user_id,
                 level=level,
                 menu_name=MAIN_MENU,
+                point_id=point_id,
             ).pack(),
         )
     )
@@ -89,7 +91,12 @@ async def get_side_menu_btns(
 
 
 async def get_image_and_kb(
-    menu_name: str, user_id: int, btns_data: dict[str], level: int = 0, caption: str = None
+    menu_name: str,
+    user_id: int,
+    point_id: int,
+    btns_data: dict[str],
+    level: int = 0,
+    caption: str = None,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """
     Получить изображение, описание и клавитуру для меню.
@@ -100,10 +107,20 @@ async def get_image_and_kb(
         image = await get_img(menu_name=menu_name, caption=caption)
     except Exception:
         image = await get_img(menu_name=NO_IMAGE, caption=caption)
-    return (image, await get_side_menu_btns(btns_data=btns_data, user_id=user_id, level=level))
+    return (
+        image,
+        await get_side_menu_btns(
+            btns_data=btns_data, user_id=user_id, level=level, point_id=point_id
+        ),
+    )
 
 
-async def get_back_kb(menu_name: str, user_id: int, level: int = 1, size: tuple[int] = DEFAULT_KEYBOARD_SIZE,) -> KeyboardMarkup:
+async def get_back_kb(
+    menu_name: str,
+    user_id: int,
+    level: int = 1,
+    size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
+) -> KeyboardMarkup:
     """Получить клавиатуру лишь с кнопкой Назад."""
     keyboard = InlineKeyboardBuilder()
     keyboard.add(

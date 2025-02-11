@@ -17,9 +17,7 @@ from app.users.models import Users
 
 
 async def get_profile_menu(
-    level: int,
-    menu_name: str,
-    user_id: int,
+    level: int, menu_name: str, user_id: int, point_id: int
 ) -> tuple[InputMediaPhoto | str, InlineKeyboardMarkup]:
     """Получить пользовательское меню."""
     user_data = await get_user_data(user_id)
@@ -28,4 +26,5 @@ async def get_profile_menu(
         user_id=user_id,
         btns_data=PROFILE_MENU_BTNS,
         caption=user_data,
+        point_id=point_id,
     )

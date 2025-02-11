@@ -19,7 +19,14 @@ from app.bot.constants import (
     NO_IMAGE,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import BACK_BTN, FAQ_MENU, FAQ_MENU_BTNS, MAIN_MENU_BUTTONS, PROFILE, QR_MENU
+from app.bot.keyboards.buttons import (
+    BACK_BTN,
+    FAQ_MENU,
+    FAQ_MENU_BTNS,
+    MAIN_MENU_BUTTONS,
+    PROFILE,
+    QR_MENU,
+)
 from app.core.config import settings
 from app.users.models import Users
 
@@ -65,9 +72,7 @@ async def get_faq_kb(
 
 
 async def get_faq_side_menu_kb(
-    level: int,
-    user_id: int,
-    size: tuple[int] = DEFAULT_KEYBOARD_SIZE
+    level: int, user_id: int, size: tuple[int] = DEFAULT_KEYBOARD_SIZE
 ) -> KeyboardMarkup:
     keyboard = InlineKeyboardBuilder()
     keyboard.add(
@@ -78,6 +83,6 @@ async def get_faq_side_menu_kb(
                 level=level - 1,
                 menu_name=FAQ_MENU,
             ).pack(),
-            )
         )
+    )
     return keyboard.adjust(*size).as_markup()

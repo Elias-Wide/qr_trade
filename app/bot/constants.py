@@ -10,6 +10,8 @@ CONFIRM = (
 
 class Button:
     MAIN_MENU = "menu"
+
+
 DELETE_CODE = "delete_code"
 DELETE_QR_SIZE: tuple[int] = (1,)
 DEFAULT_KEYBOARD_SIZE: tuple[int] = (2,)
@@ -51,7 +53,7 @@ INTRO_SURVEY_TEXT = (
     "\n😜\n"
 )
 MANAGER_ID, POINT_ID = "manager_id", "point_id"
-NO_CAPTION = ''
+NO_CAPTION = ""
 NO_IMAGE: str = "no_image"
 INVALID_DATA_TYPE: str = "Неверный формат введенных данных!"
 INVALID_ID_MESSAGE = {

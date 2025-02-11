@@ -13,6 +13,7 @@ from app.bot.constants import CONFIRM, DEFAULT_KEYBOARD_SIZE, MAIN_MENU
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
 
+
 async def create_registration_kb(
     size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
 ) -> KeyboardMarkup:

@@ -80,10 +80,12 @@ class PointExistFilter(UserExistFilter):
 
 class AccesCodeFilter(BaseFilter):
     """Класс валидации кода доступа к боту."""
+
     async def __call__(self, message: Message) -> bool:
         if message.text.strip() == "wb123":
             return True
         return False
+
 
 class ImgValidationFilter(BaseFilter):
     """
@@ -91,9 +93,9 @@ class ImgValidationFilter(BaseFilter):
     Вызов функции валидации.
     Возвращает словарь с данными file_name и value.
     """
-    
+
     async def __call__(self, message: Message) -> dict[str] | bool:
-        validated_data:  dict[str] = await validate_photo(message)
+        validated_data: dict[str] = await validate_photo(message)
         if all(validated_data.values()):
             return validated_data
         return False

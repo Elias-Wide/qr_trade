@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import and_, insert, select
-from app.dao.base import BaseDAO
+from app.dao.base import BaseDAO, ModelType
 from app.core.database import async_session_maker
 from app.sale_codes.models import Sale_Codes
 from app.sale_codes.utils import generate_filename
@@ -21,7 +21,7 @@ class Sale_CodesDAO(BaseDAO):
                 user_id=user_id,
                 file_name=file_name,
                 created_at=datetime.now().date(),
-                value=value
+                value=value,
             )
             await session.execute(query)
             await session.commit()
@@ -38,3 +38,18 @@ class Sale_CodesDAO(BaseDAO):
                 )
             )
             return get_user.mappings().all()
+
+    # @classmethod
+    # async def get_codes_by_attribute(
+    #     cls,
+    #     attr_name: str,
+    #     attr_value: str,
+    # ) -> list[ModelType | None]:
+    #     """Возвращает объект по заданому атрибуту."""
+    #     async with async_session_maker() as session:
+    #         db_objs = await session.execute(
+    #             select(cls.model.__table__.columns).where(
+    #                 getattr(cls.model, attr_name) == attr_value,
+    #             ),
+    #         )
+    #         return db_objs.mappings().all()

@@ -33,6 +33,7 @@ async def critical_message_to_admin(message: str):
     except:
         pass
 
+
 # async def download_file(file, destination):
-#     file_name = 
+#     file_name =
 #     destination_file = await bot.download_file(file.file_id, os.path.join(os.getcwd(), file_name))

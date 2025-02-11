@@ -10,6 +10,7 @@ from app.bot.constants import FMT_JPG, REGEX_QR_PATTERN
 from app.core.config import QR_DIR
 from app.core.logging import get_logger
 from app.bot.create_bot import bot
+
 logger = get_logger(__name__)
 
 
@@ -32,10 +33,12 @@ async def generate_filename() -> str:
 #         scale=10,
 #     )
 
+
 async def decode_qr(filepath: str) -> str:
-    """Декодировать изображение QR-кода. """
+    """Декодировать изображение QR-кода."""
     decocdeQR = decode(Image.open(filepath))
-    return (decocdeQR[0].data.decode('ascii'))
+    return decocdeQR[0].data.decode("ascii")
+
 
 async def delete_files_in_folder(folder_path: str):
     """Удаление файлов в заданной директории"""
@@ -46,22 +49,25 @@ async def delete_files_in_folder(folder_path: str):
                 os.remove(file_path)
         except Exception as e:
             logger.error(f"Ошибка при удалении файла {file_path}. {e}")
-            
-            
+
+
 async def download_file(file, destination) -> str:
     try:
         file_name = await generate_filename()
         path = destination / file_name
         file_from_bot = await bot.get_file(file.file_id)
-        destination_file = await bot.download_file(file_from_bot.file_path, os.path.join(os.getcwd(), path))
+        destination_file = await bot.download_file(
+            file_from_bot.file_path, os.path.join(os.getcwd(), path)
+        )
         return file_name
     except:
-        return 
+        return
+
 
 async def validate_photo(message: Message) -> bool:
     """
     Валидцация полученного изображения.
-    Передается объект сообщения, 
+    Передается объект сообщения,
     далее вызов функции загрузки файла, он возращает имя файла
     в случае успешной загрузки.
     Загруженный файл(qr-код) декодируется и проверяется регуляркой
@@ -84,4 +90,3 @@ async def validate_photo(message: Message) -> bool:
             os.remove(QR_DIR / file_name)
     print(result_data)
     return result_data
-

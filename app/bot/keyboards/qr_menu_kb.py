@@ -21,7 +21,15 @@ from app.bot.constants import (
     NO_IMAGE,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import BACK_BTN, DELETE_QR, FAQ_MENU, FAQ_MENU_BTNS, MAIN_MENU_BUTTONS, PROFILE, QR_MENU
+from app.bot.keyboards.buttons import (
+    BACK_BTN,
+    DELETE_QR,
+    FAQ_MENU,
+    FAQ_MENU_BTNS,
+    MAIN_MENU_BUTTONS,
+    PROFILE,
+    QR_MENU,
+)
 from app.core.config import settings
 from app.sale_codes.dao import Sale_CodesDAO
 from app.users.models import Users
@@ -41,17 +49,15 @@ async def get_qr_delete_kb(user_id: int, level: int, size: tuple[int] = DELETE_Q
                     user_id=user_id,
                     level=level - 1,
                     menu_name=DELETE_CODE,
-                ).pack()
+                ).pack(),
             )
         )
     keyboard.add(
         InlineKeyboardButton(
             text=BACK_BTN,
             callback_data=MenuCallBack(
-                level=level - 1,
-                menu_name=QR_MENU,
-                user_id=user_id
-            ).pack()
+                level=level - 1, menu_name=QR_MENU, user_id=user_id
+            ).pack(),
         )
     )
     return keyboard.adjust(*size).as_markup()

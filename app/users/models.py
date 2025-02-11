@@ -24,7 +24,7 @@ class Users(Base):
 
     telegram_id = Column(Integer, unique=True, nullable=False)
     username = Column(String, nullable=False)
-    point_id = Column(ForeignKey("points.id"), nullable=True)
+    point_id = Column(ForeignKey("points.point_id"), nullable=True)
     manager_id = Column(Integer, unique=True, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)
     ban = Column(BOOLEAN, default=False)

@@ -2,19 +2,23 @@ from app.users.dao import UsersDAO
 from app.users.models import Users
 from app.bot.create_bot import bot
 
+
 async def get_user_data(user_id: int) -> str:
-    user = await UsersDAO.get_user_full_data(user_id)
-    print(user)
-    return (
-        f"Ваши данные 📂: \n\n"
-        f"Юзернэйм 📱:    {user.username}\n"
-        f"Рабочий id 🔮:    {user.manager_id}\n"
-        f"Адрес пункта 🏚:    {user.addres}\n"
-        f"Помогли другим 💟:   0\n"
-    )
+    """Получить данные пользователя."""
+    try:
+        user = await UsersDAO.get_user_full_data(user_id)
+        result = (
+            f"Ваши данные 📂: \n\n"
+            f"Юзернэйм 📱:    {user.username}\n"
+            f"Рабочий ID 🔮:    {user.manager_id}\n"
+            f"Адрес пункта 🏚:    {user.addres}\n"
+            f"Помогли другим 💟:   0\n"
+        )
+        return result + f"ID пункта: {user.point_id}" if user.point_id != 1 else result
+    except:
+        return "Ошибка получения данных"
 
 
-    
 # async def get_img(
 #     menu_name: str,
 #     level: int | None = None,

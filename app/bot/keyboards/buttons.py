@@ -32,7 +32,15 @@ MAIN_MENU_BUTTONS = {
     FAQ_MENU: "FAQ 📚",
     QR_MENU: "QR меню 📨",
 }
-MAIN_MENU_PAGES: tuple[str] = (MAIN_MENU, QR_MENU, CHECK_QR, DELETE_QR, FAQ_MENU, FAQ_PROFILE, FAQ_QR, PROFILE)
+MAIN_MENU_PAGES: tuple[str] = (
+    MAIN_MENU,
+    QR_MENU,
+    DELETE_QR,
+    FAQ_MENU,
+    FAQ_PROFILE,
+    FAQ_QR,
+    PROFILE,
+)
 
 PROFILE_MENU_BTNS = {
     ADD_POINT: "Сменить пункт",
@@ -42,6 +50,6 @@ PROFILE_MENU_BTNS = {
 
 QR_MENU_BTNS = {
     ADD_QR: "Загрузить код 📨",
-    CHECK_QR: "Проверить наличие QR на мой пункт",
+    CHECK_QR: "Получить QR",
     DELETE_QR: "Удалить код 🗑",
 }
