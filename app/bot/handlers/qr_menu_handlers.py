@@ -4,9 +4,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, ContentType, InputMediaPhoto, Message
 
 from app.bot.banners import captions, get_img
-from app.bot.constants import DELETE_CODE, DELETE_ERROR, SUCCESS_DELETE
+from app.bot.constants import DELETE_CODE, DELETE_ERROR, DWNLD_ERROR, SUCCES_DNWLD, SUCCESS_DELETE
 from app.bot.filters import ImgValidationFilter, UserExistFilter
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
+from app.bot.handlers.registration_handlers import send_ivalid_data_type_message
 from app.bot.handlers.states import MenuQRStates
 from app.bot.handlers.user_handlers import get_menucallback_data, process_start_command
 from app.bot.keyboards.buttons import ADD_QR, QR_MENU
@@ -52,12 +53,26 @@ async def process_download_ok(
     value: str | None,
     ) -> None:
     """Обработки загрузки валидного изображения."""
-    user = UsersDAO.get_by_attribute("telagram_id", message.from_user.id)
-    Sale_CodesDAO.create_code
+    user = await UsersDAO.get_by_attribute("telegram_id", message.from_user.id)
+    try:
+        await Sale_CodesDAO.create_code(user.id, file_name, value)
+        message_text = SUCCES_DNWLD
+    except:
+        message_text = DWNLD_ERROR
     await message.answer(
-        text="Успешная загрузка!"
+        text=message_text
     )
     await process_start_command(message, state)
     state.clear
     
+
+@code_router.message(MenuQRStates.add_qr)
+async def process_download_error(
+    message: Message,
+    state: FSMContext,
+    ) -> None:
+    """Обработки загрузки пользователем невалидных данных."""
+    await send_ivalid_data_type_message(message=message)
+    # await process_start_command(message, state)
+    # state.clear
     

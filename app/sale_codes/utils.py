@@ -79,7 +79,7 @@ async def validate_photo(message: Message) -> bool:
         result_data["file_name"] = file_name
         value = await decode_qr(QR_DIR / file_name)
         if re.fullmatch(REGEX_QR_PATTERN, value):
-            result_data["value"] = "**" + value.split("_")[1][2:]
+            result_data["value"] = "**" + value.split("_")[0][3:]
         else:
             os.remove(QR_DIR / file_name)
     print(result_data)

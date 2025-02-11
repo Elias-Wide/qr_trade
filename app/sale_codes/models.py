@@ -16,3 +16,4 @@ class Sale_Codes(Base):
     user_id = Column(ForeignKey("users.id"), nullable=False)
     created_at = Column(Date, default=datetime.now)
     file_name = Column(String, nullable=False)
+    value = Column(String, nullable=False, unique=True)

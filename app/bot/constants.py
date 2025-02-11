@@ -75,6 +75,8 @@ REGISTRATION_CONFIRMED, REGISTRATION_CANCELED = dict(CONFIRM).keys()
 REGEX_QR_PATTERN = r"(^\d{6,12}_\d{5})"
 DELETE_ERROR = "Ошибка удаления."
 SUCCESS_DELETE = "✅ QR код УСПЕШНО удален ✅"
+SUCCES_DNWLD = "⭐️ Успешная загрузка ⭐️"
+DWNLD_ERROR = "⚠️ Вы уже загрузили данный код⚠️"
 # FAQ_MENU = (
 #     "Приветствую тебя в qr_trade боте\n"
 #     "Бот создан для быстрого обмена qr-кодами между менеджерами "

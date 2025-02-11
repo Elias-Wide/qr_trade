@@ -15,12 +15,13 @@ class Sale_CodesDAO(BaseDAO):
     model = Sale_Codes
 
     @classmethod
-    async def create_code(cls, user_id: int, file_name: str):
+    async def create_code(cls, user_id: int, file_name: str, value: str):
         async with async_session_maker() as session:
             query = insert(cls.model).values(
                 user_id=user_id,
                 file_name=file_name,
                 created_at=datetime.now().date(),
+                value=value
             )
             await session.execute(query)
             await session.commit()

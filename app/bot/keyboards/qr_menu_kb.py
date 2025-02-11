@@ -35,7 +35,7 @@ async def get_qr_delete_kb(user_id: int, level: int, size: tuple[int] = DELETE_Q
     for counter, code in enumerate(user_codes):
         keyboard.add(
             InlineKeyboardButton(
-                text=f"❌ Удалить QR #{counter + 1} (id{code.id}) ❌",
+                text=f"❌ Удалить QR #{counter + 1} ({code.value}) ❌",
                 callback_data=MenuCallBack(
                     code_id=code.id,
                     user_id=user_id,
