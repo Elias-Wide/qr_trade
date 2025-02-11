@@ -1,8 +1,8 @@
+import os
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from app.bot.handlers.registration_handlers import registration_router
 from app.core.config import settings
 
 
@@ -32,3 +32,7 @@ async def critical_message_to_admin(message: str):
         await bot.send_message(settings.telegram.admin_id, message)
     except:
         pass
+
+# async def download_file(file, destination):
+#     file_name = 
+#     destination_file = await bot.download_file(file.file_id, os.path.join(os.getcwd(), file_name))

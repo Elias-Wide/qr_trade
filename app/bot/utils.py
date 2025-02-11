@@ -1,6 +1,6 @@
 from app.users.dao import UsersDAO
 from app.users.models import Users
-
+from app.bot.create_bot import bot
 
 async def get_user_data(user_id: int) -> str:
     user = await UsersDAO.get_user_full_data(user_id)
@@ -14,6 +14,7 @@ async def get_user_data(user_id: int) -> str:
     )
 
 
+    
 # async def get_img(
 #     menu_name: str,
 #     level: int | None = None,

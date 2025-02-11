@@ -4,7 +4,9 @@ from aiogram.filters import BaseFilter
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import QR_DIR
 from app.points.dao import PointsDAO
+from app.sale_codes.utils import download_file, validate_photo
 from app.users.dao import UsersDAO
 
 
@@ -84,7 +86,14 @@ class AccesCodeFilter(BaseFilter):
         return False
 
 class ImgValidationFilter(BaseFilter):
-    """Класс валидации загруженного пользователем изображения!"""
+    """
+    Класс фильтрации загруженного пользователем изображения.
+    Вызов функции валидации.
+    Возвращает словарь с данными file_name и value.
+    """
     
-    async def __call__(self, message: Message) -> bool:
-        return True
+    async def __call__(self, message: Message) -> dict[str] | bool:
+        validated_data:  dict[str] = await validate_photo(message)
+        if all(validated_data.values()):
+            return validated_data
+        return False

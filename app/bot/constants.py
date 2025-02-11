@@ -72,7 +72,7 @@ REGISTRATION_DONE = (
 )
 
 REGISTRATION_CONFIRMED, REGISTRATION_CANCELED = dict(CONFIRM).keys()
-
+REGEX_QR_PATTERN = r"(^\d{6,12}_\d{5})"
 DELETE_ERROR = "Ошибка удаления."
 SUCCESS_DELETE = "✅ QR код УСПЕШНО удален ✅"
 # FAQ_MENU = (

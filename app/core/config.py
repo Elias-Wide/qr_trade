@@ -8,6 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_DIR = BASE_DIR / "static"
+QR_DIR = STATIC_DIR / "qr"
 
 
 class ConfigBase(BaseSettings):
