@@ -47,18 +47,22 @@ async def user_menu(
     callback_data: MenuCallBack,
 ) -> None:
     """Обработка нажатия кнопок меню."""
-
-    if not all((callback_data.user_id, callback_data.point_id)):
-        user = await UsersDAO.get_by_attribute(
-            attr_name="telegram_id", attr_value=callback.message.chat.id
-        )
-        callback_data.user_id = user.id
-        callback_data.point_id = user.point_id
-    await get_menucallback_data(callback, callback_data)
-    await callback.answer()
+    try:
+        
+        if not all((callback_data.user_id, callback_data.point_id)):
+            user = await UsersDAO.get_by_attribute(
+                attr_name="telegram_id", attr_value=callback.message.chat.id
+            )
+            callback_data.user_id = user.id
+            callback_data.point_id = user.point_id
+        await get_menucallback_data(callback, callback_data)
+        await callback.answer()
+    except:
+        await callback.answer(text="Критическая ошибка / перезапустите бота", show_alert=True)
 
 
 async def get_menucallback_data(callback: CallbackQuery, callback_data: MenuCallBack):
+    print(callback_data)
     media, reply_markup = await get_menu_content(
         level=callback_data.level,
         menu_name=callback_data.menu_name,

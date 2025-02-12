@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
-from app.bot.constants import NO_CAPTION
-from app.bot.keyboards.buttons import CHECK_QR, DELETE_QR, QR_MENU, QR_MENU_BTNS
+from app.bot.constants import NO_CAPTION, QR_SEND, QR_UPDATE
+from app.bot.keyboards.buttons import CHECK_QR, DELETE_QR, QR_MENU, QR_MENU_BTNS, QR_SEND_BTNS
 from app.bot.keyboards.main_menu_kb import get_image_and_kb
 from app.bot.keyboards.qr_menu_kb import get_qr_delete_kb
 
@@ -38,6 +38,17 @@ async def get_qr_menu(
                     await get_img(menu_name, caption=caption),
                     await get_qr_delete_kb(user_id=user_id, level=level),
                 )
+            elif menu_name == QR_SEND:
+                return await get_image_and_kb(
+                    menu_name=QR_SEND,
+                    user_id=user_id,
+                    btns_data=QR_SEND_BTNS,
+                    caption=captions.send_qr,
+                    level=level + 1,
+                    point_id=point_id,
+                )
+            elif menu_name == QR_UPDATE:   
+                pass
 
 
 async def get_qr_side_menu(

@@ -2,6 +2,8 @@ from sqlalchemy import Enum
 
 from app.core.config import settings
 
+CHANGE_POINT = 'change_point'
+NOTICE = "notice"
 CONFIRM = (
     ("YES", "Да"),
     ("NO", "Нет"),
@@ -66,7 +68,8 @@ INVALID_ID_MESSAGE = {
         f"Обратитесь к админу @{settings.telegram.admin_username}"
     ),
 }
-
+QR_SEND = "qr_send"
+QR_UPDATE = "qr_update" 
 REGISTRATION_DONE = (
     "Регистрацияуспешно пройдена! \n"
     "В разделе FAQ вы можете ознакомиться с возможностями бота."

@@ -15,7 +15,7 @@ DELETE_QR = "del_qr"
 FAQ_MENU = "faq"
 FAQ_QR = "faq_qr"
 FAQ_PROFILE = "faq_profile"
-
+QR_SEND = "qr_send"
 
 NOTIFICATIONS = "notifications"
 PROFILE = "profile"
@@ -35,6 +35,7 @@ MAIN_MENU_BUTTONS = {
 MAIN_MENU_PAGES: tuple[str] = (
     MAIN_MENU,
     QR_MENU,
+    QR_SEND,
     DELETE_QR,
     FAQ_MENU,
     FAQ_PROFILE,
@@ -50,6 +51,12 @@ PROFILE_MENU_BTNS = {
 
 QR_MENU_BTNS = {
     ADD_QR: "Загрузить код 📨",
-    CHECK_QR: "Получить QR",
+    QR_SEND: "Отправить код 🚀",
+    CHECK_QR: "Получить QR 📫",
     DELETE_QR: "Удалить код 🗑",
+}
+
+QR_SEND_BTNS = {
+    "by_addres": "Ввести адрес 🖋",
+    "by_id": "Ввести id пункта 🔢"
 }
