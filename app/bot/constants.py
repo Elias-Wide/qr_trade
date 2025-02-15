@@ -3,6 +3,7 @@ from sqlalchemy import Enum
 from app.core.config import settings
 
 CHANGE_POINT = 'change_point'
+CRITICAL_ERROR = "Критическая ошибка / перезапустите бота"
 NOTICE = "notice"
 CONFIRM = (
     ("YES", "Да"),

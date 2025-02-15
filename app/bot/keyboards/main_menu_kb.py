@@ -11,6 +11,7 @@ from aiogram.types import (
 from aiogram import Bot
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from app.core.config import settings
 from app.bot.banners import get_img
 from app.bot.constants import (
     DEFAULT_KEYBOARD_SIZE,
@@ -19,29 +20,59 @@ from app.bot.constants import (
     NO_IMAGE,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import BACK_BTN, MAIN_MENU_BUTTONS
+from app.bot.keyboards.buttons import BACK_BTN, CHECK_QR, FAQ_QR
 
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
-
-
-async def get_main_menu_btns(
-    *, level: int, sizes: tuple[int] = DEFAULT_KEYBOARD_SIZE, user_id: int | None = None
+    
+    
+async def get_btns(
+    *,
+    level: int = 0,
+    size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
+    btns_data: dict[str] | None = None,
+    point_id: int | None = None,
+    user_id: int | None = None,
+    previous_menu: str = MAIN_MENU,
+    code_id: int | None = None,
+    trade_id: int | None = None
 ) -> KeyboardMarkup:
-    """Получить кнопки для главного меню."""
+    """
+    Создание клавиатуры.
+    Текст кнопок и колбэк дата берется из констант.
+    Если btns_data нет - создается только кнопка Назад.
+    """
     keyboard = InlineKeyboardBuilder()
-    for menu_name, text in MAIN_MENU_BUTTONS.items():
+    if btns_data:
+        for menu_name, text in btns_data.items():
+            keyboard.add(
+                InlineKeyboardButton(
+                    text=text,
+                    callback_data=MenuCallBack(
+                        level=level + 1,
+                        menu_name=menu_name,
+                        user_id=user_id,
+                        point_id=point_id,
+                        code_id=code_id,
+                        trade_id=trade_id
+                    ).pack(),
+                ),
+            )
+        if menu_name == FAQ_QR:
+            keyboard.add(admin_btn)
+    if level > 0:
         keyboard.add(
             InlineKeyboardButton(
-                text=text,
+                text=BACK_BTN,
                 callback_data=MenuCallBack(
                     user_id=user_id,
-                    level=level,
-                    menu_name=menu_name,
+                    level=level - 1,
+                    menu_name=previous_menu,
+                    point_id=point_id,
                 ).pack(),
-            ),
+            )
         )
-    return keyboard.adjust(*sizes).as_markup()
+    return keyboard.adjust(*size).as_markup()
 
 
 async def set_main_menu(bot: Bot) -> None:
@@ -52,51 +83,20 @@ async def set_main_menu(bot: Bot) -> None:
     ]
     await bot.set_chat_menu_button(menu_button=None)
     await bot.set_my_commands(main_menu_commands)
-
-
-async def get_side_menu_btns(
-    *,
-    level: int = 0,
-    size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
-    btns_data: dict[str],
-    point_id: int | None = None,
-    user_id: int | None = None,
-) -> KeyboardMarkup:
-    """Создание клавиатуры для дополнительных меню."""
-    keyboard = InlineKeyboardBuilder()
-    for menu_name, text in btns_data.items():
-        keyboard.add(
-            InlineKeyboardButton(
-                text=text,
-                callback_data=MenuCallBack(
-                    level=level + 1,
-                    menu_name=menu_name,
-                    user_id=user_id,
-                    point_id=point_id,
-                ).pack(),
-            ),
+    
+admin_btn = InlineKeyboardButton(
+            text="Админ", url=f"tg://user?id={settings.telegram.admin_id}"
         )
-    keyboard.add(
-        InlineKeyboardButton(
-            text=BACK_BTN,
-            callback_data=MenuCallBack(
-                user_id=user_id,
-                level=level,
-                menu_name=MAIN_MENU,
-                point_id=point_id,
-            ).pack(),
-        )
-    )
-    return keyboard.adjust(*size).as_markup()
 
 
 async def get_image_and_kb(
     menu_name: str,
     user_id: int,
-    point_id: int,
-    btns_data: dict[str],
+    point_id: int | None = None,
+    btns_data: dict[str] | None = None,
     level: int = 0,
-    caption: str = None,
+    caption: str | None = None,
+    previous_menu: str = MAIN_MENU,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """
     Получить изображение, описание и клавитуру для меню.
@@ -109,28 +109,7 @@ async def get_image_and_kb(
         image = await get_img(menu_name=NO_IMAGE, caption=caption)
     return (
         image,
-        await get_side_menu_btns(
-            btns_data=btns_data, user_id=user_id, level=level, point_id=point_id
+        await get_btns(
+            btns_data=btns_data, user_id=user_id, level=level, point_id=point_id, previous_menu=previous_menu
         ),
     )
-
-
-async def get_back_kb(
-    menu_name: str,
-    user_id: int,
-    level: int = 1,
-    size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
-) -> KeyboardMarkup:
-    """Получить клавиатуру лишь с кнопкой Назад."""
-    keyboard = InlineKeyboardBuilder()
-    keyboard.add(
-        InlineKeyboardButton(
-            text=BACK_BTN,
-            callback_data=MenuCallBack(
-                user_id=user_id,
-                level=level - 1,
-                menu_name=menu_name,
-            ).pack(),
-        )
-    )
-    return keyboard.adjust(*size).as_markup()

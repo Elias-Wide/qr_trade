@@ -10,6 +10,7 @@ from app.bot.constants import MAIN_MENU
 ADD_POINT = "add_point"
 ADD_QR = "add_qr"
 CHECK_QR = "check_qr"
+CONFIRM_SALE = "confirm_sale"
 BACK_BTN = "Назад ◀️"
 DELETE_QR = "del_qr"
 FAQ_MENU = "faq"
@@ -42,7 +43,7 @@ MAIN_MENU_PAGES: tuple[str] = (
     FAQ_QR,
     PROFILE,
 )
-
+CONFIRM_BTNS  = { CHECK_QR: '✅ОК✅'}
 PROFILE_MENU_BTNS = {
     ADD_POINT: "Сменить пункт",
     NOTIFICATIONS: "Уведомления",

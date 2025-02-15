@@ -4,22 +4,25 @@ from aiogram.types import CallbackQuery, ContentType, Message
 
 from app.bot.banners import captions, get_img
 from app.bot.constants import (
+    CRITICAL_ERROR,
     DELETE_CODE,
     DELETE_ERROR,
     DWNLD_ERROR,
     SUCCES_DNWLD,
     SUCCESS_DELETE,
 )
+from app.bot.keyboards.main_menu_kb import get_btns, get_image_and_kb
+from app.bot.keyboards.qr_menu_kb import get_trade_confirm_kb
 from app.core.config import QR_DIR
 from app.bot.filters import ImgValidationFilter, UserExistFilter
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.handlers.registration_handlers import send_ivalid_data_type_message
 from app.bot.handlers.states import MenuQRStates
 from app.bot.handlers.user_handlers import get_menucallback_data, process_start_command
-from app.bot.keyboards.buttons import ADD_QR, CHECK_QR, QR_MENU
-from app.bot.keyboards.main_menu_kb import get_back_kb
+from app.bot.keyboards.buttons import ADD_QR, CHECK_QR, CONFIRM_BTNS, CONFIRM_SALE, QR_MENU
 from app.sale_codes.dao import Sale_CodesDAO
 from app.trades.dao import TradesDAO
+from app.trades.models import Trades
 from app.users.dao import UsersDAO
 
 code_router = Router()
@@ -47,12 +50,15 @@ async def process_agreed_delete(callback: CallbackQuery, callback_data: MenuCall
 async def process_add_code(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ):
-    print(callback_data)
+
+    media, reply_markup = await get_image_and_kb(
+        menu_name=callback_data.menu_name,
+        user_id=callback_data.user_id,
+        level=callback_data.level,
+        previous_menu=QR_MENU)
     await callback.message.edit_media(
-        media=await get_img(menu_name=callback_data.menu_name),
-        reply_markup=await get_back_kb(
-            menu_name=QR_MENU, user_id=callback_data.user_id, level=callback_data.level
-        ),
+        media=media,
+        reply_markup=reply_markup
     )
     await state.set_state(MenuQRStates.add_qr)
 
@@ -78,40 +84,6 @@ async def process_download_ok(
     state.clear
 
 
-@code_router.callback_query(
-    MenuCallBack.filter(
-        F.menu_name.in_(
-            CHECK_QR,
-        )
-    )
-)
-async def process_check_qr(
-    callback: CallbackQuery,
-    callback_data: MenuCallBack,
-) -> None:
-    print(callback_data)
-    print("CHECKR QR MENU HANDLER")
-    codes_to_point = await TradesDAO.get_trades_by_point(callback_data.point_id)
-    if codes_to_point:
-        codes = []
-        for code in codes_to_point:
-            print(code.file_name)
-            codes.append(await get_img(menu_name=code.file_name, file_dir=QR_DIR))
-            # image = await get_img(menu_name=callback_data.menu_name, file_dir=QR_DIR)
-            await callback.message.answer_media_group(codes)
-    else:
-        if callback_data.point_id == 1:
-            caption = captions.no_user_point
-        else:
-            caption = captions.point_no_qr
-        await callback.message.edit_media(
-            media=await get_img(menu_name="point_no_qr", caption=caption),
-            reply_markup=await get_back_kb(
-                menu_name=QR_MENU, user_id=callback_data.user_id
-            ),
-        )
-
-
 @code_router.message(MenuQRStates.add_qr)
 async def process_download_error(
     message: Message,
@@ -131,3 +103,85 @@ async def process_qr_back_menu(
 ) -> None:
     await get_menucallback_data(callback, callback_data)
     await state.clear()
+
+
+@code_router.callback_query(MenuCallBack.filter(F.menu_name == CONFIRM_SALE))
+async def process_confim_sale(
+    callback: CallbackQuery,
+    callback_data: CallbackQuery,
+) -> None:
+    # # await TradesDAO.
+    # print(callback_data)
+    callback_data.level = 1
+    callback_data.menu_name = CHECK_QR
+    await get_menucallback_data(callback, callback_data)
+    await callback.answer(text="SUCCES")
+    
+
+@code_router.callback_query(
+    MenuCallBack.filter(
+        F.menu_name.in_(
+            CHECK_QR,
+        )
+    )
+)
+async def process_check_qr(
+    callback: CallbackQuery,
+    callback_data: MenuCallBack,
+) -> None:
+    """
+    Хэндлер для check_qr меню.
+    Если в data передан trade_id - он удаляется, появляется алерт,
+    если trade_id нет - идет запрос в бд, который возвращает самый первый трейд 
+    в текущий офис(point), либо None. 
+    Если трейда нет - в ответ сообщение об отсутствии их в офисе.
+    Если трейд есть - редактирует собщение - меняет картинку, а в коллбэк дата
+    идет уже другой trade_id.
+    Таким образом при нажатии кнопки ОК будет происходить постепенный
+    перебор трейдов в заданный офис, когда они закончатся - сообщение,
+    что трейдов в офис нет.
+    """
+    # ДОБАВИТЬ ОБРАБОТКУ ОШИБКИ ОТСУТСТВИЯ КАРТИНКИ КОДА
+    try:
+        if callback_data.trade_id:
+            await callback.answer(text="DELETED", show_alert=True) 
+            await TradesDAO.delete_object(id=callback_data.trade_id)
+            callback_data.trade_id = None
+            trade = await TradesDAO.get_trade_by_point(callback_data.point_id)
+            if trade:
+                media, reply_markup = await reply_for_trade(callback_data, trade)
+            else:
+                media, reply_markup = await reply_no_trade(callback_data)
+        else:
+            trade = await TradesDAO.get_trade_by_point(callback_data.point_id)
+            if trade:
+                media, reply_markup = await reply_for_trade(callback_data, trade)
+            else:
+                media, reply_markup = await reply_no_trade(callback_data)
+        await callback.message.edit_media(
+            media=media,
+            reply_markup=reply_markup
+        )
+    except:
+        await callback.answer(text=CRITICAL_ERROR, show_alert=True)
+
+
+
+async def reply_no_trade(callback_data: MenuCallBack):
+    if callback_data.point_id == 1:
+        caption = captions.no_user_point
+    else:
+        caption = captions.point_no_qr
+    return await get_image_and_kb(
+        menu_name="point_no_qr",
+        user_id=callback_data.user_id,
+        level=callback_data.level,
+        previous_menu=QR_MENU,
+        caption=caption
+    )
+    
+async def reply_for_trade(callback_data: MenuCallBack, trade: Trades):
+    return (
+        await get_img(menu_name=trade.file_name, file_dir=QR_DIR, caption=captions.confirm_trade),
+        await get_trade_confirm_kb(level=callback_data.level, user_id=callback_data.user_id, point_id=callback_data.point_id, trade_id=trade.id)
+    )

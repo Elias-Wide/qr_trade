@@ -18,7 +18,6 @@ from app.bot.handlers.registration_handlers import send_ivalid_data_type_message
 from app.bot.handlers.states import MenuQRStates
 from app.bot.handlers.user_handlers import get_menucallback_data, process_start_command
 from app.bot.keyboards.buttons import ADD_QR, CHECK_QR, QR_MENU
-from app.bot.keyboards.main_menu_kb import get_back_kb
 from app.sale_codes.dao import Sale_CodesDAO
 from app.trades.dao import TradesDAO
 from app.users.dao import UsersDAO

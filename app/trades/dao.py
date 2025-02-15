@@ -12,10 +12,10 @@ class TradesDAO(BaseDAO):
     model = Trades
         
     @classmethod
-    async def get_trades_by_point(
+    async def get_trade_by_point(
     cls,
     point_id: int
-    ) -> list[ModelType]:
+    ) -> ModelType:
         """
         Получить актуальные объекты моделей БД.
         Возвращает список объектом переданой модели,
@@ -27,5 +27,5 @@ class TradesDAO(BaseDAO):
                 .join(Sale_Codes, Trades.sale_code_id == Sale_Codes.id, isouter=True)
                 .where(Trades.point_id == point_id)
             )
-            return get_objs.mappings().all()    
+            return get_objs.mappings().first()   
     

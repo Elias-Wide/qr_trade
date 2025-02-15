@@ -23,15 +23,15 @@ logger = get_logger(__name__)
 
 
 async def get_menu_content(
-    level: int, menu_name: str, user_id: int, point_id: int | None = None
+    level: int, menu_name: str, user_id: int, point_id: int | None = None, trade_id: int | None = None
 ) -> tuple[InputMediaPhoto | str, InlineKeyboardMarkup]:
     """Возвращает контент в зависимости от menu_name."""
     print(menu_name, level)
     if menu_name in (QR_MENU, CHECK_QR, DELETE_QR, QR_SEND):
-        return await get_qr_menu(level, menu_name, user_id, point_id)
+        return await get_qr_menu(level, menu_name, user_id, point_id, trade_id)
     elif menu_name in (FAQ_MENU, FAQ_PROFILE, FAQ_QR):
         return await get_faq_menu(level, menu_name, user_id)
     elif menu_name == PROFILE:
         return await get_profile_menu(level, menu_name, user_id, point_id)
     elif menu_name == MAIN_MENU:
-        return await get_main_menu(level, menu_name, user_id)
+        return await get_main_menu(level, menu_name, user_id, point_id)
