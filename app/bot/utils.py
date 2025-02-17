@@ -69,9 +69,12 @@ async def download_file(file, destination) -> str:
     except:
         return
 
+
 async def get_code_image(filename: str):
     """Получить необходимый файл по имени."""
     pass
+
+
 async def validate_photo(message: Message) -> bool:
     """
     Валидцация полученного изображения.

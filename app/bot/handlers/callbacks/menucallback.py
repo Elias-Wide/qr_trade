@@ -19,4 +19,3 @@ class MenuCallBack(CallbackData, prefix="menu"):
     code_id: int | None = None
     trade_id: int | None = None
     # page: int | None = None
-    

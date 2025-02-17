@@ -22,4 +22,10 @@ async def get_faq_menu(
             btns_data = None
             previous_menu = FAQ_MENU
     print(menu_name, user_id, btns_data, level, previous_menu)
-    return await get_image_and_kb(menu_name=menu_name, user_id=user_id, btns_data=btns_data, level=level + 1, previous_menu=previous_menu)
+    return await get_image_and_kb(
+        menu_name=menu_name,
+        user_id=user_id,
+        btns_data=btns_data,
+        level=level,
+        previous_menu=previous_menu,
+    )

@@ -12,6 +12,7 @@ class Trades(Base):
     Обеспечивает связь записей между пользователями и пунктами,
     на которые сделаны заказы.
     """
+
     sale_code_id = Column(ForeignKey("sale_codes.id"), nullable=False)
     user_id = Column(ForeignKey("users.id"))
     point_id = Column(ForeignKey("points.point_id"), nullable=False)

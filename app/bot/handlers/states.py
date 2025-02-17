@@ -17,3 +17,4 @@ class MenuQRStates(StatesGroup):
     """Класс состояний меню qr-кодов."""
 
     add_qr = State()
+    point_search = State()

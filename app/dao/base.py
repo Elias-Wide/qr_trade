@@ -108,9 +108,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     @classmethod
     async def get_actual_objs(
-        cls,
-        attr_name: str,
-        attr_value: int | str
+        cls, attr_name: str, attr_value: int | str
     ) -> list[ModelType]:
         """
         Получить актуальные объекты моделей БД.

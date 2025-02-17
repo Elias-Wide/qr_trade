@@ -1,6 +1,5 @@
 """
-Модуль для работы  изображениями и описаниями сообщений бота.
-Содержить функции и константы для выдачи необходимых данных.
+Модуль для работы с изображениями и описаниям к ним.
 """
 
 import os
@@ -14,7 +13,10 @@ BANNERS_DIR = STATIC_DIR / "banners"
 
 
 async def get_img(
-    menu_name: str, file_dir: str = BANNERS_DIR, caption: str = None
+    menu_name: str,
+    file_dir: str = BANNERS_DIR,
+    caption: str = None,
+    f_type: str = FMT_JPG,
 ) -> InputMediaPhoto:
     """
     Получить изображение.
@@ -25,12 +27,17 @@ async def get_img(
 
     if caption is None:
         caption = getattr(captions, menu_name)
-    print("FILED DIID", file_dir)
-    if not await is_file_in_dir(f"{menu_name}.jpg", file_dir):
-        print("NO FILE IN DIR")
-        menu_name = NO_IMAGE
-    image = FSInputFile(file_dir.joinpath(menu_name + FMT_JPG))
-    return InputMediaPhoto(media=image, caption=caption)
+    media = await get_file(menu_name, file_dir, f_type)
+    return InputMediaPhoto(media=media, caption=caption)
+
+
+async def get_file(
+    filename: str, file_dir: str = BANNERS_DIR, f_type: str = FMT_JPG
+) -> FSInputFile:
+    """Получить файл по имени в заданной директории."""
+    if await is_file_in_dir(filename + f_type, file_dir):
+        return FSInputFile(file_dir.joinpath(filename + f_type))
+    return FSInputFile(file_dir.joinpath(NO_IMAGE + FMT_JPG))
 
 
 async def is_file_in_dir(name, path):
@@ -62,9 +69,14 @@ class Captions:
     no_image = ""
     no_registr = "Жаль, возвращайся, когда передумаешь."
     no_qr_today = "Нет загруженных QR кодов на сегодня. \n"
-    send_qr = (
-        "Выберите опцию, как желаете отправить код - "
-        "по id пункта или поиск адресу"
+    not_found = (
+        "Не удалось найти офис по предоставленным данным😕\n"
+        "Проверьте их на корректность. \n\n"
+        "Если верно - значит данный пункт отсутствует в бд, "
+        "обратитесь к админу."
+    )
+    point_search = (
+        "Введите адрес пункта (можно частично) для его поиска, " " либо id пункта"
     )
     qr_today = "Загруженные QR-коды"
     add_qr = (
@@ -77,9 +89,8 @@ class Captions:
     no_user_point = (
         "Вы не назначили Ваш пункт. \n" "Это можно сделать в разделе Профиль"
     )
-    del_qr = (
-        "Загруженные вам коды. \n"
-    )
+    search = "Поиск....дождитесь результата"
+    del_qr = "Загруженные вам коды. \n"
     faq = (
         "Приветствую тебя в qr_trade боте\n\n"
         "Бот создан для быстрого обмена qr-кодами между менеджерами "
@@ -114,6 +125,6 @@ class Captions:
 
     def __getattr__(self, name):
         return self.no_caption
-        return getattr(self, 'no_caption')
+
 
 captions = Captions()
