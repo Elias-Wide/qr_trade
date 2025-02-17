@@ -19,6 +19,7 @@ from app.bot.constants import (
     SUCCESS_DELETE,
 )
 
+from app.bot.handlers.callbacks.qr_menu import get_reply_for_trade, get_reply_no_trade
 from app.bot.keyboards.main_menu_kb import get_btns, get_image_and_kb
 from app.bot.keyboards.qr_menu_kb import get_trade_confirm_kb
 from app.core.config import QR_DIR
@@ -213,34 +214,3 @@ async def process_invalid_point_search_data(
 ) -> None:
     """Обработки загрузки пользователем невалидных для поиска пункта."""
     await send_ivalid_data_type_message(message=message)
-
-
-async def get_reply_no_trade(callback_data: MenuCallBack):
-    """Получить"""
-    if callback_data.point_id == 1:
-        caption = captions.no_user_point
-    else:
-        caption = captions.point_no_qr
-    return await get_image_and_kb(
-        menu_name="point_no_qr",
-        user_id=callback_data.user_id,
-        level=callback_data.level,
-        previous_menu=QR_MENU,
-        caption=caption,
-    )
-
-
-async def get_reply_for_trade(callback_data: MenuCallBack, trade: Trades):
-    """Получить изображение и клавиатуру для трейда."""
-
-    return (
-        await get_img(
-            menu_name=trade.file_name, file_dir=QR_DIR, caption=captions.confirm_trade
-        ),
-        await get_trade_confirm_kb(
-            level=callback_data.level,
-            user_id=callback_data.user_id,
-            point_id=callback_data.point_id,
-            trade_id=trade.id,
-        ),
-    )

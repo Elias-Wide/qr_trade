@@ -1,3 +1,5 @@
+"""Модуль функций обработчиков для меню QR."""
+
 from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
 from app.bot.constants import (
@@ -25,6 +27,7 @@ from app.core.logging import get_logger
 from app.bot.banners import captions, get_img
 from app.sale_codes.dao import Sale_CodesDAO
 from app.trades.dao import TradesDAO
+from app.trades.models import Trades
 
 
 async def get_qr_menu(
@@ -82,3 +85,34 @@ async def get_user_codes_data(
         btns_data = None
 
     return caption, btns_data
+
+
+async def get_reply_no_trade(callback_data: MenuCallBack):
+    """Получить"""
+    if callback_data.point_id == 1:
+        caption = captions.no_user_point
+    else:
+        caption = captions.point_no_qr
+    return await get_image_and_kb(
+        menu_name="point_no_qr",
+        user_id=callback_data.user_id,
+        level=callback_data.level,
+        previous_menu=QR_MENU,
+        caption=caption,
+    )
+
+
+async def get_reply_for_trade(callback_data: MenuCallBack, trade: Trades):
+    """Получить изображение и клавиатуру для трейда."""
+
+    return (
+        await get_img(
+            menu_name=trade.file_name, file_dir=QR_DIR, caption=captions.confirm_trade
+        ),
+        await get_trade_confirm_kb(
+            level=callback_data.level,
+            user_id=callback_data.user_id,
+            point_id=callback_data.point_id,
+            trade_id=trade.id,
+        ),
+    )
