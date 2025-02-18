@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, ContentType, Message
 
-from app.bot.banners import captions, get_img
+from app.bot.keyboards.banners import captions, get_img
 from app.bot.constants import (
     CHANGE_POINT,
     DELETE_CODE,

@@ -11,7 +11,7 @@ from aiogram.types import (
 from aiogram import Bot
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.bot.banners import get_img
+from app.bot.keyboards.banners import get_img
 from app.bot.constants import (
     DEFAULT_KEYBOARD_SIZE,
     MAIN_MENU,

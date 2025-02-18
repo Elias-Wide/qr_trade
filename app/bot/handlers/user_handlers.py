@@ -12,10 +12,8 @@ from app.bot.handlers.callbacks.main_menu import (
     get_menucallback_data,
     procces_main_menu_comand,
 )
-from app.bot.handlers.callbacks.menu_processor import get_menu_content
 from app.bot.keyboards.buttons import MAIN_MENU_PAGES, QR_MENU
 from app.bot.keyboards.main_menu_kb import MenuCallBack
-from app.users.dao import UsersDAO
 from app.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -41,6 +39,7 @@ async def process_open_qr_command(
 ) -> None:
     """Обработка нажатия кнопки open_qr."""
     await procces_main_menu_comand(message, level=1, menu_name=QR_MENU)
+    await state.clear()
 
 
 @user_router.callback_query(MenuCallBack.filter(F.menu_name.in_(MAIN_MENU_PAGES)))

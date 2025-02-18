@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import QR_DIR
 from app.points.dao import PointsDAO
 from app.bot.utils import download_file, validate_photo
+from app.sale_codes.dao import Sale_CodesDAO
 from app.users.dao import UsersDAO
 
 

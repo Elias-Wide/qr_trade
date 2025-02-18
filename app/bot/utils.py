@@ -58,16 +58,14 @@ async def download_file(file, destination) -> str:
     Генерируется имя, скачивается файл из бота и
     сохраняется в назначенной директории.
     """
-    try:
-        file_name = await generate_filename()
-        path = destination / file_name
-        file_from_bot = await bot.get_file(file.file_id)
-        destination_file = await bot.download_file(
-            file_from_bot.file_path, os.path.join(os.getcwd(), path)
-        )
-        return file_name
-    except:
-        return
+    file_name = await generate_filename()
+    filename_with_format = file_name + FMT_JPG
+    path = destination / (file_name + FMT_JPG)
+    file_from_bot = await bot.get_file(file.file_id)
+    destination_file = await bot.download_file(
+        file_from_bot.file_path, os.path.join(os.getcwd(), path)
+    )
+    return file_name
 
 
 async def get_code_image(filename: str):
@@ -94,11 +92,12 @@ async def validate_photo(message: Message) -> bool:
     file_name = await download_file(message.photo[-1], QR_DIR)
     if file_name:
         result_data["file_name"] = file_name
-        value = await decode_qr(QR_DIR / file_name)
-        if re.fullmatch(REGEX_QR_PATTERN, value):
-            result_data["value"] = "**" + value.split("_")[0][3:]
-        else:
-            os.remove(QR_DIR / file_name)
+        value = await decode_qr(QR_DIR / (file_name + FMT_JPG))
+        if value:
+            if re.fullmatch(REGEX_QR_PATTERN, value):
+                result_data["value"] = value.split("_")[0]
+            else:
+                os.remove(QR_DIR / file_name / FMT_JPG)
     print(result_data)
     return result_data
 

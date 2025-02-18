@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Column, Date, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 
@@ -17,3 +17,11 @@ class Sale_Codes(Base):
     created_at = Column(Date, default=datetime.now)
     file_name = Column(String, nullable=False)
     value = Column(String, nullable=False, unique=True)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "value",
+            name="unique_user_id_and_value",
+        ),
+    )

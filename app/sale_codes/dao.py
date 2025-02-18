@@ -15,16 +15,29 @@ class Sale_CodesDAO(BaseDAO):
     model = Sale_Codes
 
     @classmethod
-    async def create_code(cls, user_id: int, file_name: str, value: str):
+    async def create_code_or_update(cls, user_id: int, file_name: str, value: str):
         async with async_session_maker() as session:
-            query = insert(cls.model).values(
-                user_id=user_id,
-                file_name=file_name,
-                created_at=datetime.now().date(),
-                value=value,
+            user_code = await session.execute(
+                select(cls.model).where(
+                    cls.model.user_id == user_id, cls.model.value == value
+                )
             )
-            await session.execute(query)
-            await session.commit()
+            if not user_code:
+                query = insert(cls.model).values(
+                    user_id=user_id,
+                    file_name=file_name,
+                    created_at=datetime.now().date(),
+                    value=value,
+                )
+                await session.execute(query)
+                await session.commit()
+                answer = "create"
+            else:
+                await BaseDAO.update(
+                    user_code, user_id=user_id, file_name=file_name, value=value
+                )
+                answer = "update"
+            return answer
 
     @classmethod
     async def get_user_qr(cls, user_id: int):

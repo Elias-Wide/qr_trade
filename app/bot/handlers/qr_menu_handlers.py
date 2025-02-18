@@ -1,27 +1,29 @@
+import os
 from random import choice
 import time
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, ContentType, FSInputFile, Message
 
-from app.bot.banners import BANNERS_DIR, captions, get_file, get_img
+from app.bot.keyboards.banners import BANNERS_DIR, captions, get_file, get_img
 from app.bot.constants import (
     CRITICAL_ERROR,
     DELETE_CODE,
     DELETE_ERROR,
     DWNLD_ERROR,
     FMT_GIF,
+    FMT_JPG,
     NEXT_QR,
     NOT_FOUND,
     QR_SEND,
     SEARCH_GIFS,
     SUCCES_DNWLD,
+    SUCCES_UPDATE,
     SUCCESS_DELETE,
 )
 
 from app.bot.handlers.callbacks.qr_menu import get_reply_for_trade, get_reply_no_trade
 from app.bot.keyboards.main_menu_kb import get_btns, get_image_and_kb
-from app.bot.keyboards.qr_menu_kb import get_trade_confirm_kb
 from app.core.config import QR_DIR
 from app.bot.filters import ImgValidationFilter, PointExistFilter, UserExistFilter
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
@@ -51,6 +53,7 @@ async def process_agreed_delete(callback: CallbackQuery, callback_data: MenuCall
     else:
         text = DELETE_ERROR
     callback_data.menu_name = QR_MENU
+    callback_data.level = 1
     await callback.answer(text=text, show_alert=True)
     await get_menucallback_data(callback, callback_data)
 
@@ -86,11 +89,15 @@ async def process_download_ok(
     value: str | None,
 ) -> None:
     """Обработки загрузки валидного изображения."""
-    user = await UsersDAO.get_by_attribute("telegram_id", message.from_user.id)
     try:
-        await Sale_CodesDAO.create_code(user.id, file_name, value)
-        message_text = SUCCES_DNWLD
+        user = await UsersDAO.get_by_attribute("telegram_id", message.from_user.id)
+        answer = await Sale_CodesDAO.create_code_or_update(user.id, file_name, value)
+        if answer == "create":
+            message_text = SUCCES_DNWLD
+        elif answer == "update":
+            message_text = SUCCES_UPDATE
     except:
+        os.remove(QR_DIR / file_name / FMT_JPG)
         message_text = DWNLD_ERROR
     await message.answer(text=message_text)
     await process_start_command(message, state)

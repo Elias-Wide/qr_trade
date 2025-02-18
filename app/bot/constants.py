@@ -15,10 +15,6 @@ CONFIRM = (
 )
 
 
-class Button:
-    MAIN_MENU = "menu"
-
-
 DELETE_CODE = "delete_code"
 DEFAULT_KEYBOARD_SIZE: int = 2
 FMT_GIF: str = ".gif"
@@ -29,6 +25,20 @@ OPEN_QR = "open_qr"
 MAIN_MENU_COMMANDS: dict[str] = {
     "/start": "Перезапуск бота/открыть меню",
     "/open_qr": "Открыть раздел QR",
+}
+MONTH = {
+    1: "янв",
+    2: "фев",
+    3: "мар",
+    4: "апр",
+    5: "мая",
+    6: "июн",
+    7: "июл",
+    8: "авг",
+    9: "сен",
+    10: "окт",
+    11: "ноя",
+    12: "дек",
 }
 
 
@@ -89,4 +99,5 @@ REGEX_QR_PATTERN = r"(^\d{6,12}_\d{5})"
 DELETE_ERROR = "Ошибка удаления."
 SUCCESS_DELETE = "✅ QR код УСПЕШНО удален ✅"
 SUCCES_DNWLD = "⭐️ Успешная загрузка ⭐️"
-DWNLD_ERROR = "⚠️ Вы уже загрузили данный код⚠️"
+DWNLD_ERROR = "⚠️ Ошибка загрузки⚠️"
+SUCCES_UPDATE = "⭐️ Код успешно обновлен ✅"

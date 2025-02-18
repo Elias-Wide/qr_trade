@@ -7,7 +7,7 @@ from app.bot.utils import get_user_data
 from app.core.config import STATIC_DIR
 
 from app.core.logging import get_logger
-from app.bot.banners import get_img
+from app.bot.keyboards.banners import get_img
 from app.users.dao import UsersDAO
 from app.users.models import Users
 

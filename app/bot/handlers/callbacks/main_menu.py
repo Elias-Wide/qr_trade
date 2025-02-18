@@ -47,6 +47,7 @@ async def get_menucallback_data(
         user_id=callback_data.user_id,
         point_id=callback_data.point_id,
         trade_id=callback_data.trade_id,
+        code_id=callback_data.code_id,
     )
     await callback.message.edit_media(
         media=media,

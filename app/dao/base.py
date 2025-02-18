@@ -108,20 +108,23 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     @classmethod
     async def get_actual_objs(
-        cls, attr_name: str, attr_value: int | str
+        cls, attr_name: str, attr_value: int | str, need_actual: bool = True
     ) -> list[ModelType]:
         """
-        Получить актуальные объекты моделей БД.
-        Возвращает список объектом переданой модели,
-        созданные в день запроса.
+        Получить  объекты моделей БД.
+        Возвращает объекты Sale_Codes или Trades.
+        Опционально можно убрать фильтр актуальности,
+        не будет сравниваться дата с текущим днем.
         """
+        if need_actual:
+            query = and_(
+                getattr(cls.model, attr_name) == attr_value,
+                cls.model.created_at == datetime.now().date(),
+            )
+        else:
+            query = getattr(cls.model, attr_name) == attr_value
         async with async_session_maker() as session:
             get_objs = await session.execute(
-                select(cls.model.__table__.columns).where(
-                    and_(
-                        getattr(cls.model, attr_name) == attr_value,
-                        cls.model.created_at == datetime.now().date(),
-                    )
-                )
+                select(cls.model.__table__.columns).where(query)
             )
             return get_objs.mappings().all()

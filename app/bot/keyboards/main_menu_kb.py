@@ -11,8 +11,9 @@ from aiogram.types import (
 from aiogram import Bot
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from app.bot.keyboards.qr_menu_kb import get_qr_delete_kb
 from app.core.config import settings
-from app.bot.banners import get_img
+from app.bot.keyboards.banners import get_img
 from app.bot.constants import (
     DEFAULT_KEYBOARD_SIZE,
     MAIN_MENU,
@@ -20,7 +21,7 @@ from app.bot.constants import (
     NO_IMAGE,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import BACK_BTN, CHECK_QR, FAQ_QR
+from app.bot.keyboards.buttons import BACK_BTN, CHECK_QR, DELETE_QR, FAQ_QR
 
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
@@ -113,9 +114,13 @@ async def get_image_and_kb(
         image = await get_img(menu_name=menu_name, caption=caption)
     except Exception:
         image = await get_img(menu_name=NO_IMAGE, caption=caption)
+    if menu_name == DELETE_QR:
+        get_kbs = get_qr_delete_kb
+    else:
+        get_kbs = get_btns
     return (
         image,
-        await get_btns(
+        await get_kbs(
             level=level,
             size=size,
             btns_data=btns_data,

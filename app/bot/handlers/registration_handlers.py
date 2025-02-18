@@ -18,7 +18,7 @@ from aiogram.types import (
     ReplyKeyboardRemove,
 )
 
-from app.bot.banners import Captions, get_img
+from app.bot.keyboards.banners import Captions, get_img
 from app.bot.constants import (
     CONFIRM,
     INTRO_SURVEY_TEXT,
