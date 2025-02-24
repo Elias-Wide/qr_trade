@@ -14,9 +14,8 @@ from app.bot.handlers.callbacks.main_menu import (
 )
 from app.bot.keyboards.buttons import MAIN_MENU_PAGES, QR_MENU
 from app.bot.keyboards.main_menu_kb import MenuCallBack
-from app.core.logging import get_logger
+from app.core.logging import logger
 
-logger = get_logger(__name__)
 user_router = Router()
 user_router.message.filter(UserExistFilter())
 
@@ -26,8 +25,8 @@ async def process_start_command(
     message: Message,
     state: FSMContext,
 ) -> None:
-    logger.info
     """После завершения анкетирования. Начало самого бота."""
+    logger()
     await procces_main_menu_comand(message)
     await state.clear()
 
@@ -38,6 +37,7 @@ async def process_open_qr_command(
     state: FSMContext,
 ) -> None:
     """Обработка нажатия кнопки open_qr."""
+    logger()
     await procces_main_menu_comand(message, level=1, menu_name=QR_MENU)
     await state.clear()
 
@@ -46,13 +46,14 @@ async def process_open_qr_command(
 async def user_menu(
     callback: CallbackQuery,
     callback_data: MenuCallBack,
+    state: FSMContext
 ) -> None:
     """Обработка нажатия кнопок меню."""
-    try:
-        await get_menucallback_data(callback, callback_data)
-        await callback.answer()
-    except Exception as error:
-        logger.error(error)
-        await callback.answer(
-            text="Критическая ошибка / перезапустите бота", show_alert=True
-        )
+    await state.clear()
+    # try:
+    await get_menucallback_data(callback, callback_data)
+    await callback.answer()
+    # except Exception as error:
+    #     await callback.answer(
+    #         text="Критическая ошибка / перезапустите бота", show_alert=True
+    #     )

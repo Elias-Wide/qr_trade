@@ -19,9 +19,6 @@ from fastapi import FastAPI, Request
 
 from app.core.database import async_session_maker
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
 
 WEBHOOK_PATH = f"/bot/{settings.telegram.bot_token.get_secret_value()}"
 WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"

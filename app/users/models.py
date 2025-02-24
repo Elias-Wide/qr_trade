@@ -30,4 +30,4 @@ class Users(Base):
     ban = Column(BOOLEAN, default=False)
     # sale_codes = relationship("Sale_codes", back_populates="managers")
     points = relationship("Points", back_populates="managers")
-    trades = relationship("Trades", back_populates="users")
+    trades = relationship("Trades", cascade="all,delete", back_populates="users")

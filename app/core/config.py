@@ -19,7 +19,7 @@ class ConfigBase(BaseSettings):
 
 class AuthConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="app_")
-
+    logging_mode: str = "on"
     admin_email: str
     admin_password: SecretStr
     secret_key: Optional[SecretStr] = Field(default=None)

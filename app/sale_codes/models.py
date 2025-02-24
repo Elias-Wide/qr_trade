@@ -17,6 +17,7 @@ class Sale_Codes(Base):
     created_at = Column(Date, default=datetime.now)
     file_name = Column(String, nullable=False)
     value = Column(String, nullable=False, unique=True)
+    trades = relationship("Trades", cascade="all,delete",back_populates="sale_codes")
 
     __table_args__ = (
         UniqueConstraint(

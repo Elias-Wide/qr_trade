@@ -1,9 +1,10 @@
 from datetime import datetime
 from sqlalchemy import and_, insert, select
+from app.core.config import QR_DIR
 from app.dao.base import BaseDAO, ModelType
 from app.core.database import async_session_maker
 from app.sale_codes.models import Sale_Codes
-from app.bot.utils import generate_filename
+from app.bot.utils import delete_file, generate_filename
 from app.trades.models import Trades
 from app.users.constants import MOSCOW_TZ, TIMEZONE_RU
 from app.users.models import Users
@@ -16,12 +17,20 @@ class Sale_CodesDAO(BaseDAO):
 
     @classmethod
     async def create_code_or_update(cls, user_id: int, file_name: str, value: str):
+        """
+        Создать или обновить объект кода.
+        Передаются данные для создания объекта,
+        если объект с заданным user_id и value уже существует,
+        то обновляются его значения и удаляется соответствующее
+        фото из хранилища.
+        В противном случае создается новый объект модели."""
         async with async_session_maker() as session:
-            user_code = await session.execute(
+            user_code = await session.scalars(
                 select(cls.model).where(
                     cls.model.user_id == user_id, cls.model.value == value
                 )
             )
+            user_code = user_code.first()
             if not user_code:
                 query = insert(cls.model).values(
                     user_id=user_id,
@@ -33,9 +42,12 @@ class Sale_CodesDAO(BaseDAO):
                 await session.commit()
                 answer = "create"
             else:
-                await BaseDAO.update(
-                    user_code, user_id=user_id, file_name=file_name, value=value
-                )
+                await delete_file(QR_DIR, user_code.file_name)
+                user_code.file_name = file_name
+                user_code.value = value
+                user_code.created_at = datetime.now().date()
+                await session.commit()
+                await session.refresh(user_code)
                 answer = "update"
             return answer
 

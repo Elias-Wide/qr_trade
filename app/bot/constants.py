@@ -2,7 +2,6 @@ from sqlalchemy import Enum
 
 from app.core.config import settings
 
-CHANGE_POINT = "change_point"
 CRITICAL_ERROR = (
     "Критическая ошибка / перезапустите бота\n\n"
     f"Если ошибка повторилась - сообщите админу @{settings.telegram.admin_username}!!"
@@ -14,8 +13,9 @@ CONFIRM = (
     ("NO", "Нет"),
 )
 
-
+DELETED = "deleted"
 DELETE_CODE = "delete_code"
+POINT_LIST_KB_SIZE: int = 1
 DEFAULT_KEYBOARD_SIZE: int = 2
 FMT_GIF: str = ".gif"
 FMT_JPG: str = ".jpg"
@@ -75,6 +75,9 @@ NEXT_QR = "Успешно ✅ Держи следующий QR 🧤"
 NO_CAPTION = ""
 NO_IMAGE: str = "no_image"
 NOT_FOUND = "not_found"
+NOTIFICATION_TYPE = (
+    ("off", "🔕 ВЫКЛ 🔕"), ("always", "🔊 ВКЛ 🔊"), ("by_schedule", "По графику 🗓")
+)
 INVALID_DATA_TYPE: str = "Неверный формат введенных данных!"
 INVALID_ID_MESSAGE = {
     MANAGER_ID: (
@@ -87,8 +90,6 @@ INVALID_ID_MESSAGE = {
         f"Обратитесь к админу @{settings.telegram.admin_username}"
     ),
 }
-QR_SEND = "qr_send"
-QR_UPDATE = "qr_update"
 REGISTRATION_DONE = (
     "Регистрацияуспешно пройдена! \n"
     "В разделе FAQ вы можете ознакомиться с возможностями бота."
@@ -97,7 +98,8 @@ REGISTRATION_DONE = (
 REGISTRATION_CONFIRMED, REGISTRATION_CANCELED = dict(CONFIRM).keys()
 REGEX_QR_PATTERN = r"(^\d{6,12}_\d{5})"
 DELETE_ERROR = "Ошибка удаления."
-SUCCESS_DELETE = "✅ QR код УСПЕШНО удален ✅"
-SUCCES_DNWLD = "⭐️ Успешная загрузка ⭐️"
 DWNLD_ERROR = "⚠️ Ошибка загрузки⚠️"
-SUCCES_UPDATE = "⭐️ Код успешно обновлен ✅"
+SUCCESS_DELETE = "✅ QR код УСПЕШНО удален ✅"
+SUCCES_DNWLD = "⭐️ Код {} успешно загружен⭐️"
+SUCCES_UPDATE = "⭐️ Код {} успешно обновлен ✅"
+TYPE_POINT = "Введите ID вашего пункта"

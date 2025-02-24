@@ -6,7 +6,7 @@ from app.bot.constants import CRITICAL_ERROR, MAIN_MENU
 from app.bot.handlers.callbacks.menu_processor import get_menu_content
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.users.dao import UsersDAO
-
+from app.core.logging import logger
 
 async def procces_main_menu_comand(
     message: Message, level: int = 0, menu_name: str = MAIN_MENU
@@ -18,7 +18,7 @@ async def procces_main_menu_comand(
         )
 
         media, reply_markup = await get_menu_content(
-            level=level, menu_name=menu_name, user_id=user.id, point_id=user.point_id
+            level=level, menu_name=menu_name, user_id=user.id
         )
         await message.answer_photo(
             photo=media.media,
@@ -34,13 +34,12 @@ async def get_menucallback_data(
     callback: CallbackQuery, callback_data: MenuCallBack
 ) -> None:
     """Получить колбэк дата"""
-    if not all((callback_data.user_id, callback_data.point_id)):
+    if not callback_data.user_id:
         user = await UsersDAO.get_by_attribute(
             attr_name="telegram_id", attr_value=callback.message.chat.id
         )
         callback_data.user_id = user.id
-        callback_data.point_id = user.point_id
-    print(callback_data)
+    logger(callback_data)
     media, reply_markup = await get_menu_content(
         level=callback_data.level,
         menu_name=callback_data.menu_name,

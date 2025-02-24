@@ -6,13 +6,14 @@ import string
 from pyzbar.pyzbar import decode
 from PIL import Image
 from aiogram.types import Message
-from app.bot.constants import FMT_JPG, REGEX_QR_PATTERN
-from app.core.config import QR_DIR
-from app.core.logging import get_logger
+from app.bot.constants import FMT_JPG, NOTIFICATION_TYPE, REGEX_QR_PATTERN
 from app.bot.create_bot import bot
+from app.bot.keyboards.buttons import NOTIFICATIONS_BTNS
+from app.core.config import QR_DIR
+from app.core.logging import logger
+from app.notifications.dao import NotificationsDAO
+from app.points.models import Points
 from app.users.dao import UsersDAO
-
-logger = get_logger(__name__)
 
 
 async def generate_filename() -> str:
@@ -40,16 +41,23 @@ async def decode_qr(filepath: str) -> str:
     decocdeQR = decode(Image.open(filepath))
     return decocdeQR[0].data.decode("ascii")
 
+async def delete_file(path: str, file_name: str):
+    """Удалить файл в заданной директории"""
+    try:
+        os.remove(path / (file_name + FMT_JPG))
+    except:
+        logger("Ошибка удаления файла")
+
 
 async def delete_files_in_folder(folder_path: str):
-    """Удаление файлов в заданной директории"""
+    """Удаление всех файлов в заданной директории"""
     for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
         try:
             if os.path.isfile(file_path):
                 os.remove(file_path)
         except Exception as e:
-            logger.error(f"Ошибка при удалении файла {file_path}. {e}")
+            logger(f"Ошибка при удалении файла {file_path}. {e}")
 
 
 async def download_file(file, destination) -> str:
@@ -58,6 +66,7 @@ async def download_file(file, destination) -> str:
     Генерируется имя, скачивается файл из бота и
     сохраняется в назначенной директории.
     """
+    logger()
     file_name = await generate_filename()
     filename_with_format = file_name + FMT_JPG
     path = destination / (file_name + FMT_JPG)
@@ -97,8 +106,8 @@ async def validate_photo(message: Message) -> bool:
             if re.fullmatch(REGEX_QR_PATTERN, value):
                 result_data["value"] = value.split("_")[0]
             else:
-                os.remove(QR_DIR / file_name / FMT_JPG)
-    print(result_data)
+                await delete_file(QR_DIR, file_name)
+    logger(result_data)
     return result_data
 
 
@@ -116,3 +125,31 @@ async def get_user_data(user_id: int) -> str:
         return result + f"ID пункта: {user.point_id}" if user.point_id != 1 else result
     except:
         return "Ошибка получения данных"
+
+async def get_point_list_caption(point_list: dict[int, Points]) -> str:
+    """Получить описание к списку пунктов.
+    Передается список объектов модели Point,
+    на основе этих данных создается строка-описание к фото."""
+    logger()
+    point_list.pop(1, None)
+    if not point_list:
+        caption = "Вы не выбрали пункт"
+    else:
+        caption = "Выбранные пункты: \n\n"
+        for point in point_list.values():
+            caption += f"ID {point.point_id} {point.addres} \n"
+    return caption 
+
+
+async def get_notice_type(user_id: int) -> str:
+    """Получить описание к меню с режимом уведомлений.
+    По id пользователя находит объект его уведомлений,
+    если его нет - то создает объект модели в бд."""
+    caption = "Режим уведомлений: {}"
+    notice = await NotificationsDAO.get_by_attribute("user_id", user_id)
+    logger(notice, NOTIFICATION_TYPE)
+    if notice:
+        for n_type in NOTIFICATION_TYPE:
+            if notice.notice_type in n_type:
+                return caption.format(n_type[1])
+    return caption.format("ВЫКЛ")

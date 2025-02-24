@@ -7,6 +7,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import Base, async_session_maker
+from app.core.logging import logger
+
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -55,20 +57,22 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 elif isinstance(error, Exception):
                     message = "Unknown Exception"
                 message += ": Не удается добавить данные."
+                logger(message)
 
     @classmethod
     async def update(
+        cls,
         db_obj: ModelType,
-        obj_in: UpdateSchemaType,
+        new_data: UpdateSchemaType,
     ) -> ModelType:
         """Обновляет объект."""
         async with async_session_maker() as session:
             obj_data = jsonable_encoder(db_obj)
-            update_data = obj_in.model_dump(exclude_unset=True)
+            # update_data = obj_in.model_dump(exclude_unset=True)
 
             for field in obj_data:
-                if field in update_data:
-                    setattr(db_obj, field, update_data[field])
+                if field in new_data:
+                    setattr(db_obj, field, new_data[field])
             session.add(db_obj)
             await session.commit()
             await session.refresh(db_obj)
@@ -82,12 +86,12 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 query = select(cls.model).filter_by(**kwargs)
                 result = await session.execute(query)
                 result = result.scalar()
-
+                object_to_delete = result
                 if not result:
                     raise None
                 await session.delete(result)
                 await session.commit()
-                return True
+                return object_to_delete
             except:
                 return None
 

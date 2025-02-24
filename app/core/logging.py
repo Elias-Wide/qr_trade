@@ -1,13 +1,16 @@
 """Общий модуль для подключение логера."""
+from icecream import ic
+from app.core.config import settings
 
-import logging
+# class Looger(IceCreamDebugger):
+    
+#     def logging_mode(self, mode: str):
+        
+logging_mode = {
+    "on": "enable",
+    "off": "disable"
+}
 
-
-def get_logger(name: str) -> logging.Logger:
-    """Возвращает логер."""
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(filename)s:%(lineno)d #%(levelname)-8s "
-        "[%(asctime)s] - %(name)s - %(message)s",
-    )
-    return logging.getLogger(name)
+logger = ic
+logger.configureOutput(prefix='logging ', includeContext=True)
+getattr(logger, logging_mode[settings.auth.logging_mode])()

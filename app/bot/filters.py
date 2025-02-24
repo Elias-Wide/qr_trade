@@ -7,9 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import QR_DIR
 from app.points.dao import PointsDAO
 from app.bot.utils import download_file, validate_photo
+from app.points.models import Points
 from app.sale_codes.dao import Sale_CodesDAO
 from app.users.dao import UsersDAO
-
+from app.core.logging import logger
 
 # class BaseUserFilter(BaseFilter):
 
@@ -47,10 +48,11 @@ class UserExistFilter(BaseFilter):
             attr_value = message.from_user.id
         else:
             attr_value = int(message.text)
-        if attr_value and await self.modelDAO.get_by_attribute(
+        obj = await self.modelDAO.get_by_attribute(
             attr_name=self.attr_name, attr_value=attr_value
-        ):
-            return True
+        )
+        if obj:
+            return {self.attr_name: attr_value}
         return False
 
 
@@ -76,7 +78,7 @@ class PointExistFilter(UserExistFilter):
 
     def __init__(self) -> None:
         self.modelDAO = PointsDAO
-        self.attr_name = "id"
+        self.attr_name = "point_id"
 
 
 class AccesCodeFilter(BaseFilter):

@@ -7,16 +7,16 @@ from app.bot.constants import (
     DELETE_CODE,
     MAIN_MENU,
     MONTH,
-    NO_CAPTION,
-    QR_SEND,
-    QR_UPDATE,
+    NO_CAPTION
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
     DELETE_QR,
     DELETE_QR_BTN,
+    POINT_SEARCH,
     QR_MENU,
     QR_MENU_BTNS,
+    SEND_QR,
 )
 from app.bot.keyboards.main_menu_kb import get_image_and_kb
 
@@ -32,6 +32,7 @@ async def get_qr_menu(
     level: int, menu_name: str, user_id: int, point_id: int, trade_id: int, code_id: int
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """Получить пользовательское меню."""
+    next_menu = None
     match level:
         case 1:
             menu_name = QR_MENU
@@ -42,14 +43,19 @@ async def get_qr_menu(
             btns_data = QR_MENU_BTNS
             caption = NO_CAPTION
             previous_menu = QR_MENU
+            point_id = None
             if menu_name == DELETE_QR:
                 menu_name = DELETE_QR
                 btns_data = None
-            elif menu_name == QR_UPDATE:
-                pass
+                next_menu = DELETE_CODE
+            elif menu_name == SEND_QR:
+                btns_data = None
+                next_menu = POINT_SEARCH
+                point_id = None
 
     return await get_image_and_kb(
         menu_name=menu_name,
+        next_menu=next_menu,
         user_id=user_id,
         point_id=point_id,
         code_id=code_id,

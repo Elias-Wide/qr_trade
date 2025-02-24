@@ -11,8 +11,7 @@ from aiogram.types import (
 from aiogram import Bot
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.bot.keyboards.qr_menu_kb import get_qr_delete_kb
-from app.core.config import settings
+from app.bot.keyboards.qr_menu_kb import get_qr_list_kb
 from app.bot.keyboards.banners import get_img
 from app.bot.constants import (
     DEFAULT_KEYBOARD_SIZE,
@@ -21,7 +20,9 @@ from app.bot.constants import (
     NO_IMAGE,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import BACK_BTN, CHECK_QR, DELETE_QR, FAQ_QR
+from app.bot.keyboards.buttons import BACK_BTN, CHECK_QR, DELETE_QR, FAQ_QR, SEND_QR
+from app.core.config import settings
+from app.core.logging import logger
 
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
@@ -39,6 +40,8 @@ async def set_main_menu(bot: Bot) -> None:
 
 async def get_btns(
     *,
+    menu_name: str,
+    next_menu: str | None = None,
     level: int = 0,
     size: int = DEFAULT_KEYBOARD_SIZE,
     btns_data: tuple[str, str] | None = None,
@@ -56,6 +59,7 @@ async def get_btns(
     kb_builder = InlineKeyboardBuilder()
     btns = []
     if btns_data:
+        logger(btns_data)
         for menu_name, text in btns_data:
             btns.append(
                 InlineKeyboardButton(
@@ -97,6 +101,7 @@ admin_btn = InlineKeyboardButton(
 async def get_image_and_kb(
     menu_name: str,
     user_id: int,
+    next_menu: str | None = None,
     point_id: int | None = None,
     code_id: int | None = None,
     trade_id: int | None = None,
@@ -110,20 +115,19 @@ async def get_image_and_kb(
     Получить изображение, описание и клавитуру для меню.
     Передаются имя меню, описание (опционально) и данные для кнопок.
     """
-    try:
-        image = await get_img(menu_name=menu_name, caption=caption)
-    except Exception:
-        image = await get_img(menu_name=NO_IMAGE, caption=caption)
-    if menu_name == DELETE_QR:
-        get_kbs = get_qr_delete_kb
+    image = await get_img(menu_name=menu_name, caption=caption)
+    if menu_name in (DELETE_QR, SEND_QR):
+        get_kbs = get_qr_list_kb
     else:
         get_kbs = get_btns
     return (
         image,
         await get_kbs(
+            menu_name=menu_name,
+            next_menu=next_menu,
             level=level,
             size=size,
-            btns_data=btns_data,
+            btns_data=btns_data,    
             user_id=user_id,
             point_id=point_id,
             trade_id=trade_id,
