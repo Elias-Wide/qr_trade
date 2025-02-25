@@ -9,7 +9,13 @@ from app.bot.handlers.callbacks.main_menu import (
     procces_main_menu_comand,
 )
 from app.bot.keyboards.banners import captions, get_img
-from app.bot.constants import CRITICAL_ERROR, DATE_FORMAT, NOTIFICATION_TYPE, POINT_ID, TYPE_POINT
+from app.bot.constants import (
+    CRITICAL_ERROR,
+    DATE_FORMAT,
+    NOTIFICATION_TYPE,
+    POINT_ID,
+    TYPE_POINT,
+)
 
 from app.bot.keyboards.calendar_btn import get_days_btns
 from app.bot.utils import get_schedule_caption
@@ -111,30 +117,43 @@ async def set_notice_type(
 
 @profile_router.callback_query(
     MenuCallBack.filter(
-        F.menu_name.in_(SCHEDULE,)
-    ), default_state
+        F.menu_name.in_(
+            SCHEDULE,
+        )
+    ),
+    default_state,
 )
 async def set_user_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
     """Меню графика, отдаем клавиатуру с календарем."""
-    user_schedule = await SchedulesDAO.get_user_schedule(user_id=callback_data.user_id)
+    user_schedule = await SchedulesDAO.get_user_schedule(
+        user_id=callback_data.user_id
+    )
     logger(user_schedule)
     user_schedule = [
-        datetime.strptime(date_str, DATE_FORMAT).date() for date_str in user_schedule[0]
-    ]   
+        datetime.strptime(date_str, DATE_FORMAT).date()
+        for date_str in user_schedule[0]
+    ]
     await callback.message.edit_media(
         media=await get_img(SCHEDULE, caption=await get_schedule_caption()),
-        reply_markup=await get_days_btns(user_id=callback_data.user_id, level=callback_data.level, user_schedule=user_schedule.copy())
+        reply_markup=await get_days_btns(
+            user_id=callback_data.user_id,
+            level=callback_data.level,
+            user_schedule=user_schedule.copy(),
+        ),
     )
     await state.update_data(user_schedule=sorted(user_schedule))
     await state.set_state(ProfileStates.schedule)
-    
-@profile_router.callback_query(ProfileStates.schedule, MenuCallBack.filter(
-        F.menu_name.in_((SCHEDULE, CONFIRM_SCHEDULE))
-    )
+
+
+@profile_router.callback_query(
+    ProfileStates.schedule,
+    MenuCallBack.filter(F.menu_name.in_((SCHEDULE, CONFIRM_SCHEDULE))),
 )
-async def procce_set_schedule(callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext):
+async def procce_set_schedule(
+    callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
+):
     """Обработка нажатий кнопок календаря."""
     if callback_data.menu_name == CONFIRM_SCHEDULE:
         try:
@@ -143,9 +162,14 @@ async def procce_set_schedule(callback: CallbackQuery, callback_data: MenuCallBa
             user_schedule_list_date_str = [
                 date.strftime(DATE_FORMAT) for date in user_schedule
             ]
-            await SchedulesDAO.set_schedule(user_id=callback_data.user_id, date_list = user_schedule_list_date_str)
+            await SchedulesDAO.set_schedule(
+                user_id=callback_data.user_id,
+                date_list=user_schedule_list_date_str,
+            )
             await state.clear()
-            await callback.answer(text="График успешно сохранен. Не забудьте включить уведомления по графику.")
+            await callback.answer(
+                text="График успешно сохранен. Не забудьте включить уведомления по графику."
+            )
             callback_data.level, callback_data.menu_name = 1, PROFILE
             await get_menucallback_data(callback, callback_data)
         except:
@@ -157,12 +181,20 @@ async def procce_set_schedule(callback: CallbackQuery, callback_data: MenuCallBa
         if date in user_schedule:
             user_schedule.remove(date)
         else:
-            user_schedule.append(datetime.strptime(callback_data.day, DATE_FORMAT).date())
+            user_schedule.append(
+                datetime.strptime(callback_data.day, DATE_FORMAT).date()
+            )
             user_schedule = sorted(user_schedule)
         await callback.message.edit_media(
-            media=await get_img(SCHEDULE, caption=await get_schedule_caption()),
-            reply_markup=await get_days_btns(user_id=callback_data.user_id, level=callback_data.level, user_schedule=user_schedule.copy())
-            )
+            media=await get_img(
+                SCHEDULE, caption=await get_schedule_caption()
+            ),
+            reply_markup=await get_days_btns(
+                user_id=callback_data.user_id,
+                level=callback_data.level,
+                user_schedule=user_schedule.copy(),
+            ),
+        )
     # state_data = await state.get_data()
     # logger(state_data, callback_data)
     # await callback.answer()

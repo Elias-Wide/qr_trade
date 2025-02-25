@@ -7,7 +7,12 @@ import string
 from pyzbar.pyzbar import decode
 from PIL import Image
 from aiogram.types import Message
-from app.bot.constants import FMT_JPG, MONTH, NOTIFICATION_TYPE, REGEX_QR_PATTERN
+from app.bot.constants import (
+    FMT_JPG,
+    MONTH,
+    NOTIFICATION_TYPE,
+    REGEX_QR_PATTERN,
+)
 from app.bot.create_bot import bot
 from app.bot.keyboards.buttons import NOTIFICATIONS_BTNS
 from app.core.config import QR_DIR
@@ -174,4 +179,4 @@ async def get_schedule_caption() -> str:
         f"<s>{MONTH[now.month + 1]}</s>\n\n"
         f"   ПН              ВТ             СР               ЧТ"
         "               ПТ            СБ               ВС"
-        )
+    )

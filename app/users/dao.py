@@ -25,7 +25,11 @@ class UsersDAO(BaseDAO):
         async with async_session_maker() as session:
             logger()
             get_user = await session.execute(
-                select(Users.__table__.columns, Points.__table__.columns, Schedules.notice_type)
+                select(
+                    Users.__table__.columns,
+                    Points.__table__.columns,
+                    Schedules.notice_type,
+                )
                 .join(Users.schedule)
                 .join(Users.points)
                 .where(Users.id == user_id)

@@ -25,13 +25,13 @@ POINT_SEARCH: str = "point_search"
 PROFILE: str = "profile"
 QR_INFO_BTN: str = "QR{} от {}❌"
 QR_MENU: str = "qr_menu"
-SET_SCHEDULE: str = 'set_schedule'
+SET_SCHEDULE: str = "set_schedule"
 SEND_QR: str = "qr_send"
 SCHEDULE: str = "schedule"
 UPDATE_QR: str = "qr_update"
 CONFIRM_SEND: str = "confirm_send"
 CONFIRM_SCHEDULE: str = "confirm_schedule"
-CONFIRM_SCHEDULE_BTN: tuple[str] = (CONFIRM_SCHEDULE, "Сохранить график 📝") 
+CONFIRM_SCHEDULE_BTN: tuple[str] = (CONFIRM_SCHEDULE, "Сохранить график 📝")
 CONFIRM_SEND_BTNS: tuple[tuple[str]] = ((CONFIRM_SEND, "📦 Отправить 📦"),)
 CONFIRM_BTNS: tuple[tuple[str]] = ((CHECK_QR, "✅ Заказ закрыт✅"),)
 

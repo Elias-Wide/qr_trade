@@ -49,7 +49,7 @@ async def get_days_btns(
     menu_name: str = SCHEDULE,
     size: int = CALENDAR_KEYBOARD_SIZE,
     previous_menu: str = PROFILE,
-    user_schedule: list[date]  = []
+    user_schedule: list[date] = []
 ) -> list[InlineKeyboardButton]:
     """
     Создание клавиатуры календаря.
@@ -59,9 +59,9 @@ async def get_days_btns(
     logger()
     kb_builder = InlineKeyboardBuilder()
     btns = []
-    
+
     for day in await get_current_month_days():
-        text=day.strftime("%d")
+        text = day.strftime("%d")
         if day in user_schedule:
             text += "📍"
             user_schedule.remove(day)
@@ -72,7 +72,7 @@ async def get_days_btns(
                     level=level,
                     menu_name=menu_name,
                     user_id=user_id,
-                    day=day.strftime("%m.%d.%Y")
+                    day=day.strftime("%m.%d.%Y"),
                 ).pack(),
             ),
         )
@@ -99,7 +99,8 @@ async def get_days_btns(
     kb_builder.row(*btns, width=size)
     return kb_builder.as_markup()
 
-async def get_current_month_days()-> list[date]:
+
+async def get_current_month_days() -> list[date]:
     """
     Возвращает список дней текущего месяца.
     Дополнительно содержит несколько дней прошлого и след. месяцев
