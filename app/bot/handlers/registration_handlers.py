@@ -1,4 +1,5 @@
 """Модуль с функциями анкеты."""
+
 from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext

@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import qrtools
 import re
@@ -6,7 +7,7 @@ import string
 from pyzbar.pyzbar import decode
 from PIL import Image
 from aiogram.types import Message
-from app.bot.constants import FMT_JPG, NOTIFICATION_TYPE, REGEX_QR_PATTERN
+from app.bot.constants import FMT_JPG, MONTH, NOTIFICATION_TYPE, REGEX_QR_PATTERN
 from app.bot.create_bot import bot
 from app.bot.keyboards.buttons import NOTIFICATIONS_BTNS
 from app.core.config import QR_DIR
@@ -118,17 +119,18 @@ async def get_user_data(user_id: int) -> str:
     """Получить данные пользователя."""
     try:
         user = await UsersDAO.get_user_full_data(user_id)
+        logger(user)
         result = (
             f"Ваши данные 📂: \n\n"
             f"Юзернэйм 📱:    {user.username}\n"
             f"Рабочий ID 🔮:    {user.manager_id}\n"
             f"Адрес пункта 🏚:    {user.addres}\n"
-            f"Помогли другим 💟:   0\n"
         )
+        n_type = f"Уведомления:  {user.notice_type}\n"
         return (
-            result + f"ID пункта: {user.point_id}"
+            result + f"ID пункта: {user.point_id}\n" + n_type
             if user.point_id != 1
-            else result
+            else result + n_type
         )
     except:
         return "Ошибка получения данных"
@@ -162,3 +164,14 @@ async def get_notice_type(user_id: int) -> str:
             if notice.notice_type in n_type:
                 return caption.format(n_type[1])
     return caption.format("ВЫКЛ")
+
+
+async def get_schedule_caption() -> str:
+    now = datetime.now()
+    return (
+        f"<s>{MONTH[now.month-1]}</s>                                   "
+        f"<b>{MONTH[now.month]}</b>                                     "
+        f"<s>{MONTH[now.month + 1]}</s>\n\n"
+        f"   ПН              ВТ             СР               ЧТ"
+        "               ПТ            СБ               ВС"
+        )

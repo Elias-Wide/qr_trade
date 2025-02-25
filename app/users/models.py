@@ -33,3 +33,4 @@ class Users(Base):
     trades = relationship(
         "Trades", cascade="all,delete", back_populates="users"
     )
+    schedule = relationship("Schedules", back_populates="user")

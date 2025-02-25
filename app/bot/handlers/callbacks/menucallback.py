@@ -1,3 +1,4 @@
+from datetime import date
 from aiogram.filters.callback_data import CallbackData
 
 from app.users.models import Users
@@ -18,4 +19,5 @@ class MenuCallBack(CallbackData, prefix="menu"):
     point_id: int | None = None
     code_id: int | None = None
     trade_id: int | None = None
+    day: str | None = None
     # page: int | None = None

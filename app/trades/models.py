@@ -14,6 +14,7 @@ from app.core.database import Base
 from app.users.constants import MOSCOW_TZ
 from app.sale_codes.models import Sale_Codes
 
+
 class Trades(Base):
     """Модель Trades.
     Обеспечивает связь записей между пользователями и пунктами,

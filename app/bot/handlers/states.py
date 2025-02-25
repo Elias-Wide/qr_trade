@@ -24,3 +24,4 @@ class ProfileStates(StatesGroup):
     """Класс состояний меню профиля."""
 
     change_point = State()
+    schedule = State()

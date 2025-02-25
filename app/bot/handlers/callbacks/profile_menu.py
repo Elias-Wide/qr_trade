@@ -35,12 +35,10 @@ async def get_profile_menu(
             #     previous_menu=MAIN_MENU,
             # )
         case 2:
-            logger(menu_name)
             if menu_name == NOTIFICATIONS:
                 btns_data = NOTIFICATIONS_BTNS
                 caption = await get_notice_type(user_id)
                 previous_menu = PROFILE
-    logger("create kb initial")
     return await get_image_and_kb(
         menu_name=menu_name,
         user_id=user_id,

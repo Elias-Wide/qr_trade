@@ -7,16 +7,18 @@ CRITICAL_ERROR = (
     f"Если ошибка повторилась - сообщите админу @{settings.telegram.admin_username}!!"
 )
 
-NOTICE = "notice"
 CONFIRM = (
     ("YES", "Да"),
     ("NO", "Нет"),
 )
+DATE_FORMAT = "%m.%d.%Y"
+NOTICE = "notice"
 
 DELETED = "deleted"
 DELETE_CODE = "delete_code"
 POINT_LIST_KB_SIZE: int = 1
 DEFAULT_KEYBOARD_SIZE: int = 2
+CALENDAR_KEYBOARD_SIZE: int = 7
 FMT_GIF: str = ".gif"
 FMT_JPG: str = ".jpg"
 SEARCH_GIFS: tuple[str] = tuple(f"search_{n}" for n in range(5))
@@ -26,19 +28,29 @@ MAIN_MENU_COMMANDS: dict[str] = {
     "/start": "Перезапуск бота/открыть меню",
     "/open_qr": "Открыть раздел QR",
 }
+
+DAY = {
+    0: "пн",
+    1: "вт",
+    2: "ср",
+    3: "чт",
+    4: "пт",
+    5: "сб",
+    6: "вс"
+}
 MONTH = {
-    1: "янв",
-    2: "фев",
-    3: "мар",
-    4: "апр",
-    5: "мая",
-    6: "июн",
-    7: "июл",
-    8: "авг",
-    9: "сен",
-    10: "окт",
-    11: "ноя",
-    12: "дек",
+    1: "Январь",
+    2: "Февраль",
+    3: "Март",
+    4: "Апрель",
+    5: "Май",
+    6: "Июнь",
+    7: "Июль",
+    8: "Август",
+    9: "Сентябрь",
+    10: "Октябрь",
+    11: "Ноябрь",
+    12: "Декабрь",
 }
 
 

@@ -27,8 +27,8 @@ async def procces_main_menu_comand(
             reply_markup=reply_markup,
         )
     except Exception as error:
-        print(error.args)
-        await message.answer(text=CRITICAL_ERROR, message_effect_id=2)
+        logger(error)
+        await message.answer(text=CRITICAL_ERROR)
 
 
 async def get_menucallback_data(

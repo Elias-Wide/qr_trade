@@ -14,3 +14,4 @@ class Schedules(Base):
     )
     user_id = Column(ForeignKey("users.id"), nullable=False)
     schedule = Column(JSON, nullable=True)
+    user = relationship("Users", back_populates="schedule")
