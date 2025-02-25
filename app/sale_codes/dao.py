@@ -16,7 +16,9 @@ class Sale_CodesDAO(BaseDAO):
     model = Sale_Codes
 
     @classmethod
-    async def create_code_or_update(cls, user_id: int, file_name: str, value: str):
+    async def create_code_or_update(
+        cls, user_id: int, file_name: str, value: str
+    ):
         """
         Создать или обновить объект кода.
         Передаются данные для создания объекта,

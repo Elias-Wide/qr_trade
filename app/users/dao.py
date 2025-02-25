@@ -27,11 +27,12 @@ class UsersDAO(BaseDAO):
                 .where(Users.id == user_id)
             )
         return get_user.mappings().all()[0]
-    
+
     @classmethod
     async def change_point(telegram_id: int, point_id: int):
         async with async_session_maker() as session:
             get_user = await session.execute(
-                select(Users.__table__.columns)
-                .where(Users.telegram_id == telegram_id)
+                select(Users.__table__.columns).where(
+                    Users.telegram_id == telegram_id
+                )
             )

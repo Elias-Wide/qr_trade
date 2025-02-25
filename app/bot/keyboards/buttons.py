@@ -30,7 +30,7 @@ SCHEDULE: str = "schedule"
 UPDATE_QR: str = "qr_update"
 CONFIRM_SEND: str = "confirm_send"
 CONFIRM_SEND_BTNS: tuple[tuple[str]] = ((CONFIRM_SEND, "📦 Отправить 📦"),)
-CONFIRM_BTNS:tuple[tuple[str]] = ((CHECK_QR, "✅ Заказ закрыт✅"),)
+CONFIRM_BTNS: tuple[tuple[str]] = ((CHECK_QR, "✅ Заказ закрыт✅"),)
 
 FAQ_MENU_BTNS: tuple[tuple[str]] = (
     (FAQ_PROFILE, "Профиль"),
@@ -51,7 +51,7 @@ MAIN_MENU_PAGES: tuple[str] = (
     FAQ_PROFILE,
     FAQ_QR,
     PROFILE,
-    NOTIFICATIONS
+    NOTIFICATIONS,
 )
 PROFILE_MENU_BTNS: tuple[tuple[str]] = (
     (CHANGE_POINT, "Сменить пункт"),
@@ -66,9 +66,9 @@ QR_MENU_BTNS: tuple[tuple[str]] = (
     (DELETE_QR, "Удалить код 🗑"),
 )
 
-QR_SEND_BTNS: tuple[tuple[str]] = (("by_addres", "Ввести адрес 🖋"), ("by_id", "Ввести id пункта 🔢"))
+QR_SEND_BTNS: tuple[tuple[str]] = (
+    ("by_addres", "Ввести адрес 🖋"),
+    ("by_id", "Ввести id пункта 🔢"),
+)
 
-QR_BTN_TYPE: dict[str] = {
-    DELETE_QR: DELETE_QR_BTN,
-    SEND_QR: QR_INFO_BTN
-}
+QR_BTN_TYPE: dict[str] = {DELETE_QR: DELETE_QR_BTN, SEND_QR: QR_INFO_BTN}

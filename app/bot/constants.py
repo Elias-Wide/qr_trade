@@ -75,8 +75,15 @@ NEXT_QR = "Успешно ✅ Держи следующий QR 🧤"
 NO_CAPTION = ""
 NO_IMAGE: str = "no_image"
 NOT_FOUND = "not_found"
+N_TYPE_DICT: dict[str, tuple[str]] = {
+    "off": ("off", "🔕 ВЫКЛ 🔕"),
+    "always": ("always", "🔊 ВКЛ 🔊"),
+    "by_schedule": ("by_schedule", "По графику 🗓"),
+}
 NOTIFICATION_TYPE = (
-    ("off", "🔕 ВЫКЛ 🔕"), ("always", "🔊 ВКЛ 🔊"), ("by_schedule", "По графику 🗓")
+    ("off", "🔕 ВЫКЛ 🔕"),
+    ("always", "🔊 ВКЛ 🔊"),
+    ("by_schedule", "По графику 🗓"),
 )
 INVALID_DATA_TYPE: str = "Неверный формат введенных данных!"
 INVALID_ID_MESSAGE = {

@@ -26,7 +26,9 @@ class AuthConfig(ConfigBase):
 
     @field_validator("secret_key", mode="before")
     @classmethod
-    def assemble_secret_key(cls, v: Optional[str], values: ValidationInfo) -> str:
+    def assemble_secret_key(
+        cls, v: Optional[str], values: ValidationInfo
+    ) -> str:
         if v is None:
             return Fernet.generate_key()
         return v

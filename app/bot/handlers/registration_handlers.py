@@ -1,35 +1,21 @@
 """Модуль с функциями анкеты."""
-
-from datetime import timedelta
-from typing import Any
-
 from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import (
     CallbackQuery,
-    InlineKeyboardMarkup,
-    InputMediaPhoto,
-    InlineKeyboardButton,
     Message,
-    ReplyKeyboardMarkup,
-    ReplyKeyboardRemove,
 )
 
 from app.bot.keyboards.banners import Captions, get_img
 from app.bot.constants import (
-    CONFIRM,
-    INTRO_SURVEY_TEXT,
     INVALID_DATA_TYPE,
     INVALID_ID_MESSAGE,
-    MAIN_MENU,
     MANAGER_ID,
     POINT_ID,
     REGISTRATION_CANCELED,
     REGISTRATION_CONFIRMED,
-    REGISTRATION_DONE,
     SurveyQuestions,
 )
 from app.bot.filters import (
@@ -148,8 +134,12 @@ async def finish_registration(
     await process_start_command(message, state)
 
 
-@registration_router.message(RegistrationStates.manager_id_question, ~F.text.isdigit())
-@registration_router.message(RegistrationStates.point_id_question, ~F.text.isdigit())
+@registration_router.message(
+    RegistrationStates.manager_id_question, ~F.text.isdigit()
+)
+@registration_router.message(
+    RegistrationStates.point_id_question, ~F.text.isdigit()
+)
 async def handle_ivalid_data_type(message: Message):
     """
     Сообщение о невалидном типе введенных данных.
@@ -159,7 +149,9 @@ async def handle_ivalid_data_type(message: Message):
 
 
 @registration_router.message(
-    RegistrationStates.access_code, F.content_type == "text", ~AccesCodeFilter()
+    RegistrationStates.access_code,
+    F.content_type == "text",
+    ~AccesCodeFilter(),
 )
 async def handle_invalid_acces_code(message: Message) -> None:
     """Сообщение о введенном невалидном manager id."""
@@ -173,7 +165,9 @@ async def handle_invalid_acces_code_type(message: Message):
 
 
 @registration_router.message(
-    RegistrationStates.manager_id_question, F.text.isdigit(), ~ManagerExistFilter()
+    RegistrationStates.manager_id_question,
+    F.text.isdigit(),
+    ~ManagerExistFilter(),
 )
 async def handle_invalid_manager_id(message: Message) -> None:
     """Сообщение о введенном невалидном manager id."""
@@ -188,7 +182,9 @@ async def handle_invalid_point_id(message: Message) -> None:
     await send_ivalid_data_type_message(data_type=POINT_ID, message=message)
 
 
-async def send_ivalid_data_type_message(message: Message, data_type: str = None):
+async def send_ivalid_data_type_message(
+    message: Message, data_type: str = None
+):
     if not data_type:
         text = INVALID_DATA_TYPE
     else:

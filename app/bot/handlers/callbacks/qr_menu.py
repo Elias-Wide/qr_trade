@@ -3,16 +3,13 @@
 from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
 from app.bot.constants import (
-    DEFAULT_KEYBOARD_SIZE,
     DELETE_CODE,
     MAIN_MENU,
-    MONTH,
-    NO_CAPTION
+    NO_CAPTION,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
     DELETE_QR,
-    DELETE_QR_BTN,
     POINT_SEARCH,
     QR_MENU,
     QR_MENU_BTNS,
@@ -29,7 +26,12 @@ from app.trades.models import Trades
 
 
 async def get_qr_menu(
-    level: int, menu_name: str, user_id: int, point_id: int, trade_id: int, code_id: int
+    level: int,
+    menu_name: str,
+    user_id: int,
+    point_id: int,
+    trade_id: int,
+    code_id: int,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """Получить пользовательское меню."""
     next_menu = None
@@ -111,7 +113,9 @@ async def get_reply_for_trade(callback_data: MenuCallBack, trade: Trades):
 
     return (
         await get_img(
-            menu_name=trade.file_name, file_dir=QR_DIR, caption=captions.confirm_trade
+            menu_name=trade.file_name,
+            file_dir=QR_DIR,
+            caption=captions.confirm_trade,
         ),
         await get_trade_confirm_kb(
             level=callback_data.level,

@@ -21,6 +21,7 @@ from app.bot.keyboards.buttons import (
 )
 from app.core.logging import logger
 
+
 async def get_main_menu(
     level: int, menu_name: str, user_id: int, point_id: int | None = None
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
@@ -46,7 +47,9 @@ async def get_menu_content(
     """Возвращает контент в зависимости от menu_name."""
     logger(level, menu_name, user_id, point_id, trade_id, code_id)
     if menu_name in (QR_MENU, CHECK_QR, DELETE_QR, SEND_QR):
-        return await get_qr_menu(level, menu_name, user_id, point_id, trade_id, code_id)
+        return await get_qr_menu(
+            level, menu_name, user_id, point_id, trade_id, code_id
+        )
     elif menu_name in (FAQ_MENU, FAQ_PROFILE, FAQ_QR):
         return await get_faq_menu(level, menu_name, user_id)
     elif menu_name in (PROFILE, NOTIFICATIONS):

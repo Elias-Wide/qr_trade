@@ -7,7 +7,13 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.bot.constants import DEFAULT_KEYBOARD_SIZE, DELETE_CODE, DELETED, MONTH, POINT_LIST_KB_SIZE
+from app.bot.constants import (
+    DEFAULT_KEYBOARD_SIZE,
+    DELETE_CODE,
+    DELETED,
+    MONTH,
+    POINT_LIST_KB_SIZE,
+)
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
     BACK_BTN,
@@ -39,7 +45,6 @@ async def get_qr_list_kb(
     previous_menu: str = QR_MENU,
     code_id: int | None = None,
     trade_id: int | None = None,
-    
 ) -> list[InlineKeyboardButton]:
     """
     Создание клавиатуры списка кодов пользователя.
@@ -79,7 +84,10 @@ async def get_qr_list_kb(
         InlineKeyboardButton(
             text=BACK_BTN,
             callback_data=MenuCallBack(
-                level=level - 1, menu_name=QR_MENU, point_id=point_id, user_id=user_id
+                level=level - 1,
+                menu_name=QR_MENU,
+                point_id=point_id,
+                user_id=user_id,
             ).pack(),
         )
     )
@@ -118,12 +126,9 @@ async def get_point_list_kb(
         InlineKeyboardButton(
             text=CANCEL_SEARCH,
             callback_data=MenuCallBack(
-                level=level - 1,
-                menu_name=CANCEL,
-                user_id=user_id
+                level=level - 1, menu_name=CANCEL, user_id=user_id
             ).pack(),
         )
     )
     kb_builder.row(*btns, width=size)
     return kb_builder.as_markup()
-

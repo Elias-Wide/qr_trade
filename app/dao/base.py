@@ -50,7 +50,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 query = insert(cls.model).values(**data)
                 object = await session.execute(query)
                 await session.commit()
-                return object.scalars().all()
+                return object.mappings().all()
             except (SQLAlchemyError, Exception) as error:
                 if isinstance(error, SQLAlchemyError):
                     message = "Database Exception"

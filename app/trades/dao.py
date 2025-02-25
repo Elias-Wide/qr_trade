@@ -21,7 +21,11 @@ class TradesDAO(BaseDAO):
         async with async_session_maker() as session:
             get_objs = await session.execute(
                 select(Trades.__table__.columns, Sale_Codes.__table__.columns)
-                .join(Sale_Codes, Trades.sale_code_id == Sale_Codes.id, isouter=True)
+                .join(
+                    Sale_Codes,
+                    Trades.sale_code_id == Sale_Codes.id,
+                    isouter=True,
+                )
                 .where(Trades.point_id == point_id)
             )
             return get_objs.mappings().first()

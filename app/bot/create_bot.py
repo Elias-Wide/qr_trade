@@ -22,7 +22,9 @@ async def start_bot():
 
 async def stop_bot():
     try:
-        await bot.send_message(settings.telegram.admin_id, "Бот остановлен. За что?😔")
+        await bot.send_message(
+            settings.telegram.admin_id, "Бот остановлен. За что?😔"
+        )
     except:
         pass
 

@@ -8,6 +8,7 @@ from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.users.dao import UsersDAO
 from app.core.logging import logger
 
+
 async def procces_main_menu_comand(
     message: Message, level: int = 0, menu_name: str = MAIN_MENU
 ) -> None:

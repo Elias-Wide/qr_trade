@@ -19,7 +19,9 @@ async def create_registration_kb(
 ) -> KeyboardMarkup:
     """Создать клавиутуру вступительной анкеты."""
     keyboard = InlineKeyboardBuilder()
-    for text, callback_datas in zip(dict(CONFIRM).values(), dict(CONFIRM).keys()):
+    for text, callback_datas in zip(
+        dict(CONFIRM).values(), dict(CONFIRM).keys()
+    ):
         keyboard.add(
             InlineKeyboardButton(text=text, callback_data=callback_datas),
         )

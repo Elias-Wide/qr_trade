@@ -1,39 +1,44 @@
-import os
-from random import choice
-import time
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import CallbackQuery, ContentType, FSInputFile, Message
+from aiogram.types import CallbackQuery, ContentType, Message
 
 from app.bot.handlers.callbacks.menu_processor import get_menu_content
-from app.bot.keyboards.banners import BANNERS_DIR, captions, get_file, get_img
+from app.bot.keyboards.banners import captions, get_file, get_img
 from app.bot.constants import (
     CRITICAL_ERROR,
     DELETE_CODE,
     DELETE_ERROR,
-    DWNLD_ERROR,
-    FMT_GIF,
-    FMT_JPG,
     NEXT_QR,
     NOT_FOUND,
-    SEARCH_GIFS,
     SUCCES_DNWLD,
     SUCCES_UPDATE,
     SUCCESS_DELETE,
 )
 
-from app.bot.handlers.callbacks.qr_menu import get_reply_for_trade, get_reply_no_trade
+from app.bot.handlers.callbacks.qr_menu import (
+    get_reply_for_trade,
+    get_reply_no_trade,
+)
 from app.bot.keyboards.main_menu_kb import get_btns, get_image_and_kb
 from app.bot.keyboards.qr_menu_kb import get_point_list_kb
 from app.bot.utils import delete_file, get_point_list_caption
 from app.core.config import QR_DIR
-from app.bot.filters import ImgValidationFilter, PointExistFilter, UserExistFilter
+from app.bot.filters import (
+    ImgValidationFilter,
+    PointExistFilter,
+    UserExistFilter,
+)
 from app.core.logging import logger
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.handlers.registration_handlers import send_ivalid_data_type_message
+from app.bot.handlers.registration_handlers import (
+    send_ivalid_data_type_message,
+)
 from app.bot.handlers.states import MenuQRStates
-from app.bot.handlers.user_handlers import get_menucallback_data, process_start_command
+from app.bot.handlers.user_handlers import (
+    get_menucallback_data,
+    process_start_command,
+)
 from app.bot.keyboards.buttons import (
     ADD_QR,
     CANCEL,
@@ -56,7 +61,9 @@ code_router.message.filter(UserExistFilter())
 
 
 @code_router.callback_query(MenuCallBack.filter(F.menu_name == DELETE_CODE))
-async def process_agreed_delete(callback: CallbackQuery, callback_data: MenuCallBack):
+async def process_agreed_delete(
+    callback: CallbackQuery, callback_data: MenuCallBack
+):
     deleted_obj = await Sale_CodesDAO.delete_object(id=callback_data.code_id)
     # await delete_file(QR_DIR, deleted_obj.file_name)
     print(deleted_obj.file_name)
@@ -93,7 +100,9 @@ async def process_add_code(
 
 
 @code_router.message(
-    MenuQRStates.add_qr, F.content_type == ContentType.PHOTO, ImgValidationFilter()
+    MenuQRStates.add_qr,
+    F.content_type == ContentType.PHOTO,
+    ImgValidationFilter(),
 )
 async def process_download_ok(
     message: Message,
@@ -103,7 +112,9 @@ async def process_download_ok(
 ) -> None:
     """Обработки загрузки валидного изображения."""
     user = await UsersDAO.get_by_attribute("telegram_id", message.from_user.id)
-    answer = await Sale_CodesDAO.create_code_or_update(user.id, file_name, value)
+    answer = await Sale_CodesDAO.create_code_or_update(
+        user.id, file_name, value
+    )
     if answer == "create":
         message_text = SUCCES_DNWLD.format(value)
     elif answer == "update":
@@ -183,16 +194,22 @@ async def process_check_qr(
             trade = await TradesDAO.get_trade_by_point(user.point_id)
             if trade:
                 await callback.answer(text=NEXT_QR, show_alert=True)
-                media, reply_markup = await get_reply_for_trade(callback_data, trade)
+                media, reply_markup = await get_reply_for_trade(
+                    callback_data, trade
+                )
             else:
                 media, reply_markup = await get_reply_no_trade(callback_data)
         else:
             trade = await TradesDAO.get_trade_by_point(callback_data.point_id)
             if trade:
-                media, reply_markup = await get_reply_for_trade(callback_data, trade)
+                media, reply_markup = await get_reply_for_trade(
+                    callback_data, trade
+                )
             else:
                 media, reply_markup = await get_reply_no_trade(callback_data)
-        await callback.message.edit_media(media=media, reply_markup=reply_markup)
+        await callback.message.edit_media(
+            media=media, reply_markup=reply_markup
+        )
     except:
         await callback.answer(text=CRITICAL_ERROR, show_alert=True)
 
@@ -203,7 +220,7 @@ async def process_check_qr(
             POINT_SEARCH,
         )
     ),
-    default_state
+    default_state,
 )
 async def find_office(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
@@ -217,7 +234,12 @@ async def find_office(
     )
     await callback.message.edit_media(media=media, reply_markup=reply_markup)
     await state.set_state(MenuQRStates.point_search)
-    await state.update_data(user_id=callback_data.user_id, code_id=callback_data.code_id, points=dict())
+    await state.update_data(
+        user_id=callback_data.user_id,
+        code_id=callback_data.code_id,
+        points=dict(),
+    )
+
 
 # @code_router.callback_query(
 #     MenuQRStates.point_search,
@@ -229,8 +251,9 @@ async def find_office(
 # )
 # async def proccess_find_point(callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext):
 #     message = callback.message
-#     print(message)   
+#     print(message)
 #     await process_point_search(message, state)
+
 
 @code_router.callback_query(
     MenuQRStates.point_search,
@@ -247,24 +270,29 @@ async def procces_add_point(
 ):
     logger()
     state_data = await state.get_data()
-    point = await PointsDAO.get_by_attribute(attr_name="point_id", attr_value=callback_data.point_id)
+    point = await PointsDAO.get_by_attribute(
+        attr_name="point_id", attr_value=callback_data.point_id
+    )
     state_data["points"][point.point_id] = point
     await callback.message.edit_media(
         media=await get_img(
             POINT_SEARCH,
-            caption=await get_point_list_caption(state_data["points"])
+            caption=await get_point_list_caption(state_data["points"]),
         ),
         reply_markup=await get_btns(
-                    menu_name=POINT_SEARCH,
-                    next_menu=CONFIRM_SEND,
-                    btns_data=CONFIRM_SEND_BTNS,
-                    previous_menu=QR_MENU,
-                    level=2
-                )
+            menu_name=POINT_SEARCH,
+            next_menu=CONFIRM_SEND,
+            btns_data=CONFIRM_SEND_BTNS,
+            previous_menu=QR_MENU,
+            level=2,
+        ),
     )
     await state.update_data(points=state_data["points"])
 
-@code_router.message(MenuQRStates.point_search, F.content_type == ContentType.TEXT)
+
+@code_router.message(
+    MenuQRStates.point_search, F.content_type == ContentType.TEXT
+)
 async def process_point_search(message: Message, state: FSMContext):
     # gif = await message.answer_animation(
     #     animation=await get_file(filename=choice(SEARCH_GIFS), f_type=FMT_GIF),
@@ -278,22 +306,23 @@ async def process_point_search(message: Message, state: FSMContext):
         point = await point_filter(message)
         if not point:
             await message.answer_photo(
-                photo=await get_file(NOT_FOUND),
-                caption=captions.not_found
+                photo=await get_file(NOT_FOUND), caption=captions.not_found
             )
         else:
             state_data["points"][point.point_id] = point
             logger(state_data)
             await message.answer_photo(
                 photo=await get_file(POINT_SEARCH),
-                caption=await get_point_list_caption(state_data["points"],),
+                caption=await get_point_list_caption(
+                    state_data["points"],
+                ),
                 reply_markup=await get_btns(
                     menu_name=POINT_SEARCH,
                     next_menu=CONFIRM_SEND,
                     btns_data=CONFIRM_SEND_BTNS,
                     previous_menu=QR_MENU,
-                    level=2
-                )
+                    level=2,
+                ),
             )
             await state.update_data(points=state_data["points"])
     else:
@@ -301,8 +330,7 @@ async def process_point_search(message: Message, state: FSMContext):
             points = await PointsDAO.search_by_addres(message.text)
             if not points:
                 await message.answer_photo(
-                    photo=await get_file(NOT_FOUND),
-                    caption=captions.not_found
+                    photo=await get_file(NOT_FOUND), caption=captions.not_found
                 )
             else:
                 await message.answer_photo(
@@ -311,13 +339,20 @@ async def process_point_search(message: Message, state: FSMContext):
                     reply_markup=await get_point_list_kb(
                         user_id=state_data["user_id"],
                         next_menu=POINT_SEARCH,
-                        points_list=points
-                    )
-            )
+                        points_list=points,
+                    ),
+                )
     await message.delete()
 
 
-@code_router.callback_query(MenuQRStates.point_search, MenuCallBack.filter(F.menu_name.in_(CONFIRM_SEND,)))
+@code_router.callback_query(
+    MenuQRStates.point_search,
+    MenuCallBack.filter(
+        F.menu_name.in_(
+            CONFIRM_SEND,
+        )
+    ),
+)
 async def process_confirm_send(
     callback: CallbackQuery,
     callback_data: MenuCallBack,
@@ -332,14 +367,17 @@ async def process_confirm_send(
             {
                 "sale_code_id": state_data["code_id"],
                 "user_id": state_data["user_id"],
-                "point_id": point.point_id
+                "point_id": point.point_id,
             }
         )
     await state.clear()
     callback_data.user_id, callback_data.menu_name, callback_data.level = (
-        state_data["user_id"], QR_MENU, 1
+        state_data["user_id"],
+        QR_MENU,
+        1,
     )
     await get_menucallback_data(callback, callback_data)
+
 
 @code_router.message(MenuQRStates.point_search)
 async def process_invalid_point_search_data(
@@ -350,9 +388,10 @@ async def process_invalid_point_search_data(
     logger()
     await send_ivalid_data_type_message(message=message)
 
+
 @code_router.callback_query(
     MenuQRStates.point_search,
-     MenuCallBack.filter(
+    MenuCallBack.filter(
         F.menu_name.in_(
             CANCEL,
         )
@@ -369,5 +408,3 @@ async def procce_back_btn(
     await state.clear()
     logger(callback_data)
     await get_menucallback_data(callback, callback_data)
-    
-    

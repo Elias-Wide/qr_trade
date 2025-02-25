@@ -5,7 +5,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.constants import MAIN_MENU, OPEN_QR
+from app.bot.constants import OPEN_QR
 from app.bot.filters import UserExistFilter
 
 from app.bot.handlers.callbacks.main_menu import (
@@ -42,18 +42,18 @@ async def process_open_qr_command(
     await state.clear()
 
 
-@user_router.callback_query(MenuCallBack.filter(F.menu_name.in_(MAIN_MENU_PAGES)))
+@user_router.callback_query(
+    MenuCallBack.filter(F.menu_name.in_(MAIN_MENU_PAGES))
+)
 async def user_menu(
-    callback: CallbackQuery,
-    callback_data: MenuCallBack,
-    state: FSMContext
+    callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
     """Обработка нажатия кнопок меню."""
     await state.clear()
-    # try:
-    await get_menucallback_data(callback, callback_data)
-    await callback.answer()
-    # except Exception as error:
-    #     await callback.answer(
-    #         text="Критическая ошибка / перезапустите бота", show_alert=True
-    #     )
+    try:
+        await get_menucallback_data(callback, callback_data)
+        await callback.answer()
+    except Exception as error:
+        await callback.answer(
+            text="Критическая ошибка / перезапустите бота", show_alert=True
+        )

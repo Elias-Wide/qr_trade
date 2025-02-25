@@ -4,6 +4,7 @@ from app.core.database import async_session_maker
 from app.points.models import Points
 from app.core.logging import logger
 
+
 class PointsDAO(BaseDAO):
     model = Points
 
@@ -13,7 +14,9 @@ class PointsDAO(BaseDAO):
             get_objs = await session.execute(
                 select(cls.model.__table__.columns).where(
                     and_(
-                        func.lower(Points.addres).contains(searching_address.lower(),),
+                        func.lower(Points.addres).contains(
+                            searching_address.lower(),
+                        ),
                         Points.point_id != 1,
                     )
                 )

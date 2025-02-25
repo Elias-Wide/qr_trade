@@ -11,7 +11,7 @@ from app.bot.create_bot import bot
 from app.bot.keyboards.buttons import NOTIFICATIONS_BTNS
 from app.core.config import QR_DIR
 from app.core.logging import logger
-from app.notifications.dao import NotificationsDAO
+from app.schedules.dao import SchedulesDAO
 from app.points.models import Points
 from app.users.dao import UsersDAO
 
@@ -20,7 +20,9 @@ async def generate_filename() -> str:
     """Генерирует рандомное имя для файла."""
     filename = [
         random.choice(
-            string.ascii_lowercase + string.digits if i != 5 else string.ascii_uppercase
+            string.ascii_lowercase + string.digits
+            if i != 5
+            else string.ascii_uppercase
         )
         for i in range(10)
     ]
@@ -40,6 +42,7 @@ async def decode_qr(filepath: str) -> str:
     """Декодировать изображение QR-кода."""
     decocdeQR = decode(Image.open(filepath))
     return decocdeQR[0].data.decode("ascii")
+
 
 async def delete_file(path: str, file_name: str):
     """Удалить файл в заданной директории"""
@@ -122,9 +125,14 @@ async def get_user_data(user_id: int) -> str:
             f"Адрес пункта 🏚:    {user.addres}\n"
             f"Помогли другим 💟:   0\n"
         )
-        return result + f"ID пункта: {user.point_id}" if user.point_id != 1 else result
+        return (
+            result + f"ID пункта: {user.point_id}"
+            if user.point_id != 1
+            else result
+        )
     except:
         return "Ошибка получения данных"
+
 
 async def get_point_list_caption(point_list: dict[int, Points]) -> str:
     """Получить описание к списку пунктов.
@@ -138,7 +146,7 @@ async def get_point_list_caption(point_list: dict[int, Points]) -> str:
         caption = "Выбранные пункты: \n\n"
         for point in point_list.values():
             caption += f"ID {point.point_id} {point.addres} \n"
-    return caption 
+    return caption
 
 
 async def get_notice_type(user_id: int) -> str:
@@ -146,10 +154,11 @@ async def get_notice_type(user_id: int) -> str:
     По id пользователя находит объект его уведомлений,
     если его нет - то создает объект модели в бд."""
     caption = "Режим уведомлений: {}"
-    notice = await NotificationsDAO.get_by_attribute("user_id", user_id)
+    notice = await SchedulesDAO.get_by_attribute("user_id", user_id)
     logger(notice, NOTIFICATION_TYPE)
     if notice:
         for n_type in NOTIFICATION_TYPE:
+            logger(n_type, notice.notice_type.code)
             if notice.notice_type in n_type:
                 return caption.format(n_type[1])
     return caption.format("ВЫКЛ")

@@ -2,7 +2,6 @@ from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
 from app.bot.constants import MAIN_MENU
 from app.bot.keyboards.buttons import FAQ_MENU, FAQ_MENU_BTNS
-from app.bot.keyboards.faq_kb import get_faq_kb, get_faq_side_menu_kb
 
 from app.bot.keyboards.banners import get_img
 from app.bot.keyboards.main_menu_kb import get_image_and_kb

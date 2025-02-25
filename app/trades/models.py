@@ -1,11 +1,18 @@
 from datetime import datetime
-from sqlalchemy import Column, Date, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import (
+    Column,
+    Date,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 
 
 from app.core.database import Base
 from app.users.constants import MOSCOW_TZ
-
+from app.sale_codes.models import Sale_Codes
 
 class Trades(Base):
     """Модель Trades.
@@ -18,6 +25,7 @@ class Trades(Base):
     point_id = Column(ForeignKey("points.point_id"), nullable=False)
     users = relationship("Users", back_populates="trades")
     point = relationship("Points", back_populates="trades")
+    sale_codes = relationship("Sale_Codes", back_populates="trades")
     created_at = Column(Date, default=datetime.now)
 
     __table_args__ = (

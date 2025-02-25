@@ -1,6 +1,5 @@
 from typing import TypeAlias
 
-from aiogram.filters.callback_data import CallbackData
 from aiogram.types import (
     BotCommand,
     InlineKeyboardButton,
@@ -17,10 +16,14 @@ from app.bot.constants import (
     DEFAULT_KEYBOARD_SIZE,
     MAIN_MENU,
     MAIN_MENU_COMMANDS,
-    NO_IMAGE,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import BACK_BTN, CHECK_QR, DELETE_QR, FAQ_QR, SEND_QR
+from app.bot.keyboards.buttons import (
+    BACK_BTN,
+    DELETE_QR,
+    FAQ_QR,
+    SEND_QR,
+)
 from app.core.config import settings
 from app.core.logging import logger
 
@@ -127,7 +130,7 @@ async def get_image_and_kb(
             next_menu=next_menu,
             level=level,
             size=size,
-            btns_data=btns_data,    
+            btns_data=btns_data,
             user_id=user_id,
             point_id=point_id,
             trade_id=trade_id,

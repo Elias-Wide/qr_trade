@@ -19,7 +19,8 @@ class MenuQRStates(StatesGroup):
     add_qr = State()
     point_search = State()
 
+
 class ProfileStates(StatesGroup):
     """Класс состояний меню профиля."""
-    
+
     change_point = State()

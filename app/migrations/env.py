@@ -9,7 +9,7 @@ from sqlalchemy import engine_from_config, pool
 from app.acces_codes.models import Acces_Codes  # noqa
 from app.core.config import settings  # noqa
 from app.core.database import Base  # noqa
-from app.notifications.models import Notifications # noqa
+from app.schedules.models import Schedules  # noqa
 from app.points.models import Points  # noqa
 from app.sale_codes.models import Sale_Codes  # noqa
 from app.trades.models import Trades  # noqa
@@ -21,7 +21,9 @@ sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 # access to the values within the .ini file in use.
 config = context.config
 
-config.set_main_option("sqlalchemy.url", f"{settings.db.url}?async_fallback=True")
+config.set_main_option(
+    "sqlalchemy.url", f"{settings.db.url}?async_fallback=True"
+)
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -77,7 +79,9 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection, target_metadata=target_metadata
+        )
 
         with context.begin_transaction():
             context.run_migrations()
