@@ -20,6 +20,7 @@ from app.bot.constants import (
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
     BACK_BTN,
+    CALENDAR_BTNS,
     CONFIRM_SCHEDULE,
     CONFIRM_SCHEDULE_BTN,
     DELETE_QR,
@@ -59,7 +60,17 @@ async def get_days_btns(
     logger()
     kb_builder = InlineKeyboardBuilder()
     btns = []
-
+    for menu, text in CALENDAR_BTNS:
+        btns.append(
+            InlineKeyboardButton(
+                text=text,
+                callback_data=MenuCallBack(
+                    level=level,
+                    menu_name=menu_name,
+                    user_id=user_id,
+                ).pack(),
+            ),
+        )
     for day in await get_current_month_days():
         text = day.strftime("%d")
         if day in user_schedule:

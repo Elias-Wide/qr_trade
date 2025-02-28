@@ -31,7 +31,7 @@ class AuthConfig(ConfigBase):
     ) -> str:
         if v is None:
             return Fernet.generate_key()
-        return v
+        return v.encode()
 
     def refresh_secret_key(self):
         self.secret_key = Fernet.generate_key()

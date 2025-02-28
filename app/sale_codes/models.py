@@ -22,8 +22,8 @@ class Sale_Codes(Base):
 
     user_id = Column(ForeignKey("users.id"), nullable=False)
     created_at = Column(Date, default=datetime.now)
-    file_name = Column(String, nullable=False)
-    value = Column(String, nullable=False, unique=True)
+    client_id = Column(String, nullable=False, unique=True)
+    encoded_value = Column(String, nullable=False)
     trades = relationship(
         "Trades", cascade="all,delete", back_populates="sale_codes"
     )
@@ -31,7 +31,7 @@ class Sale_Codes(Base):
     __table_args__ = (
         UniqueConstraint(
             "user_id",
-            "value",
-            name="unique_user_id_and_value",
+            "client_id",
+            name="unique_user_and_client_id",
         ),
     )

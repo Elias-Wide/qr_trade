@@ -9,16 +9,17 @@ from app.bot.constants import (
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
+    CONFIRM_BTNS,
     DELETE_QR,
     POINT_SEARCH,
     QR_MENU,
     QR_MENU_BTNS,
     SEND_QR,
 )
-from app.bot.keyboards.main_menu_kb import get_image_and_kb
-
+from app.bot.keyboards.banners import captions, get_img, get_qr_code_image
+from app.bot.keyboards.main_kb_builder import get_btns, get_image_and_kb
 from app.core.config import QR_DIR
-from app.bot.keyboards.banners import captions, get_img
+from app.core.logging import logger
 from app.sale_codes.dao import Sale_CodesDAO
 from app.sale_codes.models import Sale_Codes
 from app.trades.dao import TradesDAO
@@ -68,32 +69,9 @@ async def get_qr_menu(
     )
 
 
-# async def get_sale_codes_data(
-#     user_id: int, menu_name: str, btn_text: str,
-# ) -> tuple[str, tuple[str, str] | None]:
-#     """Получить описание данные для кнопок.
-#     Запрос в бд возвращает список объектов
-#     заданной модели по id юзера.
-#     """
-#     user_codes = await Sale_CodesDAO.get_actual_objs(
-#         attr_name="user_id", attr_value=user_id, need_actual=True
-#     )
-#     btns_data = None
-#     if user_codes:
-#         for obj in user_codes:
-#             created_at = obj.created_at
-#             created_at = f"{created_at.day} {MONTH[created_at.month]}"
-#             btns_data = tuple(
-#                 (menu_name, btn_text.format(obj.value, created_at)) for obj in user_codes
-#         )
-#         caption = captions.delete_qr
-#     else:
-#         caption = captions.no_qr_today
-#         btns_data = None
-#     return caption, btns_data, code.
-
-
-async def get_reply_no_trade(callback_data: MenuCallBack):
+async def get_reply_no_trade(
+    callback_data: MenuCallBack,
+) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """Получить"""
     if callback_data.point_id == 1:
         caption = captions.no_user_point
@@ -105,22 +83,29 @@ async def get_reply_no_trade(callback_data: MenuCallBack):
         level=callback_data.level,
         previous_menu=QR_MENU,
         caption=caption,
+        need_back_btn=True,
     )
 
 
-async def get_reply_for_trade(callback_data: MenuCallBack, trade: Trades):
+async def get_reply_for_trade(
+    callback_data: MenuCallBack, trade: Trades
+) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """Получить изображение и клавиатуру для трейда."""
-
-    return (
-        await get_img(
-            menu_name=trade.file_name,
-            file_dir=QR_DIR,
-            caption=captions.confirm_trade,
-        ),
-        await get_trade_confirm_kb(
-            level=callback_data.level,
-            user_id=callback_data.user_id,
-            point_id=callback_data.point_id,
-            trade_id=trade.id,
-        ),
-    )
+    try:
+        return (
+            await get_qr_code_image(
+                client_id=trade.client_id, encoded_value=trade.encoded_value
+            ),
+            await get_btns(
+                level=callback_data.level,
+                btns_data=CONFIRM_BTNS,
+                menu_name=callback_data.menu_name,
+                user_id=callback_data.user_id,
+                point_id=callback_data.point_id,
+                trade_id=trade.id,
+                need_back_btn=False,
+            ),
+        )
+    except Exception as error:
+        logger(error)
+        raise error

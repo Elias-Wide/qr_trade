@@ -34,10 +34,11 @@ from app.bot.handlers.states import ProfileStates
 from app.bot.keyboards.buttons import (
     CHANGE_POINT,
     CONFIRM_SCHEDULE,
+    NONE_MENU,
     PROFILE,
     SCHEDULE,
 )
-from app.bot.keyboards.main_menu_kb import get_btns
+from app.bot.keyboards.main_kb_builder import get_btns
 from app.points.models import Points
 from app.schedules.dao import SchedulesDAO
 from app.users.dao import UsersDAO
@@ -127,20 +128,26 @@ async def set_user_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
     """Меню графика, отдаем клавиатуру с календарем."""
-    user_schedule = await SchedulesDAO.get_user_schedule(
-        user_id=callback_data.user_id
-    )
-    logger(user_schedule)
-    await callback.message.edit_media(
-        media=await get_img(SCHEDULE, caption=await get_schedule_caption()),
-        reply_markup=await get_days_btns(
-            user_id=callback_data.user_id,
-            level=callback_data.level,
-            user_schedule=user_schedule.copy(),
-        ),
-    )
-    await state.update_data(user_schedule=sorted(user_schedule))
-    await state.set_state(ProfileStates.schedule)
+    try:
+        user_schedule = await SchedulesDAO.get_user_schedule(
+            user_id=callback_data.user_id
+        )
+        logger(user_schedule)
+        await callback.message.edit_media(
+            media=await get_img(
+                SCHEDULE, caption=await get_schedule_caption()
+            ),
+            reply_markup=await get_days_btns(
+                user_id=callback_data.user_id,
+                level=callback_data.level,
+                user_schedule=user_schedule.copy(),
+            ),
+        )
+        await state.update_data(user_schedule=sorted(user_schedule))
+        await state.set_state(ProfileStates.schedule)
+    except Exception as error:
+        logger(error)
+        await callback.answer(text=CRITICAL_ERROR, show_alert=True)
 
 
 @profile_router.callback_query(
@@ -170,25 +177,41 @@ async def procce_set_schedule(
             logger("CONFIRM_SCHEDULE ERROR")
             await callback.answer(text=CRITICAL_ERROR, show_alert=True)
     else:
-        date = datetime.strptime(callback_data.day, DATE_FORMAT).date()
-        if date in user_schedule:
-            user_schedule.remove(date)
-        else:
-            user_schedule.append(
-                datetime.strptime(callback_data.day, DATE_FORMAT).date()
+        if callback_data.day:
+            date = datetime.strptime(callback_data.day, DATE_FORMAT).date()
+            if date in user_schedule:
+                user_schedule.remove(date)
+            else:
+                user_schedule.append(
+                    datetime.strptime(callback_data.day, DATE_FORMAT).date()
+                )
+                user_schedule = sorted(user_schedule)
+                logger(user_schedule)
+            await callback.message.edit_media(
+                media=await get_img(
+                    SCHEDULE, caption=await get_schedule_caption()
+                ),
+                reply_markup=await get_days_btns(
+                    user_id=callback_data.user_id,
+                    level=callback_data.level,
+                    user_schedule=user_schedule.copy(),
+                ),
             )
-            user_schedule = sorted(user_schedule)
-            logger(user_schedule)
-        await callback.message.edit_media(
-            media=await get_img(
-                SCHEDULE, caption=await get_schedule_caption()
-            ),
-            reply_markup=await get_days_btns(
-                user_id=callback_data.user_id,
-                level=callback_data.level,
-                user_schedule=user_schedule.copy(),
-            ),
+        else:
+            await callback.answer()
+
+
+@profile_router.callback_query(
+    ProfileStates.schedule,
+    MenuCallBack.filter(
+        F.menu_name.in_(
+            NONE_MENU,
         )
-    # state_data = await state.get_data()
-    # logger(state_data, callback_data)
-    # await callback.answer()
+    ),
+)
+async def proccess_empty_btn(
+    callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
+) -> None:
+    """Меню графика, отдаем клавиатуру с календарем."""
+    await callback.answer(text="Это пустые кнопки, не балуйся!")
+    await procce_set_schedule(callback, callback_data, state)

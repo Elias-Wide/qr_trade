@@ -3,11 +3,15 @@
 """
 
 import os
-
-from aiogram.types import FSInputFile, InputMediaPhoto
-
+from io import BytesIO
+from PIL import Image
+from aiogram.types import BufferedInputFile, FSInputFile, InputMediaPhoto
+import qrcode
 from app.bot.constants import FMT_JPG, NO_IMAGE
+from app.core.logging import logger
 from app.core.config import STATIC_DIR
+from app.core.utils import decode_data, is_file_in_dir
+from app.sale_codes.dao import Sale_CodesDAO
 
 BANNERS_DIR = STATIC_DIR / "banners"
 
@@ -39,12 +43,25 @@ async def get_file(
     return FSInputFile(file_dir.joinpath(NO_IMAGE + FMT_JPG))
 
 
-async def is_file_in_dir(name, path):
-    """Проверить, если ли необходимое изображение в директории."""
-    for root, dirs, files in os.walk(path):
-        if name in files:
-            return True
-        return False
+async def get_qr_code_image(client_id: str, encoded_value: str):
+    value = await decode_data(encoded_value)
+    qr_data = "_".join((client_id, value))
+    logger(qr_data)
+    qr_img = qrcode.make(qr_data)
+    buffer = BytesIO()
+    qr_img.save(buffer)
+    buffer.seek(0)
+    return BufferedInputFile(buffer.getvalue(), filename=f"QR {client_id}")
+    return InputMediaPhoto(media=img, caption=captions.confirm_trade)
+
+
+# file_name = await download_file(message.photo[-1], QR_DIR)
+# file = await bot.get_file(message.photo[-1].file_id)
+# # image = BytesIO(file)
+# img = Image.open(BytesIO(file))
+# output = BytesIO()
+# image.save(output, format="JPEG", optimize=True, quality=Quality)
+# image.seek(0)
 
 
 class Captions:
@@ -76,10 +93,11 @@ class Captions:
         "обратитесь к админу."
     )
     point_search = (
-        "Введите адрес пункта (можно частично) для его поиска, "
-        "либо id пункта.\n\n"
+        "Введите адрес пункта (можно частично, но не меньше 5 букв) для его "
+        "поиска, либо id пункта.\n\n"
         "Вы можете поочередно добавить до 7 пунктов."
     )
+    qr_confirm = "✅ Заказ проведен ✅"
     qr_today = "Загруженные QR-коды"
     add_qr = (
         "Загрузите скриншот вашего кода, обрезав его, как показано выше.\n\n"

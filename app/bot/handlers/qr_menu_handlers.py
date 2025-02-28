@@ -14,15 +14,16 @@ from app.bot.constants import (
     SUCCES_DNWLD,
     SUCCES_UPDATE,
     SUCCESS_DELETE,
+    SUCCESS_SENDING,
 )
 
 from app.bot.handlers.callbacks.qr_menu import (
     get_reply_for_trade,
     get_reply_no_trade,
 )
-from app.bot.keyboards.main_menu_kb import get_btns, get_image_and_kb
+from app.bot.keyboards.main_kb_builder import get_btns, get_image_and_kb
 from app.bot.keyboards.qr_menu_kb import get_point_list_kb
-from app.bot.utils import delete_file, get_point_list_caption
+from app.bot.utils import get_point_list_caption
 from app.core.config import QR_DIR
 from app.bot.filters import (
     ImgValidationFilter,
@@ -65,10 +66,7 @@ async def process_agreed_delete(
     callback: CallbackQuery, callback_data: MenuCallBack
 ):
     deleted_obj = await Sale_CodesDAO.delete_object(id=callback_data.code_id)
-    # await delete_file(QR_DIR, deleted_obj.file_name)
-    print(deleted_obj.file_name)
     if deleted_obj:
-        await delete_file(QR_DIR, deleted_obj.file_name)
         text = SUCCESS_DELETE
     else:
         text = DELETE_ERROR
@@ -107,35 +105,21 @@ async def process_add_code(
 async def process_download_ok(
     message: Message,
     state: FSMContext,
-    file_name: str | None,
-    value: str | None,
+    client_id: str | None,
+    encode_value: str | None,
 ) -> None:
     """Обработки загрузки валидного изображения."""
     user = await UsersDAO.get_by_attribute("telegram_id", message.from_user.id)
     answer = await Sale_CodesDAO.create_code_or_update(
-        user.id, file_name, value
+        user.id, client_id, encode_value
     )
     if answer == "create":
-        message_text = SUCCES_DNWLD.format(value)
+        message_text = SUCCES_DNWLD.format(client_id)
     elif answer == "update":
-        message_text = SUCCES_UPDATE.format(value)
+        message_text = SUCCES_UPDATE.format(client_id)
     await message.answer(text=message_text)
     await process_start_command(message, state)
     await state.clear()
-    # try:
-    #     print("TRY")
-    #     user = await UsersDAO.get_by_attribute("telegram_id", message.from_user.id)
-    #     answer = await Sale_CodesDAO.create_code_or_update(user.id, file_name, value)
-    #     if answer == "create":
-    #         message_text = SUCCES_DNWLD
-    #     elif answer == "update":
-    #         message_text = SUCCES_UPDATE
-    # except:
-    #     os.remove(QR_DIR / (file_name + FMT_JPG))
-    #     message_text = DWNLD_ERROR
-    # await message.answer(text=message_text)
-    # await process_start_command(message, state)
-    # state.clear
 
 
 @code_router.message(MenuQRStates.add_qr)
@@ -185,32 +169,46 @@ async def process_check_qr(
     что трейдов в офис нет.
     """
     # ДОБАВИТЬ ОБРАБОТКУ ОШИБКИ ОТСУТСТВИЯ КАРТИНКИ КОДА
+    user = await UsersDAO.get_by_id(callback_data.user_id)
+    callback_data.level = 2
     try:
         logger(callback_data)
         if callback_data.trade_id:
             await TradesDAO.delete_object(id=callback_data.trade_id)
             callback_data.trade_id = None
-            user = await UsersDAO.get_by_id(callback_data.user_id)
             trade = await TradesDAO.get_trade_by_point(user.point_id)
             if trade:
                 await callback.answer(text=NEXT_QR, show_alert=True)
+                await callback.message.edit_caption(
+                    caption=captions.qr_confirm
+                )
                 media, reply_markup = await get_reply_for_trade(
                     callback_data, trade
                 )
             else:
                 media, reply_markup = await get_reply_no_trade(callback_data)
         else:
-            trade = await TradesDAO.get_trade_by_point(callback_data.point_id)
+            trade = await TradesDAO.get_trade_by_point(user.point_id)
+            logger(trade)
             if trade:
                 media, reply_markup = await get_reply_for_trade(
                     callback_data, trade
                 )
+                callback_action = "answer"
             else:
                 media, reply_markup = await get_reply_no_trade(callback_data)
-        await callback.message.edit_media(
-            media=media, reply_markup=reply_markup
-        )
-    except:
+        try:
+            await callback.message.answer_photo(
+                photo=media,
+                caption=captions.confirm_trade,
+                reply_markup=reply_markup,
+            )
+        except:
+            await callback.message.edit_media(
+                media=media, reply_markup=reply_markup
+            )
+    except Exception as error:
+        logger(error)
         await callback.answer(text=CRITICAL_ERROR, show_alert=True)
 
 
@@ -294,16 +292,12 @@ async def procces_add_point(
     MenuQRStates.point_search, F.content_type == ContentType.TEXT
 )
 async def process_point_search(message: Message, state: FSMContext):
-    # gif = await message.answer_animation(
-    #     animation=await get_file(filename=choice(SEARCH_GIFS), f_type=FMT_GIF),
-    #     caption=captions.search,
-    # )
-    print(message.text)
     logger()
     state_data = await state.get_data()
+    logger(state_data)
     if message.text.isdigit():
         point_filter = PointExistFilter()
-        point = await point_filter(message)
+        point = (await point_filter(message))["model_obj"]
         if not point:
             await message.answer_photo(
                 photo=await get_file(NOT_FOUND), caption=captions.not_found
@@ -361,7 +355,6 @@ async def process_confirm_send(
     """ОБработка подтверждения отправки кодов на пункты."""
     state_data = await state.get_data()
     logger(state_data)
-    # point_data = dict()
     for point in state_data["points"].values():
         await TradesDAO.create(
             {
@@ -376,6 +369,7 @@ async def process_confirm_send(
         QR_MENU,
         1,
     )
+    await callback.answer(text=SUCCESS_SENDING)
     await get_menucallback_data(callback, callback_data)
 
 

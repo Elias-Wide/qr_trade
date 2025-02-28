@@ -10,7 +10,7 @@ import uvicorn
 from contextlib import asynccontextmanager
 from app.bot.create_bot import bot, dp, stop_bot, start_bot
 from app.bot.handlers.routers import main_router
-from app.bot.keyboards.main_menu_kb import set_main_menu
+from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.core.config import settings
 from aiogram.types import Update
 from fastapi import FastAPI, Request

@@ -53,6 +53,7 @@ async def get_btns(
     previous_menu: str = MAIN_MENU,
     code_id: int | None = None,
     trade_id: int | None = None,
+    need_back_btn: bool = True,
 ) -> list[InlineKeyboardButton]:
     """
     Создание клавиатуры.
@@ -79,7 +80,7 @@ async def get_btns(
             )
         if menu_name == FAQ_QR:
             btns.append(admin_btn)
-    if level > 0:
+    if need_back_btn:
         btns.append(
             InlineKeyboardButton(
                 text=BACK_BTN,
@@ -113,6 +114,7 @@ async def get_image_and_kb(
     caption: str | None = None,
     previous_menu: str = MAIN_MENU,
     size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
+    need_back_btn: bool = True,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """
     Получить изображение, описание и клавитуру для меню.
@@ -136,5 +138,6 @@ async def get_image_and_kb(
             trade_id=trade_id,
             code_id=code_id,
             previous_menu=previous_menu,
+            need_back_btn=need_back_btn,
         ),
     )

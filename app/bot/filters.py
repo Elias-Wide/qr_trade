@@ -52,7 +52,7 @@ class UserExistFilter(BaseFilter):
             attr_name=self.attr_name, attr_value=attr_value
         )
         if obj:
-            return {self.attr_name: attr_value}
+            return {self.attr_name: attr_value, "model_obj": obj}
         return False
 
 
@@ -99,6 +99,7 @@ class ImgValidationFilter(BaseFilter):
 
     async def __call__(self, message: Message) -> dict[str] | bool:
         validated_data: dict[str] = await validate_photo(message)
+        logger(validated_data)
         if all(validated_data.values()):
             return validated_data
         return False

@@ -16,14 +16,15 @@ CHECK_QR: str = "check_qr"
 CONFIRM_SALE: str = "confirm_sale"
 BACK_BTN: str = "Назад ◀️"
 DELETE_QR: str = "del_qr"
-DELETE_QR_BTN = "QR{} от {}❌"
+DELETE_QR_BTN = "QR{} ❌"
 FAQ_MENU: str = "faq"
 FAQ_PROFILE: str = "faq_profile"
 FAQ_QR: str = "faq_qr"
+NONE_MENU = "none"
 NOTIFICATIONS: str = "notifications"
 POINT_SEARCH: str = "point_search"
 PROFILE: str = "profile"
-QR_INFO_BTN: str = "QR{} от {}❌"
+QR_INFO_BTN: str = "QR{}❌"
 QR_MENU: str = "qr_menu"
 SET_SCHEDULE: str = "set_schedule"
 SEND_QR: str = "qr_send"
@@ -34,6 +35,10 @@ CONFIRM_SCHEDULE: str = "confirm_schedule"
 CONFIRM_SCHEDULE_BTN: tuple[str] = (CONFIRM_SCHEDULE, "Сохранить график 📝")
 CONFIRM_SEND_BTNS: tuple[tuple[str]] = ((CONFIRM_SEND, "📦 Отправить 📦"),)
 CONFIRM_BTNS: tuple[tuple[str]] = ((CHECK_QR, "✅ Заказ закрыт✅"),)
+CALENDAR_BTNS: tuple[tuple[str]] = tuple(
+    (NONE_MENU, text) for text in ("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")
+)
+
 
 FAQ_MENU_BTNS: tuple[tuple[str]] = (
     (FAQ_PROFILE, "Профиль"),
