@@ -46,10 +46,10 @@ async def get_days_btns(
     *,
     user_id: int,
     level: int,
+    user_schedule: list[date],
     menu_name: str = SCHEDULE,
     size: int = CALENDAR_KEYBOARD_SIZE,
     previous_menu: str = PROFILE,
-    user_schedule: list[date] = []
 ) -> list[InlineKeyboardButton]:
     """
     Создание клавиатуры календаря.

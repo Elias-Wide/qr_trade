@@ -131,10 +131,6 @@ async def set_user_schedule(
         user_id=callback_data.user_id
     )
     logger(user_schedule)
-    user_schedule = [
-        datetime.strptime(date_str, DATE_FORMAT).date()
-        for date_str in user_schedule[0]
-    ]
     await callback.message.edit_media(
         media=await get_img(SCHEDULE, caption=await get_schedule_caption()),
         reply_markup=await get_days_btns(
@@ -155,17 +151,15 @@ async def procce_set_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ):
     """Обработка нажатий кнопок календаря."""
+    user_schedule = (await state.get_data())["user_schedule"]
     if callback_data.menu_name == CONFIRM_SCHEDULE:
+        logger(user_schedule)
         try:
-            logger()
-            user_schedule = (await state.get_data())["user_schedule"]
-            user_schedule_list_date_str = [
-                date.strftime(DATE_FORMAT) for date in user_schedule
-            ]
-            await SchedulesDAO.set_schedule(
-                user_id=callback_data.user_id,
-                date_list=user_schedule_list_date_str,
-            )
+            if user_schedule:
+                await SchedulesDAO.set_schedule(
+                    user_id=callback_data.user_id,
+                    date_list=user_schedule,
+                )
             await state.clear()
             await callback.answer(
                 text="График успешно сохранен. Не забудьте включить уведомления по графику."
@@ -176,7 +170,6 @@ async def procce_set_schedule(
             logger("CONFIRM_SCHEDULE ERROR")
             await callback.answer(text=CRITICAL_ERROR, show_alert=True)
     else:
-        user_schedule = (await state.get_data())["user_schedule"]
         date = datetime.strptime(callback_data.day, DATE_FORMAT).date()
         if date in user_schedule:
             user_schedule.remove(date)
@@ -185,6 +178,7 @@ async def procce_set_schedule(
                 datetime.strptime(callback_data.day, DATE_FORMAT).date()
             )
             user_schedule = sorted(user_schedule)
+            logger(user_schedule)
         await callback.message.edit_media(
             media=await get_img(
                 SCHEDULE, caption=await get_schedule_caption()

@@ -15,3 +15,8 @@ TIMEZONE_RU = {
     11: "Asia/Magadan",
     12: "Asia/Kamchatka",
 }
+
+SCHEDULE_JOB_HOUR = ", ".join([str(x) for x in range(0, 24)])
+NOTIFICATION_TIME = "11, 14, 17, 20"
+CLEAR_DB_TIME = "3"
+CLEAR_MONTH_SCHEDULE_TIME = "3"
