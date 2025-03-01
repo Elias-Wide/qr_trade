@@ -34,10 +34,12 @@ from app.bot.handlers.states import ProfileStates
 from app.bot.keyboards.buttons import (
     CHANGE_POINT,
     CONFIRM_SCHEDULE,
+    EMPTY_BTN,
+    NONE_MENU,
     PROFILE,
     SCHEDULE,
 )
-from app.bot.keyboards.main_menu_kb import get_btns
+from app.bot.keyboards.main_kb_builder import get_btns
 from app.points.models import Points
 from app.schedules.dao import SchedulesDAO
 from app.users.dao import UsersDAO
@@ -50,10 +52,10 @@ profile_router.message.filter(UserExistFilter())
 @profile_router.callback_query(
     MenuCallBack.filter(F.menu_name.in_(CHANGE_POINT))
 )
-async def profile_menu(
+async def change_user_point(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
-    """Обработка нажатия меню профиля."""
+    """Обработка нажатия кнопки смены пункта в профиле."""
     await state.set_state(ProfileStates.change_point)
     await callback.message.edit_caption(
         caption=TYPE_POINT,
@@ -67,9 +69,10 @@ async def profile_menu(
 @profile_router.message(
     ProfileStates.change_point, F.text.isdigit(), PointExistFilter()
 )
-async def change_user_point(
+async def process_change_user_point(
     message: Message, state: FSMContext, telegram_id: int, point_id: Points
 ) -> None:
+    """Смена пункта пользователя в меню профиля."""
     logger()
     user = await UsersDAO.get_by_attribute(
         attr_name="telegram_id", attr_value=telegram_id
@@ -104,8 +107,7 @@ async def handle_point_id_not_in_db(message: Message) -> None:
 async def set_notice_type(
     callback: CallbackQuery, callback_data: MenuCallBack
 ) -> None:
-    """Обработка нажатие кнопки для смены режима увеодмлений."""
-    # await NotificationsDAO.set_nonification_type(user_id=callback_data.user_id, notice_type=callback_data.menu_name)
+    """Обработка нажатие кнопки для смены режима уведомлений."""
     logger(callback_data)
     await SchedulesDAO.set_nonification_type(
         callback_data.user_id, callback_data.menu_name
@@ -127,64 +129,11 @@ async def set_user_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
     """Меню графика, отдаем клавиатуру с календарем."""
-    user_schedule = await SchedulesDAO.get_user_schedule(
-        user_id=callback_data.user_id
-    )
-    logger(user_schedule)
-    user_schedule = [
-        datetime.strptime(date_str, DATE_FORMAT).date()
-        for date_str in user_schedule[0]
-    ]
-    await callback.message.edit_media(
-        media=await get_img(SCHEDULE, caption=await get_schedule_caption()),
-        reply_markup=await get_days_btns(
-            user_id=callback_data.user_id,
-            level=callback_data.level,
-            user_schedule=user_schedule.copy(),
-        ),
-    )
-    await state.update_data(user_schedule=sorted(user_schedule))
-    await state.set_state(ProfileStates.schedule)
-
-
-@profile_router.callback_query(
-    ProfileStates.schedule,
-    MenuCallBack.filter(F.menu_name.in_((SCHEDULE, CONFIRM_SCHEDULE))),
-)
-async def procce_set_schedule(
-    callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
-):
-    """Обработка нажатий кнопок календаря."""
-    if callback_data.menu_name == CONFIRM_SCHEDULE:
-        try:
-            logger()
-            user_schedule = (await state.get_data())["user_schedule"]
-            user_schedule_list_date_str = [
-                date.strftime(DATE_FORMAT) for date in user_schedule
-            ]
-            await SchedulesDAO.set_schedule(
-                user_id=callback_data.user_id,
-                date_list=user_schedule_list_date_str,
-            )
-            await state.clear()
-            await callback.answer(
-                text="График успешно сохранен. Не забудьте включить уведомления по графику."
-            )
-            callback_data.level, callback_data.menu_name = 1, PROFILE
-            await get_menucallback_data(callback, callback_data)
-        except:
-            logger("CONFIRM_SCHEDULE ERROR")
-            await callback.answer(text=CRITICAL_ERROR, show_alert=True)
-    else:
-        user_schedule = (await state.get_data())["user_schedule"]
-        date = datetime.strptime(callback_data.day, DATE_FORMAT).date()
-        if date in user_schedule:
-            user_schedule.remove(date)
-        else:
-            user_schedule.append(
-                datetime.strptime(callback_data.day, DATE_FORMAT).date()
-            )
-            user_schedule = sorted(user_schedule)
+    try:
+        user_schedule = await SchedulesDAO.get_user_schedule(
+            user_id=callback_data.user_id
+        )
+        logger(user_schedule)
         await callback.message.edit_media(
             media=await get_img(
                 SCHEDULE, caption=await get_schedule_caption()
@@ -195,6 +144,75 @@ async def procce_set_schedule(
                 user_schedule=user_schedule.copy(),
             ),
         )
-    # state_data = await state.get_data()
-    # logger(state_data, callback_data)
-    # await callback.answer()
+        await state.update_data(user_schedule=sorted(user_schedule))
+        await state.set_state(ProfileStates.schedule)
+    except Exception as error:
+        logger(error)
+        await callback.answer(text=CRITICAL_ERROR, show_alert=True)
+
+
+@profile_router.callback_query(
+    ProfileStates.schedule,
+    MenuCallBack.filter(F.menu_name.in_((SCHEDULE, CONFIRM_SCHEDULE))),
+)
+async def procce_set_schedule(
+    callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
+):
+    """Обработка нажатий кнопок календаря."""
+    user_schedule = (await state.get_data())["user_schedule"]
+    if callback_data.menu_name == CONFIRM_SCHEDULE:
+        logger(user_schedule)
+        try:
+            if user_schedule:
+                await SchedulesDAO.set_schedule(
+                    user_id=callback_data.user_id,
+                    date_list=user_schedule,
+                )
+            await state.clear()
+            await callback.answer(
+                text="График успешно сохранен. Не забудьте включить уведомления по графику."
+            )
+            callback_data.level, callback_data.menu_name = 1, PROFILE
+            await get_menucallback_data(callback, callback_data)
+        except:
+            logger("CONFIRM_SCHEDULE ERROR")
+            await callback.answer(text=CRITICAL_ERROR, show_alert=True)
+    else:
+        if callback_data.day:
+            date = datetime.strptime(callback_data.day, DATE_FORMAT).date()
+            if date in user_schedule:
+                user_schedule.remove(date)
+            else:
+                user_schedule.append(
+                    datetime.strptime(callback_data.day, DATE_FORMAT).date()
+                )
+                user_schedule = sorted(user_schedule)
+                logger(user_schedule)
+            await callback.message.edit_media(
+                media=await get_img(
+                    SCHEDULE, caption=await get_schedule_caption()
+                ),
+                reply_markup=await get_days_btns(
+                    user_id=callback_data.user_id,
+                    level=callback_data.level,
+                    user_schedule=user_schedule.copy(),
+                ),
+            )
+        else:
+            await callback.answer()
+
+
+@profile_router.callback_query(
+    ProfileStates.schedule,
+    MenuCallBack.filter(
+        F.menu_name.in_(
+            NONE_MENU,
+        )
+    ),
+)
+async def proccess_empty_btn(
+    callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
+) -> None:
+    """Обработка нажатий пустых кнопок с днями недели в календаре."""
+    await callback.answer(text=EMPTY_BTN)
+    await procce_set_schedule(callback, callback_data, state)

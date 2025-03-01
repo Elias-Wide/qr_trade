@@ -6,18 +6,18 @@
 """
 
 import logging
-from fastapi_sqlalchemy import DBSessionMiddleware
 import uvicorn
 from contextlib import asynccontextmanager
 from app.bot.create_bot import bot, dp, stop_bot, start_bot
-from app.bot.handlers.registration_handlers import registration_router
 from app.bot.handlers.routers import main_router
-from app.bot.keyboards.main_menu_kb import set_main_menu
+from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.core.config import settings
 from aiogram.types import Update
 from fastapi import FastAPI, Request
 
-from app.core.database import async_session_maker
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+from app.users.constants import SCHEDULE_JOB_HOUR
 
 
 WEBHOOK_PATH = f"/bot/{settings.telegram.bot_token.get_secret_value()}"
@@ -27,6 +27,19 @@ WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logging.info("Starting bot setup...")
+    # scheduler = AsyncIOScheduler(timezone="UTC")
+    # scheduler.start()
+    # scheduler.add_job(
+    #     send_notifications,
+    #     trigger='cron',
+    #     hour=SCHEDULE_JOB_HOUR,
+    # )
+    # scheduler.add_job(
+    #     send_notifications,
+    #     trigger='cron',
+    #     hour=SCHEDULE_JOB_HOUR,
+    # )
+
     dp.include_router(main_router)
     await start_bot()
     await bot.set_webhook(

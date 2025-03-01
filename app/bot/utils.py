@@ -4,9 +4,12 @@ import qrtools
 import re
 import random
 import string
+from io import BytesIO
+from PIL import Image
 from pyzbar.pyzbar import decode
 from PIL import Image
 from aiogram.types import Message
+import segno
 from app.bot.constants import (
     FMT_JPG,
     MONTH,
@@ -17,6 +20,8 @@ from app.bot.create_bot import bot
 from app.bot.keyboards.buttons import NOTIFICATIONS_BTNS
 from app.core.config import QR_DIR
 from app.core.logging import logger
+from app.core.utils import encode_data
+from app.sale_codes.dao import Sale_CodesDAO
 from app.schedules.dao import SchedulesDAO
 from app.points.models import Points
 from app.users.dao import UsersDAO
@@ -33,15 +38,6 @@ async def generate_filename() -> str:
         for i in range(10)
     ]
     return "".join(filename)
-
-
-# async def create_qr(data: str, file_name: str):
-#     """Создать QR-код из строки и сохранить в папку статики."""
-#     qrcode = segno.make_qr(data)
-#     qrcode.save(
-#         STATIC_DIR / "trades" / file_name,
-#         scale=10,
-#     )
 
 
 async def decode_qr(filepath: str) -> str:
@@ -103,19 +99,17 @@ async def validate_photo(message: Message) -> bool:
     Если данные не проходят проверку - файл удаляется.
     Функция возвращает словарь со значениями file_name и value.
     """
-    result_data: dict[str] = {
-        "file_name": None,
-        "value": None,
-    }
-    file_name = await download_file(message.photo[-1], QR_DIR)
-    if file_name:
-        result_data["file_name"] = file_name
-        value = await decode_qr(QR_DIR / (file_name + FMT_JPG))
-        if value:
-            if re.fullmatch(REGEX_QR_PATTERN, value):
-                result_data["value"] = value.split("_")[0]
-            else:
-                await delete_file(QR_DIR, file_name)
+    result_data: dict[str] = {"client_id": None, "encode_value": None}
+    file_from_bot = await bot.get_file(message.photo[-1].file_id)
+    buffer = BytesIO()
+    img = await bot.download_file(file_from_bot.file_path, buffer)
+    decoded_qr = await decode_qr(img)
+    logger(decoded_qr)
+    if re.fullmatch(REGEX_QR_PATTERN, decoded_qr):
+        client_id, value = decoded_qr.split("_")
+        encode_value = await encode_data(value)
+        result_data["client_id"] = client_id
+        result_data["encode_value"] = encode_value
     logger(result_data)
     return result_data
 
@@ -174,9 +168,15 @@ async def get_notice_type(user_id: int) -> str:
 async def get_schedule_caption() -> str:
     now = datetime.now()
     return (
-        f"<s>{MONTH[now.month-1]}</s>                                   "
-        f"<b>{MONTH[now.month]}</b>                                     "
+        f"<s>{MONTH[now.month-1]}</s>            "
+        f"<b>{MONTH[now.month]}</b>            "
         f"<s>{MONTH[now.month + 1]}</s>\n\n"
-        f"   ПН              ВТ             СР               ЧТ"
-        "               ПТ            СБ               ВС"
     )
+
+
+async def delete_file(path: str):
+    """Удалить файл в заданной директории"""
+    try:
+        os.remove(path)
+    except:
+        logger("Ошибка удаления файла")

@@ -1,3 +1,5 @@
+"""Модуль по созданию клавиатур в меню."""
+
 from typing import TypeAlias
 
 from aiogram.types import (
@@ -53,10 +55,11 @@ async def get_btns(
     previous_menu: str = MAIN_MENU,
     code_id: int | None = None,
     trade_id: int | None = None,
+    need_back_btn: bool = True,
 ) -> list[InlineKeyboardButton]:
     """
     Создание клавиатуры.
-    Текст кнопок и колбэк дата берется из констант.
+    Текст кнопок и колбэк дата берется из констант модуля buttons.
     Если btns_data нет - создается только кнопка Назад.
     """
     kb_builder = InlineKeyboardBuilder()
@@ -79,7 +82,7 @@ async def get_btns(
             )
         if menu_name == FAQ_QR:
             btns.append(admin_btn)
-    if level > 0:
+    if need_back_btn:
         btns.append(
             InlineKeyboardButton(
                 text=BACK_BTN,
@@ -113,10 +116,11 @@ async def get_image_and_kb(
     caption: str | None = None,
     previous_menu: str = MAIN_MENU,
     size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
+    need_back_btn: bool = True,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """
-    Получить изображение, описание и клавитуру для меню.
-    Передаются имя меню, описание (опционально) и данные для кнопок.
+    Агрегирующая функция создания клавиатуры.
+    Возвращаеь изображение с описанием и клавитуру для меню.
     """
     image = await get_img(menu_name=menu_name, caption=caption)
     if menu_name in (DELETE_QR, SEND_QR):
@@ -136,5 +140,6 @@ async def get_image_and_kb(
             trade_id=trade_id,
             code_id=code_id,
             previous_menu=previous_menu,
+            need_back_btn=need_back_btn,
         ),
     )

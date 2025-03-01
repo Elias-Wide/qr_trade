@@ -1,10 +1,14 @@
-"""Модуль главного и других меню."""
+"""
+Модуль меню.
+Содержит функции, которые агрегируют контент в
+зависимости от названия и уровня меню.
+"""
 
 from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
 from app.bot.handlers.callbacks.faq_menu import get_faq_menu
 from app.bot.handlers.callbacks.qr_menu import get_qr_menu
-from app.bot.keyboards.main_menu_kb import get_image_and_kb
+from app.bot.keyboards.main_kb_builder import get_image_and_kb
 from app.bot.constants import MAIN_MENU
 from app.bot.handlers.callbacks.profile_menu import get_profile_menu
 from app.bot.keyboards.buttons import (
@@ -33,6 +37,7 @@ async def get_main_menu(
         point_id=point_id,
         btns_data=MAIN_MENU_BUTTONS,
         level=level,
+        need_back_btn=False,
     )
 
 

@@ -1,13 +1,8 @@
 from datetime import datetime
 from sqlalchemy import and_, insert, select
-from app.core.config import QR_DIR
 from app.dao.base import BaseDAO, ModelType
 from app.core.database import async_session_maker
 from app.sale_codes.models import Sale_Codes
-from app.bot.utils import delete_file, generate_filename
-from app.trades.models import Trades
-from app.users.constants import MOSCOW_TZ, TIMEZONE_RU
-from app.users.models import Users
 
 
 class Sale_CodesDAO(BaseDAO):
@@ -17,8 +12,8 @@ class Sale_CodesDAO(BaseDAO):
 
     @classmethod
     async def create_code_or_update(
-        cls, user_id: int, file_name: str, value: str
-    ):
+        cls, user_id: int, client_id: str, encoded_value: str
+    ) -> str:
         """
         Создать или обновить объект кода.
         Передаются данные для создания объекта,
@@ -29,24 +24,24 @@ class Sale_CodesDAO(BaseDAO):
         async with async_session_maker() as session:
             user_code = await session.scalars(
                 select(cls.model).where(
-                    cls.model.user_id == user_id, cls.model.value == value
+                    cls.model.user_id == user_id,
+                    cls.model.client_id == client_id,
                 )
             )
             user_code = user_code.first()
             if not user_code:
                 query = insert(cls.model).values(
                     user_id=user_id,
-                    file_name=file_name,
+                    client_id=client_id,
                     created_at=datetime.now().date(),
-                    value=value,
+                    encoded_value=encoded_value,
                 )
                 await session.execute(query)
                 await session.commit()
                 answer = "create"
             else:
-                await delete_file(QR_DIR, user_code.file_name)
-                user_code.file_name = file_name
-                user_code.value = value
+                user_code.client_id = client_id
+                user_code.encoded_value = encoded_value
                 user_code.created_at = datetime.now().date()
                 await session.commit()
                 await session.refresh(user_code)

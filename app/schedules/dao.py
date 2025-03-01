@@ -35,16 +35,20 @@ class SchedulesDAO(BaseDAO):
             await session.refresh(obj)
 
     @classmethod
-    async def get_user_schedule(cls, user_id: int) -> list[str]:
+    async def get_user_schedule(cls, user_id: int) -> list[date] | list:
+        """
+        Получить график пользователя.
+        Возвращает атрибут schedule модели Schedules,
+        который содержит список рабочих дней пользователя.
+        """
         async with async_session_maker() as session:
             list_date = await session.scalars(
                 select(cls.model.schedule).where(cls.model.user_id == user_id)
             )
-            logger(list_date)
-            return list_date.all()
+            return list_date.first()
 
     @classmethod
-    async def set_schedule(cls, user_id: int, date_list: list[str]) -> bool:
+    async def set_schedule(cls, user_id: int, date_list: list[date]) -> bool:
         async with async_session_maker() as session:
             try:
                 user_schedule = await session.scalars(
@@ -53,7 +57,7 @@ class SchedulesDAO(BaseDAO):
                 user_schedule = user_schedule.first()
                 logger(user_schedule, date_list)
                 if not user_schedule:
-                    SchedulesDAO.create(
+                    await SchedulesDAO.create(
                         {"user_id": user_id, "schedule": date_list}
                     )
                 else:

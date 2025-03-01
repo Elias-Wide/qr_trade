@@ -45,6 +45,7 @@ async def get_qr_list_kb(
     previous_menu: str = QR_MENU,
     code_id: int | None = None,
     trade_id: int | None = None,
+    need_back_btn: bool = True,
 ) -> list[InlineKeyboardButton]:
     """
     Создание клавиатуры списка кодов пользователя.
@@ -62,11 +63,7 @@ async def get_qr_list_kb(
     for code in user_codes:
         created_at = code.created_at
         created_at = f"{created_at.day} {MONTH[created_at.month]}"
-        text = QR_BTN_TYPE[menu_name].format(code.value, created_at)
-        if code.file_name == DELETED:
-            if menu_name == SEND_QR:
-                continue
-            text = "⚠️" + text + "⚠️"
+        text = QR_BTN_TYPE[menu_name].format(code.client_id)
         btns.append(
             InlineKeyboardButton(
                 text=text,

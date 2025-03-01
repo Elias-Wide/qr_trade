@@ -8,9 +8,13 @@ class MenuCallBack(CallbackData, prefix="menu"):
     """
     Фабрика колбэков.
 
-    level :: атрибут указывающий на глубину(шаг) меню.
-
-    menu_name :: название меню.
+    level :: атрибут указывающий на глубину(шаг) меню
+    menu_name :: название меню
+    user_id :: id пользователя в бд
+    point_id :: id пункта пользователя (не pk в бд)
+    code_id :: id(pk) объекта Sale_Codes
+    trade :: id(pk) объекта Trades
+    day :: дата, переданная в строковом формате
     """
 
     level: int = 0

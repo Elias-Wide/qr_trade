@@ -2,12 +2,13 @@
 Модуль для работы с изображениями и описаниям к ним.
 """
 
-import os
-
 from aiogram.types import FSInputFile, InputMediaPhoto
-
-from app.bot.constants import FMT_JPG, NO_IMAGE
-from app.core.config import STATIC_DIR
+import segno
+from app.bot.constants import FMT_JPG, FMT_PNG, NO_IMAGE
+from app.bot.utils import generate_filename
+from app.core.logging import logger
+from app.core.config import QR_DIR, STATIC_DIR
+from app.core.utils import decode_data, is_file_in_dir
 
 BANNERS_DIR = STATIC_DIR / "banners"
 
@@ -19,8 +20,8 @@ async def get_img(
     f_type: str = FMT_JPG,
 ) -> InputMediaPhoto:
     """
-    Получить изображение.
-    В функцию передаются имя меню, уровень меню и описание,
+    Получить изображение с описанием.
+    В функцию передаются имя меню и описание,
     если описания нет, то оно берется из класса Captions.
     Если нет необходимого изображения, то берется картинка 'no_image'.
     """
@@ -39,12 +40,24 @@ async def get_file(
     return FSInputFile(file_dir.joinpath(NO_IMAGE + FMT_JPG))
 
 
-async def is_file_in_dir(name, path):
-    """Проверить, если ли необходимое изображение в директории."""
-    for root, dirs, files in os.walk(path):
-        if name in files:
-            return True
-        return False
+async def get_qr_code_image(client_id: str, encoded_value: str):
+    """
+    Создать qr код.
+    Создать файл с изображением и сохраняет, в дальнейшем
+    он будет удален, после передачи в коллбэк.
+    Возвращает InputMediaPhoto c изображением и описанием.
+    """
+    value = await decode_data(encoded_value)
+    qr_data = "_".join((client_id, value))
+    logger(qr_data)
+    qr_img = segno.make_qr(qr_data)
+    file_name = QR_DIR / ((await generate_filename()) + FMT_PNG)
+    logger(file_name)
+    qr_img.save(file_name, scale=10)
+    mediaphoto = InputMediaPhoto(
+        media=FSInputFile(file_name), caption=captions.confirm_trade
+    )
+    return mediaphoto
 
 
 class Captions:
@@ -76,10 +89,11 @@ class Captions:
         "обратитесь к админу."
     )
     point_search = (
-        "Введите адрес пункта (можно частично) для его поиска, "
-        "либо id пункта.\n\n"
+        "Введите адрес пункта (можно частично, но не меньше 5 букв) для его "
+        "поиска, либо id пункта.\n\n"
         "Вы можете поочередно добавить до 7 пунктов."
     )
+    qr_confirm = "✅ Заказ проведен ✅"
     qr_today = "Загруженные QR-коды"
     add_qr = (
         "Загрузите скриншот вашего кода, обрезав его, как показано выше.\n\n"

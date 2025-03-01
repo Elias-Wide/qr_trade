@@ -1,4 +1,5 @@
-from sqlalchemy import insert, select
+import datetime
+from sqlalchemy import and_, insert, or_, select
 from sqlalchemy.orm import aliased
 
 from app.core.logging import logger
@@ -7,6 +8,7 @@ from app.core.database import async_session_maker
 from app.points.models import Points
 from app.sale_codes.models import Sale_Codes
 from app.schedules.models import Schedules
+from app.trades.models import Trades
 from app.users.models import Users
 
 
@@ -45,3 +47,36 @@ class UsersDAO(BaseDAO):
                     Users.telegram_id == telegram_id
                 )
             )
+
+    @classmethod
+    async def get_telegram_id():
+        """
+        Получить список id пользователей.
+        Возвращает список telegram id пользователей,
+        которые должны получить уведомление о наличие заказов.
+        У пользователя должны быть включены уведомления, либо уведомления
+        по графику(и установлен рабочий график).
+        """
+        async with async_session_maker() as session:
+            today = datetime.now()
+            today = today.strftime("%m.%d.%Y")
+            get_user = await session.execute(
+                select(
+                    Users.telegram_id,
+                )
+                .join(Users.schedule)
+                .join(Trades)
+                .where(
+                    and_(
+                        Users.point_id == Trades.point_id,
+                        or_(
+                            Users.notice_type == "always",
+                            and_(
+                                Users.schedule.notice_type == "by_schedule",
+                                Users.schedule.contains(today),
+                            ),
+                        ),
+                    ),
+                )
+            )
+            return get_user.all()
