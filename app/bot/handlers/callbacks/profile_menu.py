@@ -1,4 +1,4 @@
-from aiogram.types import FSInputFile, InlineKeyboardMarkup, InputMediaPhoto
+from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
 from app.bot.constants import MAIN_MENU
 from app.bot.keyboards.buttons import (
@@ -10,8 +10,6 @@ from app.bot.keyboards.buttons import (
 from app.bot.keyboards.main_kb_builder import get_image_and_kb
 from app.bot.utils import get_notice_type, get_user_data
 from app.core.logging import logger
-
-from app.bot.keyboards.banners import get_img
 
 
 async def get_profile_menu(

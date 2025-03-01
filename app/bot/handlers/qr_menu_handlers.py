@@ -3,7 +3,6 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, ContentType, Message
 
-from app.bot.handlers.callbacks.menu_processor import get_menu_content
 from app.bot.keyboards.banners import captions, get_file, get_img
 from app.bot.constants import (
     CRITICAL_ERROR,
@@ -44,8 +43,6 @@ from app.bot.keyboards.buttons import (
     ADD_QR,
     CANCEL,
     CHECK_QR,
-    CONFIRM_BTNS,
-    CONFIRM_SALE,
     CONFIRM_SEND,
     CONFIRM_SEND_BTNS,
     POINT_SEARCH,
@@ -65,6 +62,7 @@ code_router.message.filter(UserExistFilter())
 async def process_agreed_delete(
     callback: CallbackQuery, callback_data: MenuCallBack
 ):
+    """Обработка нажатий кнопок удаления Sale_Codes."""
     deleted_obj = await Sale_CodesDAO.delete_object(id=callback_data.code_id)
     if deleted_obj:
         text = SUCCESS_DELETE
@@ -86,7 +84,7 @@ async def process_agreed_delete(
 async def process_add_code(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ):
-
+    """Обработка нажатия кнопки НАЗАД в процессе загрузки кода."""
     media, reply_markup = await get_image_and_kb(
         menu_name=callback_data.menu_name,
         user_id=callback_data.user_id,
@@ -158,15 +156,15 @@ async def process_check_qr(
 ) -> None:
     """
     Хэндлер для check_qr меню.
-    Если в data передан trade_id - он удаляется, появляется алерт,
-    если trade_id нет - идет запрос в бд, который возвращает самый первый трейд
+    Если в callback_data передан trade_id - он удаляется, появляется алерт,
+    если trade_id нет - запрос в бд, который возвращает самый первый трейд
     в текущий офис(point), либо None.
-    Если трейда нет - в ответ сообщение об отсутствии их в офисе.
+    Если трейда нет - в ответ сообщение об отсутствии заказов на пункт.
     Если трейд есть - редактирует собщение - меняет картинку, а в коллбэк дата
     идет уже другой trade_id.
     Таким образом при нажатии кнопки ОК будет происходить постепенный
     перебор трейдов в заданный офис, когда они закончатся - сообщение,
-    что трейдов в офис нет.
+    что заказов на пункт пользователя нет.
     """
     user = await UsersDAO.get_by_id(callback_data.user_id)
     callback_data.level = 2
@@ -178,9 +176,6 @@ async def process_check_qr(
             trade = await TradesDAO.get_trade_by_point(user.point_id)
             if trade:
                 await callback.answer(text=NEXT_QR, show_alert=True)
-                # await callback.message.edit_caption(
-                #     caption=captions.qr_confirm
-                # )
                 media, reply_markup = await get_reply_for_trade(
                     callback_data, trade
                 )
@@ -213,9 +208,10 @@ async def process_check_qr(
     ),
     default_state,
 )
-async def find_office(
+async def process_find_office(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
+    """обраотка нажатия кнопки выбора кода, открытие меню поиска пункта."""
     logger()
     media, reply_markup = await get_image_and_kb(
         menu_name=POINT_SEARCH,
@@ -232,20 +228,6 @@ async def find_office(
     )
 
 
-# @code_router.callback_query(
-#     MenuQRStates.point_search,
-#     MenuCallBack.filter(
-#         F.menu_name.in_(
-#             POINT_SEARCH,
-#         )
-#     ),
-# )
-# async def proccess_find_point(callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext):
-#     message = callback.message
-#     print(message)
-#     await process_point_search(message, state)
-
-
 @code_router.callback_query(
     MenuQRStates.point_search,
     MenuCallBack.filter(
@@ -259,6 +241,7 @@ async def procces_add_point(
     callback_data: MenuCallBack,
     state: FSMContext,
 ):
+    """ОБработка найденного пункта, доавление в state_data."""
     logger()
     state_data = await state.get_data()
     point = await PointsDAO.get_by_attribute(
@@ -285,7 +268,12 @@ async def procces_add_point(
     MenuQRStates.point_search, F.content_type == ContentType.TEXT
 )
 async def process_point_search(message: Message, state: FSMContext):
-    logger()
+    """
+    Поиск пункта по адресу или id.
+    В сообщение передается возможный адрес пункта или его id,
+    осуществляется запрос в бд по выбранному параметру.
+    Валидация пункта через фильтр непосредственно в хэндлере.
+    """
     state_data = await state.get_data()
     logger(state_data)
     if message.text.isdigit():
@@ -297,7 +285,6 @@ async def process_point_search(message: Message, state: FSMContext):
             )
         else:
             state_data["points"][point.point_id] = point
-            logger(state_data)
             await message.answer_photo(
                 photo=await get_file(POINT_SEARCH),
                 caption=await get_point_list_caption(
@@ -313,7 +300,7 @@ async def process_point_search(message: Message, state: FSMContext):
             )
             await state.update_data(points=state_data["points"])
     else:
-        if len(message.text) > 5:
+        if len(message.text) >= 5:
             points = await PointsDAO.search_by_addres(message.text)
             if not points:
                 await message.answer_photo(
@@ -393,5 +380,4 @@ async def procce_back_btn(
     logger()
     callback_data.menu_name = QR_MENU
     await state.clear()
-    logger(callback_data)
     await get_menucallback_data(callback, callback_data)

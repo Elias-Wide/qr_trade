@@ -1,3 +1,5 @@
+"""Модуль по созданию клавиатур в меню."""
+
 from typing import TypeAlias
 
 from aiogram.types import (
@@ -57,7 +59,7 @@ async def get_btns(
 ) -> list[InlineKeyboardButton]:
     """
     Создание клавиатуры.
-    Текст кнопок и колбэк дата берется из констант.
+    Текст кнопок и колбэк дата берется из констант модуля buttons.
     Если btns_data нет - создается только кнопка Назад.
     """
     kb_builder = InlineKeyboardBuilder()
@@ -117,8 +119,8 @@ async def get_image_and_kb(
     need_back_btn: bool = True,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """
-    Получить изображение, описание и клавитуру для меню.
-    Передаются имя меню, описание (опционально) и данные для кнопок.
+    Агрегирующая функция создания клавиатуры.
+    Возвращаеь изображение с описанием и клавитуру для меню.
     """
     image = await get_img(menu_name=menu_name, caption=caption)
     if menu_name in (DELETE_QR, SEND_QR):

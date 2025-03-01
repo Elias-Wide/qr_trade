@@ -34,6 +34,7 @@ from app.bot.handlers.states import ProfileStates
 from app.bot.keyboards.buttons import (
     CHANGE_POINT,
     CONFIRM_SCHEDULE,
+    EMPTY_BTN,
     NONE_MENU,
     PROFILE,
     SCHEDULE,
@@ -51,10 +52,10 @@ profile_router.message.filter(UserExistFilter())
 @profile_router.callback_query(
     MenuCallBack.filter(F.menu_name.in_(CHANGE_POINT))
 )
-async def profile_menu(
+async def change_user_point(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
-    """Обработка нажатия меню профиля."""
+    """Обработка нажатия кнопки смены пункта в профиле."""
     await state.set_state(ProfileStates.change_point)
     await callback.message.edit_caption(
         caption=TYPE_POINT,
@@ -68,9 +69,10 @@ async def profile_menu(
 @profile_router.message(
     ProfileStates.change_point, F.text.isdigit(), PointExistFilter()
 )
-async def change_user_point(
+async def process_change_user_point(
     message: Message, state: FSMContext, telegram_id: int, point_id: Points
 ) -> None:
+    """Смена пункта пользователя в меню профиля."""
     logger()
     user = await UsersDAO.get_by_attribute(
         attr_name="telegram_id", attr_value=telegram_id
@@ -105,8 +107,7 @@ async def handle_point_id_not_in_db(message: Message) -> None:
 async def set_notice_type(
     callback: CallbackQuery, callback_data: MenuCallBack
 ) -> None:
-    """Обработка нажатие кнопки для смены режима увеодмлений."""
-    # await NotificationsDAO.set_nonification_type(user_id=callback_data.user_id, notice_type=callback_data.menu_name)
+    """Обработка нажатие кнопки для смены режима уведомлений."""
     logger(callback_data)
     await SchedulesDAO.set_nonification_type(
         callback_data.user_id, callback_data.menu_name
@@ -212,6 +213,6 @@ async def procce_set_schedule(
 async def proccess_empty_btn(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
-    """Меню графика, отдаем клавиатуру с календарем."""
-    await callback.answer(text="Это пустые кнопки, не балуйся!")
+    """Обработка нажатий пустых кнопок с днями недели в календаре."""
+    await callback.answer(text=EMPTY_BTN)
     await procce_set_schedule(callback, callback_data, state)

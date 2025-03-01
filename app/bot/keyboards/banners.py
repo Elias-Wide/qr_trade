@@ -2,10 +2,10 @@
 Модуль для работы с изображениями и описаниям к ним.
 """
 
-from aiogram.types import BufferedInputFile, FSInputFile, InputMediaPhoto
+from aiogram.types import FSInputFile, InputMediaPhoto
 import segno
 from app.bot.constants import FMT_JPG, FMT_PNG, NO_IMAGE
-from app.bot.utils import delete_file, generate_filename
+from app.bot.utils import generate_filename
 from app.core.logging import logger
 from app.core.config import QR_DIR, STATIC_DIR
 from app.core.utils import decode_data, is_file_in_dir
@@ -20,8 +20,8 @@ async def get_img(
     f_type: str = FMT_JPG,
 ) -> InputMediaPhoto:
     """
-    Получить изображение.
-    В функцию передаются имя меню, уровень меню и описание,
+    Получить изображение с описанием.
+    В функцию передаются имя меню и описание,
     если описания нет, то оно берется из класса Captions.
     Если нет необходимого изображения, то берется картинка 'no_image'.
     """
@@ -43,6 +43,8 @@ async def get_file(
 async def get_qr_code_image(client_id: str, encoded_value: str):
     """
     Создать qr код.
+    Создать файл с изображением и сохраняет, в дальнейшем
+    он будет удален, после передачи в коллбэк.
     Возвращает InputMediaPhoto c изображением и описанием.
     """
     value = await decode_data(encoded_value)
@@ -52,9 +54,9 @@ async def get_qr_code_image(client_id: str, encoded_value: str):
     file_name = QR_DIR / ((await generate_filename()) + FMT_PNG)
     logger(file_name)
     qr_img.save(file_name, scale=10)
-    mediaphoto = InputMediaPhoto(media=FSInputFile(file_name), caption=captions.confirm_trade)
-    # return BufferedInputFile(buffer.getvalue(), filename=f"QR {client_id}")
-    # await delete_file(file_name)
+    mediaphoto = InputMediaPhoto(
+        media=FSInputFile(file_name), caption=captions.confirm_trade
+    )
     return mediaphoto
 
 
