@@ -72,7 +72,7 @@ async def get_qr_menu(
 async def get_reply_no_trade(
     callback_data: MenuCallBack,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
-    """Получить"""
+    """Получить изображение и клавиаутуру, когда нет заказов на пункт"""
     if callback_data.point_id == 1:
         caption = captions.no_user_point
     else:

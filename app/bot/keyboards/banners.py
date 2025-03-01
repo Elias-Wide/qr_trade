@@ -2,16 +2,13 @@
 Модуль для работы с изображениями и описаниям к ним.
 """
 
-import os
-from io import BytesIO
-from PIL import Image
 from aiogram.types import BufferedInputFile, FSInputFile, InputMediaPhoto
-import qrcode
-from app.bot.constants import FMT_JPG, NO_IMAGE
+import segno
+from app.bot.constants import FMT_JPG, FMT_PNG, NO_IMAGE
+from app.bot.utils import delete_file, generate_filename
 from app.core.logging import logger
-from app.core.config import STATIC_DIR
+from app.core.config import QR_DIR, STATIC_DIR
 from app.core.utils import decode_data, is_file_in_dir
-from app.sale_codes.dao import Sale_CodesDAO
 
 BANNERS_DIR = STATIC_DIR / "banners"
 
@@ -44,24 +41,21 @@ async def get_file(
 
 
 async def get_qr_code_image(client_id: str, encoded_value: str):
+    """
+    Создать qr код.
+    Возвращает InputMediaPhoto c изображением и описанием.
+    """
     value = await decode_data(encoded_value)
     qr_data = "_".join((client_id, value))
     logger(qr_data)
-    qr_img = qrcode.make(qr_data)
-    buffer = BytesIO()
-    qr_img.save(buffer)
-    buffer.seek(0)
-    return BufferedInputFile(buffer.getvalue(), filename=f"QR {client_id}")
-    return InputMediaPhoto(media=img, caption=captions.confirm_trade)
-
-
-# file_name = await download_file(message.photo[-1], QR_DIR)
-# file = await bot.get_file(message.photo[-1].file_id)
-# # image = BytesIO(file)
-# img = Image.open(BytesIO(file))
-# output = BytesIO()
-# image.save(output, format="JPEG", optimize=True, quality=Quality)
-# image.seek(0)
+    qr_img = segno.make_qr(qr_data)
+    file_name = QR_DIR / ((await generate_filename()) + FMT_PNG)
+    logger(file_name)
+    qr_img.save(file_name, scale=10)
+    mediaphoto = InputMediaPhoto(media=FSInputFile(file_name), caption=captions.confirm_trade)
+    # return BufferedInputFile(buffer.getvalue(), filename=f"QR {client_id}")
+    # await delete_file(file_name)
+    return mediaphoto
 
 
 class Captions:

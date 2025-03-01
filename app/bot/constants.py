@@ -20,6 +20,7 @@ POINT_LIST_KB_SIZE: int = 1
 DEFAULT_KEYBOARD_SIZE: int = 2
 CALENDAR_KEYBOARD_SIZE: int = 7
 FMT_GIF: str = ".gif"
+FMT_PNG: str = ".png"
 FMT_JPG: str = ".jpg"
 SEARCH_GIFS: tuple[str] = tuple(f"search_{n}" for n in range(5))
 MAIN_MENU: str = "main_menu"

@@ -23,7 +23,7 @@ from app.bot.handlers.callbacks.qr_menu import (
 )
 from app.bot.keyboards.main_kb_builder import get_btns, get_image_and_kb
 from app.bot.keyboards.qr_menu_kb import get_point_list_kb
-from app.bot.utils import get_point_list_caption
+from app.bot.utils import delete_file, get_point_list_caption
 from app.core.config import QR_DIR
 from app.bot.filters import (
     ImgValidationFilter,
@@ -168,7 +168,6 @@ async def process_check_qr(
     перебор трейдов в заданный офис, когда они закончатся - сообщение,
     что трейдов в офис нет.
     """
-    # ДОБАВИТЬ ОБРАБОТКУ ОШИБКИ ОТСУТСТВИЯ КАРТИНКИ КОДА
     user = await UsersDAO.get_by_id(callback_data.user_id)
     callback_data.level = 2
     try:
@@ -179,9 +178,9 @@ async def process_check_qr(
             trade = await TradesDAO.get_trade_by_point(user.point_id)
             if trade:
                 await callback.answer(text=NEXT_QR, show_alert=True)
-                await callback.message.edit_caption(
-                    caption=captions.qr_confirm
-                )
+                # await callback.message.edit_caption(
+                #     caption=captions.qr_confirm
+                # )
                 media, reply_markup = await get_reply_for_trade(
                     callback_data, trade
                 )
@@ -194,19 +193,13 @@ async def process_check_qr(
                 media, reply_markup = await get_reply_for_trade(
                     callback_data, trade
                 )
-                callback_action = "answer"
             else:
                 media, reply_markup = await get_reply_no_trade(callback_data)
-        try:
-            await callback.message.answer_photo(
-                photo=media,
-                caption=captions.confirm_trade,
-                reply_markup=reply_markup,
-            )
-        except:
-            await callback.message.edit_media(
-                media=media, reply_markup=reply_markup
-            )
+        await callback.message.edit_media(
+            media=media, reply_markup=reply_markup
+        )
+        if media.caption != captions.point_no_qr:
+            await delete_file(media.media.path)
     except Exception as error:
         logger(error)
         await callback.answer(text=CRITICAL_ERROR, show_alert=True)

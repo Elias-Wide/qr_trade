@@ -105,15 +105,6 @@ async def validate_photo(message: Message) -> bool:
     img = await bot.download_file(file_from_bot.file_path, buffer)
     decoded_qr = await decode_qr(img)
     logger(decoded_qr)
-
-    # file_name = await download_file(message.photo[-1], QR_DIR)
-    # file = await bot.get_file(message.photo[-1].file_id)
-    # # image = BytesIO(file)
-    # img = Image.open(BytesIO(file))
-    # output = BytesIO()
-    # image.save(output, format="JPEG", optimize=True, quality=Quality)
-    # image.seek(0)
-
     if re.fullmatch(REGEX_QR_PATTERN, decoded_qr):
         client_id, value = decoded_qr.split("_")
         encode_value = await encode_data(value)
@@ -181,3 +172,11 @@ async def get_schedule_caption() -> str:
         f"<b>{MONTH[now.month]}</b>            "
         f"<s>{MONTH[now.month + 1]}</s>\n\n"
     )
+
+
+async def delete_file(path: str):
+    """Удалить файл в заданной директории"""
+    try:
+        os.remove(path)
+    except:
+        logger("Ошибка удаления файла")
