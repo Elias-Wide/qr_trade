@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from app.bot.create_bot import bot, dp, stop_bot, start_bot
 from app.bot.handlers.routers import main_router
 from app.bot.keyboards.main_kb_builder import set_main_menu
+from app.bot.scheduler import send_order_notification
 from app.core.config import settings
 from aiogram.types import Update
 from fastapi import FastAPI, Request
@@ -27,13 +28,13 @@ WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logging.info("Starting bot setup...")
-    # scheduler = AsyncIOScheduler(timezone="UTC")
-    # scheduler.start()
-    # scheduler.add_job(
-    #     send_notifications,
-    #     trigger='cron',
-    #     hour=SCHEDULE_JOB_HOUR,
-    # )
+    scheduler = AsyncIOScheduler(timezone="UTC")
+    scheduler.start()
+    scheduler.add_job(
+        send_order_notification,
+        trigger='cron',
+        hour=SCHEDULE_JOB_HOUR,
+    )
     # scheduler.add_job(
     #     send_notifications,
     #     trigger='cron',

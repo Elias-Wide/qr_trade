@@ -14,7 +14,9 @@ from app.bot.handlers.callbacks.main_menu import (
 )
 from app.bot.keyboards.buttons import MAIN_MENU_PAGES, QR_MENU
 from app.bot.keyboards.main_kb_builder import MenuCallBack
+from app.bot.scheduler import send_order_notification
 from app.core.logging import logger
+from app.users.dao import UsersDAO
 
 user_router = Router()
 user_router.message.filter(UserExistFilter())
@@ -57,3 +59,17 @@ async def user_menu(
         await callback.answer(
             text="Критическая ошибка / перезапустите бота", show_alert=True
         )
+
+
+@user_router.message(Command("check_tgid"))
+async def process_check_command(
+    message: Message,
+) -> None:
+    """Обработка нажатия кнопки open_qr."""
+    logger()
+    try:
+        users = await UsersDAO.get_telegram_id()
+        logger(users)
+        await send_order_notification()
+    except Exception as error:
+        logger(error)

@@ -90,6 +90,7 @@ NOTIFICATION_TYPE = (
     ("always", "🔊 ВКЛ 🔊"),
     ("by_schedule", "По графику 🗓"),
 )
+NOTIFICATION_MSG_TEXT = "На Ваш пункт🛍 пришел заказ 📦"
 INVALID_DATA_TYPE: str = "Неверный формат введенных данных!"
 INVALID_ID_MESSAGE = {
     MANAGER_ID: (
