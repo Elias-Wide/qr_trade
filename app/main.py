@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
     scheduler.start()
     scheduler.add_job(
         send_order_notification,
-        trigger='cron',
+        trigger="cron",
         hour=SCHEDULE_JOB_HOUR,
     )
     # scheduler.add_job(

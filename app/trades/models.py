@@ -3,8 +3,6 @@ from sqlalchemy import (
     Column,
     Date,
     ForeignKey,
-    Integer,
-    String,
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship

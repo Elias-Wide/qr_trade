@@ -3,7 +3,6 @@ from sqlalchemy import (
     Column,
     Date,
     ForeignKey,
-    Integer,
     String,
     UniqueConstraint,
 )
@@ -11,7 +10,6 @@ from sqlalchemy.orm import relationship
 
 
 from app.core.database import Base
-from app.users.constants import MOSCOW_TZ
 
 
 class Sale_Codes(Base):
