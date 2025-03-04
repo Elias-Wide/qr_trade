@@ -58,7 +58,7 @@ async def get_qr_list_kb(
     kb_builder = InlineKeyboardBuilder()
     btns = []
     user_codes = await Sale_CodesDAO.get_actual_objs(
-        attr_name="user_id", attr_value=user_id, need_actual=False
+        attr_name="user_id", attr_value=user_id, need_actual=True
     )
     for code in user_codes:
         created_at = code.created_at

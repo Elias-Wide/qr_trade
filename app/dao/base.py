@@ -132,3 +132,19 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 select(cls.model.__table__.columns).where(query)
             )
             return get_objs.mappings().all()
+
+    @classmethod
+    async def delete_old_objs(cls) -> bool:
+        """Удаляет все старые записи."""
+        async with async_session_maker() as session:
+            try:
+                await session.execute(
+                    cls.model.__table__.delete().where(
+                        cls.model.created_at < datetime.now().date()
+                    )
+                )
+                await session.commit()
+                return True
+            except Exception as error:
+                logger(error)
+                return False

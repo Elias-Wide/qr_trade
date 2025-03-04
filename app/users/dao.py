@@ -1,5 +1,5 @@
-import datetime
-from sqlalchemy import and_, insert, or_, select
+from datetime import datetime
+from sqlalchemy import and_, any_, insert, or_, select
 from sqlalchemy.orm import aliased
 
 from app.core.logging import logger
@@ -36,8 +36,9 @@ class UsersDAO(BaseDAO):
                 .join(Users.points)
                 .where(Users.id == user_id)
             )
-
-        return get_user.mappings().all()[0]
+        data = get_user.mappings().all()[0]
+        logger(data)
+        return data
 
     @classmethod
     async def change_point(telegram_id: int, point_id: int):
@@ -49,34 +50,43 @@ class UsersDAO(BaseDAO):
             )
 
     @classmethod
-    async def get_telegram_id():
+    async def get_telegram_id(cls) -> list[int]:
         """
         Получить список id пользователей.
         Возвращает список telegram id пользователей,
         которые должны получить уведомление о наличие заказов.
         У пользователя должны быть включены уведомления, либо уведомления
-        по графику(и установлен рабочий график).
+        по графику(и установлен рабочий график) и текущая дата есть в графике.
         """
+
+        # SELECT * FROM public.users
+        # LEFT JOIN schedules ON users.id = schedules.user_id
+        # LEFT JOIN trades ON trades.point_id = users.point_id
+        # WHERE trades.id IS NOT NULL
+        # AND (
+        #         (
+        #             notice_type = 'by_schedule'
+        #             today = ANY(schedule)
+        #         )
+        #         OR notice_type = 'always'
+        # )
         async with async_session_maker() as session:
-            today = datetime.now()
-            today = today.strftime("%m.%d.%Y")
-            get_user = await session.execute(
-                select(
-                    Users.telegram_id,
-                )
-                .join(Users.schedule)
-                .join(Trades)
+            today = datetime.now().date()
+            get_users_id = await session.scalars(
+                select(Users.telegram_id)
+                .join(Schedules, Schedules.user_id == Users.id, isouter=True)
+                .join(Trades, Users.point_id == Trades.point_id, isouter=True)
                 .where(
                     and_(
-                        Users.point_id == Trades.point_id,
+                        Trades.id.isnot(None),
                         or_(
-                            Users.notice_type == "always",
+                            Schedules.notice_type == "always",
                             and_(
-                                Users.schedule.notice_type == "by_schedule",
-                                Users.schedule.contains(today),
+                                Schedules.notice_type == "by_schedule",
+                                any_(Schedules.schedule) == today,
                             ),
                         ),
-                    ),
+                    )
                 )
             )
-            return get_user.all()
+            return get_users_id.all()

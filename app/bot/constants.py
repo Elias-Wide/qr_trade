@@ -90,6 +90,7 @@ NOTIFICATION_TYPE = (
     ("always", "🔊 ВКЛ 🔊"),
     ("by_schedule", "По графику 🗓"),
 )
+NOTIFICATION_MSG_TEXT = "На Ваш пункт🛍 пришел заказ 📦"
 INVALID_DATA_TYPE: str = "Неверный формат введенных данных!"
 INVALID_ID_MESSAGE = {
     MANAGER_ID: (
@@ -115,4 +116,18 @@ SUCCESS_DELETE = "✅ QR код УСПЕШНО удален ✅"
 SUCCES_DNWLD = "⭐️ Код {} успешно загружен⭐️"
 SUCCESS_SENDING = "Заказы успешно отправлены 🤩"
 SUCCES_UPDATE = "⭐️ Код {} успешно обновлен ✅"
+TIMEZONE_RU = {
+    1: "Europe/London",
+    2: "Europe/Kaliningrad",
+    3: "Europe/Moscow",
+    4: "Europe/Samara",
+    5: "Asia/Yekaterinburg",
+    6: "Asia/Omsk",
+    7: "Asia/Krasnoyarsk",
+    8: "Asia/Irkutsk",
+    9: "Asia/Yakutsk",
+    10: "Asia/Vladivostok",
+    11: "Asia/Magadan",
+    12: "Asia/Kamchatka",
+}
 TYPE_POINT = "Введите ID вашего пункта"
