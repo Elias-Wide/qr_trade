@@ -23,9 +23,11 @@ class Sale_Codes(Base):
     client_id = Column(String, nullable=False, unique=True)
     encoded_value = Column(String, nullable=False)
     trades = relationship(
-        "Trades", cascade="all,delete", back_populates="sale_codes"
+        "Trades",
+        cascade="all, delete-orphan",
+        backref="sale_code",
     )
-
+    # children = relationship("Child", cascade="all,delete", backref="parent")
     __table_args__ = (
         UniqueConstraint(
             "user_id",

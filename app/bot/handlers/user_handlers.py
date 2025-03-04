@@ -14,8 +14,14 @@ from app.bot.handlers.callbacks.main_menu import (
 )
 from app.bot.keyboards.buttons import MAIN_MENU_PAGES, QR_MENU
 from app.bot.keyboards.main_kb_builder import MenuCallBack
-from app.bot.scheduler import send_order_notification
+from app.bot.scheduler import (
+    delete_old_sale_codes,
+    delete_old_trades,
+    send_order_notification,
+)
 from app.core.logging import logger
+from app.sale_codes.dao import Sale_CodesDAO
+from app.trades.dao import TradesDAO
 from app.users.dao import UsersDAO
 
 user_router = Router()
@@ -68,8 +74,7 @@ async def process_check_command(
     """Обработка нажатия кнопки open_qr."""
     logger()
     try:
-        users = await UsersDAO.get_telegram_id()
-        logger(users)
-        await send_order_notification()
+        await delete_old_sale_codes()
+        await delete_old_trades()
     except Exception as error:
         logger(error)

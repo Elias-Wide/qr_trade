@@ -193,7 +193,8 @@ async def process_check_qr(
         await callback.message.edit_media(
             media=media, reply_markup=reply_markup
         )
-        if media.caption != captions.point_no_qr:
+        logger(media.caption)
+        if media.caption == captions.confirm_trade:
             await delete_file(media.media.path)
     except Exception as error:
         logger(error)
