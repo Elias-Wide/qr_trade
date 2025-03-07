@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from app.bot.constants import OPEN_QR
-from app.bot.filters import UserExistFilter
+from app.bot.filters import BanFilter, UserExistFilter
 
 from app.bot.handlers.callbacks.main_menu import (
     get_menucallback_data,
@@ -17,15 +17,11 @@ from app.bot.keyboards.main_kb_builder import MenuCallBack
 from app.bot.scheduler import (
     delete_old_sale_codes,
     delete_old_trades,
-    send_order_notification,
 )
 from app.core.logging import logger
-from app.sale_codes.dao import Sale_CodesDAO
-from app.trades.dao import TradesDAO
-from app.users.dao import UsersDAO
+
 
 user_router = Router()
-user_router.message.filter(UserExistFilter())
 
 
 @user_router.message(CommandStart())

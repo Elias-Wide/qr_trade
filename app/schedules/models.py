@@ -12,6 +12,8 @@ class Schedules(Base):
     notice_type = Column(
         ChoiceType(NOTIFICATION_TYPE), default=NOTIFICATION_TYPE[0][0]
     )
-    user_id = Column(ForeignKey("users.id"), nullable=False)
+    user_id = Column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
     schedule = Column(ARRAY(Date), default=[])
     user = relationship("Users", back_populates="schedule")

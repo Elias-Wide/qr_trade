@@ -131,7 +131,8 @@ async def get_user_data(user_id: int) -> str:
             if user.point_id != 1
             else result + n_type
         )
-    except:
+    except Exception as error:
+        logger(error)
         return "Ошибка получения данных"
 
 

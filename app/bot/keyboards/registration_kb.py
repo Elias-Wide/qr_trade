@@ -15,14 +15,16 @@ KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
 
 
 async def create_registration_kb(
-    size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
+    size: int = DEFAULT_KEYBOARD_SIZE,
 ) -> KeyboardMarkup:
     """Создать клавиутуру вступительной анкеты."""
-    keyboard = InlineKeyboardBuilder()
+    kb_builder = InlineKeyboardBuilder()
+    btns = []
     for text, callback_datas in zip(
         dict(CONFIRM).values(), dict(CONFIRM).keys()
     ):
-        keyboard.add(
+        btns.append(
             InlineKeyboardButton(text=text, callback_data=callback_datas),
         )
-    return keyboard.adjust(*size).as_markup()
+    kb_builder.row(*btns, width=size)
+    return kb_builder.as_markup()

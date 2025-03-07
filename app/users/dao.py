@@ -29,11 +29,13 @@ class UsersDAO(BaseDAO):
             get_user = await session.execute(
                 select(
                     Users.__table__.columns,
-                    Points.__table__.columns,
+                    Points.point_id,
+                    Points.addres,
+                    Schedules.schedule,
                     Schedules.notice_type,
                 )
-                .join(Users.schedule)
-                .join(Users.points)
+                .join(Schedules, Schedules.user_id == Users.id, isouter=True)
+                .join(Points, Points.point_id == Users.point_id, isouter=True)
                 .where(Users.id == user_id)
             )
         data = get_user.mappings().all()[0]

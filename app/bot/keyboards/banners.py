@@ -34,7 +34,7 @@ async def get_img(
 async def get_file(
     filename: str, file_dir: str = BANNERS_DIR, f_type: str = FMT_JPG
 ) -> FSInputFile:
-    """Получить файл по имени в заданной директории."""
+    """Получить файл типа FSInputFile по имени в заданной директории."""
     if await is_file_in_dir(filename + f_type, file_dir):
         return FSInputFile(file_dir.joinpath(filename + f_type))
     return FSInputFile(file_dir.joinpath(NO_IMAGE + FMT_JPG))
