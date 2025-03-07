@@ -12,23 +12,6 @@ from app.sale_codes.dao import Sale_CodesDAO
 from app.users.dao import UsersDAO
 from app.core.logging import logger
 
-# class BaseUserFilter(BaseFilter):
-
-#     def __init__(self) -> None:
-#         self.modelDAO = UsersDAO
-#         self.attr_name = "telegram_id"
-
-#     async def __call__(
-#         self,
-#         message: Message
-#     ) -> bool:
-#         if not await self.modelDAO.get_by_attribute(
-#             attr_name=self.attr_name,
-#             attr_value=message.from_user.id
-#         ):
-#             return True
-#         return False
-
 
 class UserExistFilter(BaseFilter):
     """
@@ -44,6 +27,7 @@ class UserExistFilter(BaseFilter):
         self,
         message: Message,
     ) -> bool:
+        logger()
         if self.attr_name == "telegram_id":
             attr_value = message.from_user.id
         else:
@@ -103,3 +87,20 @@ class ImgValidationFilter(BaseFilter):
         if all(validated_data.values()):
             return validated_data
         return False
+
+
+class BanFilter(UserExistFilter):
+    """Класс фильтрации по наличию бана у пользователя."""
+
+    async def __call__(self, message):
+        """
+        Проверить пользователя на наличие бана.
+        Делает базовую проверку на регистрацию из родительского класса
+        и проверяет на наличие бана.
+        """
+        user = await super().__call__(message)
+        logger(user["model_obj"].ban)
+        if user["model_obj"].ban == True:
+            logger(False)
+            return False
+        return user

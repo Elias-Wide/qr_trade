@@ -8,7 +8,7 @@ from app.bot.handlers.callbacks.main_menu import (
     get_menucallback_data,
     procces_main_menu_comand,
 )
-from app.bot.keyboards.banners import captions, get_img
+from app.bot.keyboards.banners import get_img
 from app.bot.constants import (
     CRITICAL_ERROR,
     DATE_FORMAT,
@@ -19,12 +19,10 @@ from app.bot.constants import (
 
 from app.bot.keyboards.calendar_btn import get_days_btns
 from app.bot.utils import get_schedule_caption
-from app.core.config import QR_DIR
 from app.core.logging import logger
 from app.bot.filters import (
-    ImgValidationFilter,
+    BanFilter,
     PointExistFilter,
-    UserExistFilter,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.handlers.registration_handlers import (
@@ -46,7 +44,6 @@ from app.users.dao import UsersDAO
 
 
 profile_router = Router()
-profile_router.message.filter(UserExistFilter())
 
 
 @profile_router.callback_query(

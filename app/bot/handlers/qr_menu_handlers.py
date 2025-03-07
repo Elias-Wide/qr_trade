@@ -23,11 +23,9 @@ from app.bot.handlers.callbacks.qr_menu import (
 from app.bot.keyboards.main_kb_builder import get_btns, get_image_and_kb
 from app.bot.keyboards.qr_menu_kb import get_point_list_kb
 from app.bot.utils import delete_file, get_point_list_caption
-from app.core.config import QR_DIR
 from app.bot.filters import (
     ImgValidationFilter,
     PointExistFilter,
-    UserExistFilter,
 )
 from app.core.logging import logger
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
@@ -55,7 +53,6 @@ from app.trades.models import Trades
 from app.users.dao import UsersDAO
 
 code_router = Router()
-code_router.message.filter(UserExistFilter())
 
 
 @code_router.callback_query(MenuCallBack.filter(F.menu_name == DELETE_CODE))

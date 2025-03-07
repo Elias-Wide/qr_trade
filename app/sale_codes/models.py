@@ -27,7 +27,6 @@ class Sale_Codes(Base):
         cascade="all, delete-orphan",
         backref="sale_code",
     )
-    # children = relationship("Child", cascade="all,delete", backref="parent")
     __table_args__ = (
         UniqueConstraint(
             "user_id",

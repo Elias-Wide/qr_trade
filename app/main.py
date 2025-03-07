@@ -5,11 +5,16 @@
 Подключается база данных, логика аутентификации и админка.
 """
 
+from aiogram.types import Update
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
 import logging
 import uvicorn
-from contextlib import asynccontextmanager
+
 from app.bot.create_bot import bot, dp, stop_bot, start_bot
+from app.bot.handlers.other_handlers import ban_router
 from app.bot.handlers.routers import main_router
+from app.bot.handlers.registration_handlers import registration_router
 from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.bot.scheduler import (
     delete_old_sale_codes,
@@ -17,11 +22,7 @@ from app.bot.scheduler import (
     send_order_notification,
 )
 from app.core.config import settings
-from aiogram.types import Update
-from fastapi import FastAPI, Request
-
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
 from app.users.constants import SCHEDULE_JOB_HOUR
 
 
@@ -51,6 +52,8 @@ async def lifespan(app: FastAPI):
     )
 
     dp.include_router(main_router)
+    dp.include_router(registration_router)
+    dp.include_router(ban_router)
     await start_bot()
     await bot.set_webhook(
         url=WEBHOOK_URL,

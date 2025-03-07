@@ -21,6 +21,7 @@ from app.bot.constants import (
 )
 from app.bot.filters import (
     AccesCodeFilter,
+    BanFilter,
     ManagerExistFilter,
     PointExistFilter,
     UserExistFilter,
@@ -33,6 +34,7 @@ from app.bot.handlers.states import RegistrationStates
 
 
 registration_router = Router()
+registration_router.message.filter(~UserExistFilter())
 
 
 async def return_to_main_menu(
@@ -44,7 +46,7 @@ async def return_to_main_menu(
     await process_start_command(message, state)
 
 
-@registration_router.message(default_state, CommandStart(), ~UserExistFilter())
+@registration_router.message(default_state, CommandStart())
 async def begin_registration(
     message: Message,
     state: FSMContext,
@@ -193,11 +195,11 @@ async def send_ivalid_data_type_message(
     await message.answer(text=text)
 
 
-@registration_router.message(CommandStart(), UserExistFilter())
-async def handle_existing_user(
-    message: Message,
-    state: FSMContext,
-) -> None:
-    """Сообщение о уже существующем пользователе."""
-    await state.set_state(RegistrationStates.finished)
-    await return_to_main_menu(message, state)
+# @registration_router.message(CommandStart(), BanFilter())
+# async def handle_existing_user(
+#     message: Message,
+#     state: FSMContext,
+# ) -> None:
+#     """Сообщение о уже существующем пользователе."""
+#     await state.set_state(RegistrationStates.finished)
+#     await return_to_main_menu(message, state)
