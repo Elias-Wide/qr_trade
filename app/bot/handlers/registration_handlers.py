@@ -9,7 +9,8 @@ from aiogram.types import (
     Message,
 )
 
-from app.bot.keyboards.banners import Captions, get_img
+
+from app.bot.keyboards.banners import Captions, get_file, get_img
 from app.bot.constants import (
     INVALID_DATA_TYPE,
     INVALID_ID_MESSAGE,
@@ -21,16 +22,15 @@ from app.bot.constants import (
 )
 from app.bot.filters import (
     AccesCodeFilter,
-    BanFilter,
     ManagerExistFilter,
     PointExistFilter,
     UserExistFilter,
 )
+from app.bot.handlers.states import RegistrationStates
 from app.bot.handlers.user_handlers import process_start_command
 from app.bot.keyboards.registration_kb import create_registration_kb
+from app.core.logging import logger
 from app.users.dao import UsersDAO
-
-from app.bot.handlers.states import RegistrationStates
 
 
 registration_router = Router()
@@ -57,7 +57,7 @@ async def begin_registration(
         username=message.from_user.username,
     )
     await message.answer_photo(
-        photo=await get_img("registration_start"),
+        photo=await get_file("registration_start"),
         caption=Captions.registration_start,
         reply_markup=await create_registration_kb(),
     )
@@ -72,7 +72,7 @@ async def handle_survey_cancel(
     """Отказ от регистрации."""
     await state.set_state(default_state)
     await callback_query.message.answer_photo(
-        photo=await get_img("no_registr"),
+        photo=await get_file("no_registr"),
         caption=Captions.no_registr,
     )
 
@@ -126,12 +126,16 @@ async def finish_registration(
     Запись инфо из state в БД. Завершение регистрации.
     Создание модели пользователя по полученным данным.
     """
+    logger()
     await state.update_data(
         point_id=int(message.text),
     )
     registration_data = await state.get_data()
     await UsersDAO.create(registration_data),
-    await message.answer_photo(await get_img(menu_name="registration_done"))
+    await message.answer_photo(
+        photo=await get_file("registration_done"),
+        caption=Captions.registration_done,
+    )
 
     await state.set_state(RegistrationStates.finished)
     await process_start_command(message, state)

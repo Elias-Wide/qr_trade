@@ -37,6 +37,7 @@ class UserExistFilter(BaseFilter):
         )
         if obj:
             return {self.attr_name: attr_value, "model_obj": obj}
+        logger(False)
         return False
 
 
@@ -99,8 +100,6 @@ class BanFilter(UserExistFilter):
         и проверяет на наличие бана.
         """
         user = await super().__call__(message)
-        logger(user["model_obj"].ban)
-        if user["model_obj"].ban == True:
-            logger(False)
+        if user and user["model_obj"].ban == True:
             return False
         return user

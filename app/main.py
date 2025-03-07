@@ -12,7 +12,7 @@ import logging
 import uvicorn
 
 from app.bot.create_bot import bot, dp, stop_bot, start_bot
-from app.bot.handlers.other_handlers import ban_router
+
 from app.bot.handlers.routers import main_router
 from app.bot.handlers.registration_handlers import registration_router
 from app.bot.keyboards.main_kb_builder import set_main_menu
@@ -53,7 +53,6 @@ async def lifespan(app: FastAPI):
 
     dp.include_router(main_router)
     dp.include_router(registration_router)
-    dp.include_router(ban_router)
     await start_bot()
     await bot.set_webhook(
         url=WEBHOOK_URL,
