@@ -1,5 +1,5 @@
 from datetime import date
-from sqlalchemy import and_, func, insert, select
+from sqlalchemy import and_, func, insert, select, update
 from app.bot.constants import N_TYPE_DICT
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
@@ -68,3 +68,22 @@ class SchedulesDAO(BaseDAO):
             except:
                 logger("SET SCHEDULE ERROR")
                 return False
+
+    @classmethod
+    async def clear_users_schedule(cls) -> None:
+        """
+        Очистить аттрибут schedule во всех объектах модели Schedules.
+        """
+        query = (
+            update(Schedules)
+            .where(Schedules.schedule.isnot(None))
+            .values({Schedules.schedule: []})
+        )
+        async with async_session_maker() as session:
+            try:
+                await session.execute(
+                    update(Schedules).values({Schedules.schedule: []})
+                )
+                await session.commit()
+            except Exception as error:
+                logger(error)

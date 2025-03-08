@@ -4,7 +4,6 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import and_, insert, select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import Base, async_session_maker
 from app.core.logging import logger
@@ -47,17 +46,20 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """Создает объект."""
         async with async_session_maker() as session:
             try:
-                query = insert(cls.model).values(**data)
+                query = (
+                    insert(cls.model).values(**data).returning(cls.model.id)
+                )
                 object = await session.execute(query)
                 await session.commit()
-                return object.mappings().all()
+                return object.mappings().first()
             except (SQLAlchemyError, Exception) as error:
+                await session.rollback()
                 if isinstance(error, SQLAlchemyError):
                     message = "Database Exception"
                 elif isinstance(error, Exception):
                     message = "Unknown Exception"
                 message += ": Не удается добавить данные."
-                logger(message)
+                logger(error, message)
 
     @classmethod
     async def update(
@@ -67,16 +69,18 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     ) -> ModelType:
         """Обновляет объект."""
         async with async_session_maker() as session:
-            obj_data = jsonable_encoder(db_obj)
-            # update_data = obj_in.model_dump(exclude_unset=True)
-
-            for field in obj_data:
-                if field in new_data:
-                    setattr(db_obj, field, new_data[field])
-            session.add(db_obj)
-            await session.commit()
-            await session.refresh(db_obj)
-            return db_obj
+            try:
+                obj_data = jsonable_encoder(db_obj)
+                for field in obj_data:
+                    if field in new_data:
+                        setattr(db_obj, field, new_data[field])
+                session.add(db_obj)
+                await session.commit()
+                await session.refresh(db_obj)
+                return db_obj
+            except Exception as error:
+                logger(error)
+                session.rollback()
 
     @classmethod
     async def delete_object(cls, **kwargs):

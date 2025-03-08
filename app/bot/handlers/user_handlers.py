@@ -15,6 +15,7 @@ from app.bot.handlers.callbacks.main_menu import (
 from app.bot.keyboards.buttons import MAIN_MENU_PAGES, QR_MENU
 from app.bot.keyboards.main_kb_builder import MenuCallBack
 from app.bot.scheduler import (
+    clear_user_schedule,
     delete_old_sale_codes,
     delete_old_trades,
 )
@@ -70,6 +71,7 @@ async def process_check_command(
     """Обработка нажатия кнопки open_qr."""
     logger()
     try:
+        await clear_user_schedule()
         await delete_old_sale_codes()
         await delete_old_trades()
     except Exception as error:

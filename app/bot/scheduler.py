@@ -2,6 +2,7 @@ from app.bot.constants import NOTIFICATION_MSG_TEXT
 from app.bot.create_bot import bot
 from app.core.logging import logger
 from app.sale_codes.dao import Sale_CodesDAO
+from app.schedules.dao import SchedulesDAO
 from app.trades.dao import TradesDAO
 from app.trades.models import Trades
 from app.users.dao import UsersDAO
@@ -35,3 +36,8 @@ async def delete_old_trades() -> bool:
 async def delete_old_db_objs(modelDAO: TradesDAO | Sale_CodesDAO) -> bool:
     """Удалить старые трейды."""
     return await modelDAO.delete_old_objs()
+
+
+async def clear_user_schedule() -> None:
+    """Очистить график пользователей в начале месяца."""
+    await SchedulesDAO.clear_users_schedule()

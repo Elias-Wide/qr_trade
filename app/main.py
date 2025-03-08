@@ -17,6 +17,7 @@ from app.bot.handlers.routers import main_router
 from app.bot.handlers.registration_handlers import registration_router
 from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.bot.scheduler import (
+    clear_user_schedule,
     delete_old_sale_codes,
     delete_old_trades,
     send_order_notification,
@@ -49,6 +50,13 @@ async def lifespan(app: FastAPI):
         delete_old_trades,
         trigger="cron",
         hour=SCHEDULE_JOB_HOUR,
+    )
+    scheduler.add_job(
+        clear_user_schedule,
+        trigger="cron",
+        day=1,
+        hour=0,
+        minute=0,
     )
 
     dp.include_router(main_router)

@@ -30,6 +30,7 @@ from app.bot.handlers.states import RegistrationStates
 from app.bot.handlers.user_handlers import process_start_command
 from app.bot.keyboards.registration_kb import create_registration_kb
 from app.core.logging import logger
+from app.schedules.dao import SchedulesDAO
 from app.users.dao import UsersDAO
 
 
@@ -131,14 +132,18 @@ async def finish_registration(
         point_id=int(message.text),
     )
     registration_data = await state.get_data()
-    await UsersDAO.create(registration_data),
-    await message.answer_photo(
-        photo=await get_file("registration_done"),
-        caption=Captions.registration_done,
-    )
+    try:
+        user = await UsersDAO.create(registration_data)
+        await SchedulesDAO.create({"user_id": user.id})
+        await message.answer_photo(
+            photo=await get_file("registration_done"),
+            caption=Captions.registration_done,
+        )
 
-    await state.set_state(RegistrationStates.finished)
-    await process_start_command(message, state)
+        await state.set_state(RegistrationStates.finished)
+        await process_start_command(message, state)
+    except Exception as error:
+        logger(error)
 
 
 @registration_router.message(
