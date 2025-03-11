@@ -2,6 +2,8 @@ from sqlalchemy import Enum
 
 from app.core.config import settings
 
+
+ADMIN_VIEW_PAGE_SIZE: int = 15
 CRITICAL_ERROR = (
     "Критическая ошибка / перезапустите бота\n\n"
     f"Если ошибка повторилась - сообщите админу @{settings.telegram.admin_username}!!"

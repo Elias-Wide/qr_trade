@@ -4,12 +4,13 @@ from aiogram.filters import BaseFilter
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import QR_DIR
+from app.core.config import settings
 from app.points.dao import PointsDAO
 from app.bot.utils import download_file, validate_photo
 from app.points.models import Points
 from app.sale_codes.dao import Sale_CodesDAO
 from app.users.dao import UsersDAO
+
 from app.core.logging import logger
 
 
@@ -27,7 +28,6 @@ class UserExistFilter(BaseFilter):
         self,
         message: Message,
     ) -> bool:
-        logger()
         if self.attr_name == "telegram_id":
             attr_value = message.from_user.id
         else:
@@ -36,6 +36,7 @@ class UserExistFilter(BaseFilter):
             attr_name=self.attr_name, attr_value=attr_value
         )
         if obj:
+            logger(obj.username)
             return {self.attr_name: attr_value, "model_obj": obj}
         logger(False)
         return False
@@ -93,7 +94,7 @@ class ImgValidationFilter(BaseFilter):
 class BanFilter(UserExistFilter):
     """Класс фильтрации по наличию бана у пользователя."""
 
-    async def __call__(self, message):
+    async def __call__(self, message: Message):
         """
         Проверить пользователя на наличие бана.
         Делает базовую проверку на регистрацию из родительского класса
@@ -103,3 +104,13 @@ class BanFilter(UserExistFilter):
         if user and user["model_obj"].ban == True:
             return False
         return user
+
+
+class AdminFilter(BaseFilter):
+    """Класс фильтрации по наличию прав админа."""
+
+    async def __call__(self, message: Message):
+        logger(message.from_user.id, settings.telegram.admin_id)
+        if message.from_user.id == int(settings.telegram.admin_id):
+            return True
+        return False

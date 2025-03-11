@@ -4,7 +4,7 @@
 потом сложные - dict, tuple.
 """
 
-from app.bot.constants import MAIN_MENU, NOTIFICATION_TYPE
+from app.core.constants import MAIN_MENU, NOTIFICATION_TYPE
 
 
 ADD_POINT: str = "add_point"

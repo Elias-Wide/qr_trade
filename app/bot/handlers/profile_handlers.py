@@ -9,7 +9,7 @@ from app.bot.handlers.callbacks.main_menu import (
     procces_main_menu_comand,
 )
 from app.bot.keyboards.banners import get_img
-from app.bot.constants import (
+from app.core.constants import (
     CRITICAL_ERROR,
     DATE_FORMAT,
     NOTIFICATION_TYPE,

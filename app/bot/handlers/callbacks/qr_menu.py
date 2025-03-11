@@ -2,7 +2,7 @@
 
 from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
-from app.bot.constants import (
+from app.core.constants import (
     DELETE_CODE,
     MAIN_MENU,
     NO_CAPTION,

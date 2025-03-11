@@ -28,9 +28,12 @@ class Users(Base):
     manager_id = Column(Integer, unique=True, nullable=False)
     timezone = Column(Integer, default=MOSCOW_TZ)
     ban = Column(BOOLEAN, default=False)
-    # sale_codes = relationship("Sale_codes", back_populates="managers")
+    codes = relationship("Sale_Codes", back_populates="user")
     points = relationship("Points", back_populates="managers")
     trades = relationship(
         "Trades", cascade="all,delete", back_populates="users"
     )
     schedule = relationship("Schedules", back_populates="user")
+
+    def __str__(self):
+        return f"Пользователь @{self.username}"

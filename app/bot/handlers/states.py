@@ -25,3 +25,9 @@ class ProfileStates(StatesGroup):
 
     change_point = State()
     schedule = State()
+
+
+class AdminStates(StatesGroup):
+    """Класс состояний для команд админа."""
+
+    dwnld_points = State()

@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
-from app.bot.constants import MAIN_MENU
+from app.core.constants import MAIN_MENU
 from app.bot.keyboards.buttons import (
     NOTIFICATIONS,
     NOTIFICATIONS_BTNS,

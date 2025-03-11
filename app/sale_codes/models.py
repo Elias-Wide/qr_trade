@@ -18,10 +18,13 @@ class Sale_Codes(Base):
     Коды подтверждения продаж.
     """
 
-    user_id = Column(ForeignKey("users.id"), nullable=False)
+    user_id = Column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
     created_at = Column(Date, default=datetime.now)
     client_id = Column(String, nullable=False, unique=True)
     encoded_value = Column(String, nullable=False)
+    user = relationship("Users", back_populates="codes")
     trades = relationship(
         "Trades",
         cascade="all, delete-orphan",
@@ -34,3 +37,6 @@ class Sale_Codes(Base):
             name="unique_user_and_client_id",
         ),
     )
+
+    def __str__(self):
+        return f"Код #{self.client_id}"

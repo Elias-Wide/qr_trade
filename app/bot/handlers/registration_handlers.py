@@ -11,7 +11,7 @@ from aiogram.types import (
 
 
 from app.bot.keyboards.banners import Captions, get_file, get_img
-from app.bot.constants import (
+from app.core.constants import (
     INVALID_DATA_TYPE,
     INVALID_ID_MESSAGE,
     MANAGER_ID,

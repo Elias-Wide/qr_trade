@@ -12,7 +12,7 @@ from alembic import op
 import sqlalchemy as sa
 import sqlalchemy_utils
 
-from app.bot.constants import NOTIFICATION_TYPE
+from app.core.constants import NOTIFICATION_TYPE
 
 # revision identifiers, used by Alembic.
 revision: str = "4d7af0302f5e"

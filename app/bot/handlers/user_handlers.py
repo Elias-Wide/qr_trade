@@ -5,8 +5,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.constants import OPEN_QR
-from app.bot.filters import BanFilter, UserExistFilter
+from app.core.constants import OPEN_QR
 
 from app.bot.handlers.callbacks.main_menu import (
     get_menucallback_data,

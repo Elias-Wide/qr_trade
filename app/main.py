@@ -6,11 +6,15 @@
 """
 
 from aiogram.types import Update
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 import logging
+from sqladmin import Admin
 import uvicorn
 
+from app.admin.adminview import admin_views
+from app.admin.auth import authentication_backend
 from app.bot.create_bot import bot, dp, stop_bot, start_bot
 
 from app.bot.handlers.routers import main_router
@@ -23,9 +27,8 @@ from app.bot.scheduler import (
     send_order_notification,
 )
 from app.core.config import settings
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from app.core.database import engine
 from app.users.constants import SCHEDULE_JOB_HOUR
-
 
 WEBHOOK_PATH = f"/bot/{settings.telegram.bot_token.get_secret_value()}"
 WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
@@ -78,8 +81,13 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+admin = Admin(
+    app=app,
+    engine=engine,
+    authentication_backend=authentication_backend,
+)
 
-# Маршрут для обработки вебхуков
+
 @app.post("/webhook")
 async def webhook(request: Request) -> None:
     logging.info("Received webhook request")
@@ -89,6 +97,12 @@ async def webhook(request: Request) -> None:
 
 
 if __name__ == "__main__":
-    config = uvicorn.Config("main:app", port=5000, log_level="info")
+    config = uvicorn.Config(
+        "main:app",
+        port=5000,
+    )
     server = uvicorn.Server(config)
     server.run()
+
+for view in admin_views:
+    admin.add_view(view)

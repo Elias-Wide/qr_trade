@@ -17,7 +17,6 @@ class PreBase:
     id = Column(Integer, primary_key=True)
 
 
-print(settings.db.url)
 engine = create_async_engine(settings.db.url)
 
 async_session_maker = sessionmaker(

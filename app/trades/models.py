@@ -37,12 +37,12 @@ class Trades(Base):
             "point_id",
             name="unique_user_point_sale_code_id",
         ),
-    )
-
-    __table_args__ = (
         UniqueConstraint(
             "sale_code_id",
             "id",
             name="unique_sale_code_id",
         ),
     )
+
+    def __str__(self):
+        return f"код для офиса {self.point_id}"
