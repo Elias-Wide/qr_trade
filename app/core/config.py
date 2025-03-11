@@ -22,6 +22,7 @@ class AuthConfig(ConfigBase):
     logging_mode: str = "on"
     admin_email: str
     admin_password: SecretStr
+    admin_sc: SecretStr
     secret_key: Optional[SecretStr] = Field(default=None)
 
     @field_validator("secret_key", mode="before")

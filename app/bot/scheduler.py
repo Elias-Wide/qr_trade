@@ -1,4 +1,4 @@
-from app.bot.constants import NOTIFICATION_MSG_TEXT
+from app.core.constants import NOTIFICATION_MSG_TEXT
 from app.bot.create_bot import bot
 from app.core.logging import logger
 from app.sale_codes.dao import Sale_CodesDAO

@@ -4,7 +4,7 @@
 
 from aiogram.types import FSInputFile, InputMediaPhoto
 import segno
-from app.bot.constants import FMT_JPG, FMT_PNG, NO_IMAGE
+from app.core.constants import FMT_JPG, FMT_PNG, NO_IMAGE
 from app.bot.utils import generate_filename
 from app.core.logging import logger
 from app.core.config import QR_DIR, STATIC_DIR
@@ -110,7 +110,6 @@ class Captions:
     del_qr = (
         "Выберите код для удаления \n\n"
         "Также удаляться и созданные с ним трейды на другие пвз.\n"
-        "Знак ⚠️ сигнализирует о том, что необходимо обновить QR\n\n"
         "Просто загрузите новый qr в разделе Загрузить код - "
         "данные обновятся."
     )

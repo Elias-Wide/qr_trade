@@ -1,6 +1,6 @@
 from datetime import date
 from sqlalchemy import and_, func, insert, select, update
-from app.bot.constants import N_TYPE_DICT
+from app.core.constants import N_TYPE_DICT
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
 from app.schedules.models import Schedules
@@ -74,11 +74,6 @@ class SchedulesDAO(BaseDAO):
         """
         Очистить аттрибут schedule во всех объектах модели Schedules.
         """
-        query = (
-            update(Schedules)
-            .where(Schedules.schedule.isnot(None))
-            .values({Schedules.schedule: []})
-        )
         async with async_session_maker() as session:
             try:
                 await session.execute(

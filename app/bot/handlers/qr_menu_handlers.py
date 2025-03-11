@@ -4,7 +4,7 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, ContentType, Message
 
 from app.bot.keyboards.banners import captions, get_file, get_img
-from app.bot.constants import (
+from app.core.constants import (
     CRITICAL_ERROR,
     DELETE_CODE,
     DELETE_ERROR,

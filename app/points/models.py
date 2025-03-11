@@ -23,3 +23,6 @@ class Points(Base):
     addres = Column(String, nullable=False)
     trades = relationship("Trades", back_populates="point")
     managers = relationship("Users", back_populates="points")
+
+    def __str__(self):
+        return f"Офис {self.name}"

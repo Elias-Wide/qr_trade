@@ -7,7 +7,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.bot.constants import (
+from app.core.constants import (
     DEFAULT_KEYBOARD_SIZE,
     DELETE_CODE,
     DELETED,

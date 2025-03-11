@@ -9,7 +9,7 @@ from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 from app.bot.handlers.callbacks.faq_menu import get_faq_menu
 from app.bot.handlers.callbacks.qr_menu import get_qr_menu
 from app.bot.keyboards.main_kb_builder import get_image_and_kb
-from app.bot.constants import MAIN_MENU
+from app.core.constants import MAIN_MENU
 from app.bot.handlers.callbacks.profile_menu import get_profile_menu
 from app.bot.keyboards.buttons import (
     CHECK_QR,

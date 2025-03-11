@@ -14,7 +14,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.bot.keyboards.qr_menu_kb import get_qr_list_kb
 from app.bot.keyboards.banners import get_img
-from app.bot.constants import (
+from app.core.constants import (
     DEFAULT_KEYBOARD_SIZE,
     MAIN_MENU,
     MAIN_MENU_COMMANDS,

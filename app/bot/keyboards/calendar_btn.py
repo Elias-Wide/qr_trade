@@ -10,7 +10,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.bot.constants import (
+from app.core.constants import (
     CALENDAR_KEYBOARD_SIZE,
     DAY,
     DEFAULT_KEYBOARD_SIZE,
@@ -37,7 +37,7 @@ from datetime import date, datetime
 
 from aiogram.types import CallbackQuery
 
-from app.bot.constants import DEFAULT_KEYBOARD_SIZE
+from app.core.constants import DEFAULT_KEYBOARD_SIZE
 
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup

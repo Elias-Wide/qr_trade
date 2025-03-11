@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy import ARRAY, JSON, Column, Date, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import ChoiceType
-from app.bot.constants import NOTIFICATION_TYPE
+from app.core.constants import NOTIFICATION_TYPE
 from app.core.database import Base
 
 
@@ -17,3 +17,6 @@ class Schedules(Base):
     )
     schedule = Column(ARRAY(Date), default=[])
     user = relationship("Users", back_populates="schedule")
+
+    def __str__(self):
+        return f"График польззователя {self.user_id}"

@@ -8,9 +8,10 @@ from io import BytesIO
 from PIL import Image
 from pyzbar.pyzbar import decode
 from PIL import Image
-from aiogram.types import Message
+from aiogram.types import ContentType, Message
+import openpyxl
 import segno
-from app.bot.constants import (
+from app.core.constants import (
     FMT_JPG,
     MONTH,
     NOTIFICATION_TYPE,
@@ -96,14 +97,12 @@ async def validate_photo(message: Message) -> bool:
     Загруженный файл(qr-код) декодируется и проверяется регуляркой
     на соответствие - если True -в значение value записываются
     последние три цифры кода.
-    Если данные не проходят проверку - файл удаляется.
-    Функция возвращает словарь со значениями file_name и value.
+    Функция возвращает словарь со значениями client_id и encode_value.
     """
+
     result_data: dict[str] = {"client_id": None, "encode_value": None}
-    file_from_bot = await bot.get_file(message.photo[-1].file_id)
-    buffer = BytesIO()
-    img = await bot.download_file(file_from_bot.file_path, buffer)
-    decoded_qr = await decode_qr(img)
+    buffer = await download_file_from_bot(message)
+    decoded_qr = await decode_qr(buffer)
     logger(decoded_qr)
     if re.fullmatch(REGEX_QR_PATTERN, decoded_qr):
         client_id, value = decoded_qr.split("_")
@@ -181,3 +180,25 @@ async def delete_file(path: str):
         os.remove(path)
     except:
         logger("Ошибка удаления файла")
+
+
+async def read_excel_file(message: Message):
+    """Обработка данных эксель файла."""
+
+    xlsx_file_in_buffer = await download_file_from_bot(message)
+    workbook = openpyxl.load_workbook(xlsx_file_in_buffer)
+    sheet = workbook.active
+    for row in sheet.iter_rows(values_only=True):
+        id, address = row
+        logger(id, address)
+
+
+async def download_file_from_bot(message: Message) -> BytesIO:
+    """Загрузка файла из бота в буфер."""
+
+    buffer = BytesIO()
+    if message.content_type == ContentType.PHOTO:
+        file_from_bot = await bot.get_file(message.photo[-1].file_id)
+    elif message.content_type == ContentType.DOCUMENT:
+        file_from_bot = await bot.get_file(message.document.file_id)
+    return await bot.download_file(file_from_bot.file_path, buffer)

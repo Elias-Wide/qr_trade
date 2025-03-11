@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from sqlalchemy import and_, func, insert, select
-from app.bot.constants import TIMEZONE_RU
+from app.core.constants import TIMEZONE_RU
 from app.dao.base import BaseDAO, ModelType
 from app.core.database import async_session_maker
 from app.sale_codes.models import Sale_Codes
