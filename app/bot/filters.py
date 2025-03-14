@@ -36,7 +36,6 @@ class UserExistFilter(BaseFilter):
             attr_name=self.attr_name, attr_value=attr_value
         )
         if obj:
-            logger(obj.username)
             return {self.attr_name: attr_value, "model_obj": obj}
         logger(False)
         return False
@@ -48,7 +47,7 @@ class ManagerExistFilter(UserExistFilter):
     Если в базе уже есть такой id - возвращает False.
     """
 
-    def __init__(self) -> None:
+    def __init__(self) -> None:gi
         self.modelDAO = UsersDAO
         self.attr_name = "manager_id"
 

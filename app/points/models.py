@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 
@@ -18,11 +18,14 @@ class Points(Base):
         managers: менеджеры офиса
     """
 
-    name = Column(String, nullable=False, unique=True)
-    point_id = Column(Integer, nullable=False, unique=True)
     addres = Column(String, nullable=False)
+    point_id = Column(Integer, nullable=False, unique=True)
+    region_id = Column(
+        ForeignKey("regions.id", ondelete="SET NULL"), nullable=True
+    )
+    region = relationship("Regions", back_populates="points")
     trades = relationship("Trades", back_populates="point")
     managers = relationship("Users", back_populates="points")
 
     def __str__(self):
-        return f"Офис {self.name}"
+        return f"{self.addres}"

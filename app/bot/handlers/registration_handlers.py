@@ -91,7 +91,9 @@ async def ask_access_code(
 
 
 @registration_router.message(
-    RegistrationStates.access_code, F.content_type == "text", AccesCodeFilter()
+    RegistrationStates.access_code,
+    F.content_type == "text",
+    AccesCodeFilter(),
 )
 async def ask_manager_id(
     message: Message,
@@ -187,7 +189,9 @@ async def handle_invalid_manager_id(message: Message) -> None:
 
 
 @registration_router.message(
-    RegistrationStates.point_id_question, F.text.isdigit(), ~PointExistFilter()
+    RegistrationStates.point_id_question,
+    F.text.isdigit(),
+    ~PointExistFilter(),
 )
 async def handle_invalid_point_id(message: Message) -> None:
     """Сообщение о введенном невалидном point id."""

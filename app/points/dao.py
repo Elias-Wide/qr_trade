@@ -12,7 +12,8 @@ class PointsDAO(BaseDAO):
     async def search_by_addres(cls, searching_address: str):
         async with async_session_maker() as session:
             get_objs = await session.execute(
-                select(cls.model.__table__.columns).where(
+                select(cls.model.__table__.columns)
+                .where(
                     and_(
                         func.lower(Points.addres).contains(
                             searching_address.lower(),
@@ -20,6 +21,7 @@ class PointsDAO(BaseDAO):
                         Points.point_id != 1,
                     )
                 )
+                .order_by("addres")
             )
             logger(get_objs, searching_address)
             return get_objs.mappings().all()

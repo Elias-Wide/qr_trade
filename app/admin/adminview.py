@@ -1,6 +1,7 @@
 from sqladmin import ModelView
 from app.core.constants import ADMIN_VIEW_PAGE_SIZE
 from app.points.models import Points
+from app.regions.models import Regions
 from app.sale_codes.models import Sale_Codes
 from app.schedules.models import Schedules
 from app.trades.models import Trades
@@ -39,6 +40,7 @@ class SchedulesAdmin(ModelView, model=Schedules):
     can_delete = False
     column_searchable_list = [Schedules.user_id]
     column_sortable_list = [Schedules.notice_type]
+    icon = "fa fa-bell"
 
 
 class PointsAdmin(ModelView, model=Points):
@@ -48,7 +50,9 @@ class PointsAdmin(ModelView, model=Points):
     name = "Офис"
     name_plural = "Офисы"
     can_delete = True
+    column_sortable_list = [Points.addres]
     column_searchable_list = [Points.addres, Points.point_id]
+    icon = "fa fa-house"
 
 
 class Sale_CodesAdmin(ModelView, model=Sale_Codes):
@@ -59,7 +63,8 @@ class Sale_CodesAdmin(ModelView, model=Sale_Codes):
     name_plural = "Коды продаж"
     can_delete = True
     column_searchable_list = [Sale_Codes.client_id]
-    column_exclude_list = [Sale_Codes.encoded_value]
+    column_exclude_list = [Sale_Codes.encoded_value, Sale_Codes.trades]
+    icon = "fa fa-star"
 
 
 class TradesAdmin(ModelView, model=Trades):
@@ -73,12 +78,29 @@ class TradesAdmin(ModelView, model=Trades):
     name_plural = "Трейды"
     can_delete = True
     column_searchable_list = [Trades.user_id, Trades.point_id]
+    icon = "fa fa-handshake"
+
+
+class RegionsAdmin(ModelView, model=Regions):
+    """Настройки страницы офисов."""
+
+    column_list = [c.name for c in Regions.__table__.c] + [
+        Regions.ceo,
+        Regions.points,
+    ]
+    name = "Регион"
+    name_plural = "Регионы"
+    can_delete = True
+    column_sortable_list = [Regions.name]
+    column_searchable_list = [Regions.name, Regions.ceo]
+    icon = "fa fa-map"
 
 
 admin_views: tuple[ModelView] = (
-    PointsAdmin,
-    Sale_CodesAdmin,
-    SchedulesAdmin,
-    TradesAdmin,
     UsersAdmin,
+    SchedulesAdmin,
+    PointsAdmin,
+    RegionsAdmin,
+    Sale_CodesAdmin,
+    TradesAdmin,
 )
