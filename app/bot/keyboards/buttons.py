@@ -9,30 +9,35 @@ from app.core.constants import MAIN_MENU, NOTIFICATION_TYPE
 
 ADD_POINT: str = "add_point"
 ADD_QR: str = "add_qr"
+BACK_BTN: str = "Назад ◀️"
 CANCEL: str = "cancel"
 CANCEL_SEARCH: str = "Отменить поиск"
 CHANGE_POINT = "change_point"
 CHECK_QR: str = "check_qr"
 CONFIRM_SALE: str = "confirm_sale"
-BACK_BTN: str = "Назад ◀️"
+CONFIRM_SCHEDULE: str = "confirm_schedule"
+CONFIRM_SEND: str = "confirm_send"
 DELETE_QR: str = "del_qr"
 DELETE_QR_BTN = "QR{} ❌"
 EMPTY_BTN: str = "Это пустые кнопки, не балуйся!"
 FAQ_MENU: str = "faq"
 FAQ_PROFILE: str = "faq_profile"
 FAQ_QR: str = "faq_qr"
+MAX_POINTS_LIST_MSG: str = (
+    "Вы добавили максимальное количество пунктов! \n"
+    "Подтвердите отправку. \n\n"
+)
 NONE_MENU = "none"
 NOTIFICATIONS: str = "notifications"
 POINT_SEARCH: str = "point_search"
 PROFILE: str = "profile"
-QR_INFO_BTN: str = "QR{}❌"
+QR_INFO_BTN: str = "QR{} ✳️"
 QR_MENU: str = "qr_menu"
 SET_SCHEDULE: str = "set_schedule"
 SEND_QR: str = "qr_send"
 SCHEDULE: str = "schedule"
 UPDATE_QR: str = "qr_update"
-CONFIRM_SEND: str = "confirm_send"
-CONFIRM_SCHEDULE: str = "confirm_schedule"
+
 CONFIRM_SCHEDULE_BTN: tuple[str] = (CONFIRM_SCHEDULE, "Сохранить график 📝")
 CONFIRM_SEND_BTNS: tuple[tuple[str]] = ((CONFIRM_SEND, "📦 Отправить 📦"),)
 CONFIRM_BTNS: tuple[tuple[str]] = ((CHECK_QR, "✅ Заказ закрыт✅"),)

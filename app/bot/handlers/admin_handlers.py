@@ -6,9 +6,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import ContentType, Message
 from aiogram.fsm.state import default_state
 
+from app.core.logging import logger
 from app.bot.filters import AdminFilter
 from app.bot.handlers.states import AdminStates
 from app.bot.utils import read_excel_file
+from app.points.dao import PointsDAO
 
 
 admin_router = Router()
@@ -27,4 +29,7 @@ async def procces_dnwld_point_command(message: Message, state: FSMContext):
 )
 async def proccess_dwnld_file(message: Message, state: FSMContext):
     """Обработка сообщения, загрузка и обработка файла."""
-    await read_excel_file(message=message)
+    point_list = await read_excel_file(message=message)
+    for point_data in point_list:
+        await PointsDAO.create(point_data)
+    await message.answer(text="Success!")

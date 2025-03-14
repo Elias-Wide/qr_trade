@@ -11,6 +11,7 @@ from app.core.config import settings  # noqa
 from app.core.database import Base  # noqa
 from app.schedules.models import Schedules  # noqa
 from app.points.models import Points  # noqa
+from app.regions.models import Regions  # noqa
 from app.sale_codes.models import Sale_Codes  # noqa
 from app.trades.models import Trades  # noqa
 from app.users.models import Users  # noqa

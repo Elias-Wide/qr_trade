@@ -188,9 +188,10 @@ async def read_excel_file(message: Message):
     xlsx_file_in_buffer = await download_file_from_bot(message)
     workbook = openpyxl.load_workbook(xlsx_file_in_buffer)
     sheet = workbook.active
-    for row in sheet.iter_rows(values_only=True):
-        id, address = row
-        logger(id, address)
+    return [
+        {"point_id": row[0], "addres": row[1]}
+        for row in sheet.iter_rows(values_only=True)
+    ]
 
 
 async def download_file_from_bot(message: Message) -> BytesIO:

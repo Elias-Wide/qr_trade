@@ -97,6 +97,7 @@ async def get_point_list_kb(
     user_id: int,
     next_menu: str,
     level: int = 2,
+    points_in_state: list,
     size: int = POINT_LIST_KB_SIZE,
     points_list: list[Points],
     previous_menu: str = QR_MENU,
@@ -107,6 +108,8 @@ async def get_point_list_kb(
     kb_builder = InlineKeyboardBuilder()
     btns = []
     for point in points_list:
+        if point.point_id in points_in_state:
+            continue
         text = f"ID {point.point_id} 🛍 {point.addres}"
         btns.append(
             InlineKeyboardButton(
