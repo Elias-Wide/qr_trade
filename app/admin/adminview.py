@@ -1,4 +1,5 @@
 from sqladmin import ModelView
+from app.acces_codes.models import Acces_Codes
 from app.core.constants import ADMIN_VIEW_PAGE_SIZE
 from app.points.models import Points
 from app.regions.models import Regions
@@ -58,7 +59,6 @@ class PointsAdmin(ModelView, model=Points):
 class Sale_CodesAdmin(ModelView, model=Sale_Codes):
     """Настройки страницы кодов продаж."""
 
-    # column_list = [c.name for c in Sale_Codes.__table__.c] + [Sale_Codes.user]
     name = "Код продажи"
     name_plural = "Коды продаж"
     can_delete = True
@@ -96,6 +96,16 @@ class RegionsAdmin(ModelView, model=Regions):
     icon = "fa fa-map"
 
 
+class Acces_CodesAdmin(ModelView, model=Acces_Codes):
+    """Настройки страницы кодов доступа."""
+
+    column_list = [c.name for c in Acces_Codes.__table__.c]
+    name = "Код доступа"
+    name_plural = "Код доступа"
+    can_delete = True
+    icon = "fa fa-lock"
+
+
 admin_views: tuple[ModelView] = (
     UsersAdmin,
     SchedulesAdmin,
@@ -103,4 +113,5 @@ admin_views: tuple[ModelView] = (
     RegionsAdmin,
     Sale_CodesAdmin,
     TradesAdmin,
+    Acces_CodesAdmin,
 )

@@ -4,6 +4,7 @@ from aiogram.filters import BaseFilter
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.acces_codes.dao import Acces_CodesDAO
 from app.core.config import settings
 from app.points.dao import PointsDAO
 from app.bot.utils import download_file, validate_photo
@@ -47,7 +48,7 @@ class ManagerExistFilter(UserExistFilter):
     Если в базе уже есть такой id - возвращает False.
     """
 
-    def __init__(self) -> None:gi
+    def __init__(self) -> None:
         self.modelDAO = UsersDAO
         self.attr_name = "manager_id"
 
@@ -70,9 +71,9 @@ class AccesCodeFilter(BaseFilter):
     """Класс валидации кода доступа к боту."""
 
     async def __call__(self, message: Message) -> bool:
-        if message.text.strip() == "wb123":
-            return True
-        return False
+        return await Acces_CodesDAO.check_acces(
+            acces_code=message.text.strip()
+        )
 
 
 class ImgValidationFilter(BaseFilter):

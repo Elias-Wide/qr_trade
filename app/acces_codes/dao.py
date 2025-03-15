@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.acces_codes.models import Acces_Codes
@@ -15,7 +15,6 @@ class Acces_CodesDAO(BaseDAO):
     async def check_acces(
         cls,
         acces_code: str,
-        session: AsyncSession,
     ) -> bool:
         """Проверить доступ.
         Принимает код, проверяет наличие его в бд
@@ -23,13 +22,18 @@ class Acces_CodesDAO(BaseDAO):
         В случае успешной проверки, урезает доступный лимит
         на единицу и возращает True.
         """
-        code_object = await session.execute(
-            select(Acces_Codes).filter_by(
-                Acces_Codes.value == acces_code, Acces_Codes.limit > 0
+        async with async_session_maker() as session:
+            code_object = await session.execute(
+                select(Acces_Codes).where(
+                    and_(
+                        Acces_Codes.value == acces_code, Acces_Codes.limit > 0
+                    )
+                )
             )
-        ).scalar_one_or_none()
-        if not code_object:
-            return False
-        code_object.limit -= 1
-        session.commit()
-        return True
+            code_object = code_object.scalar_one_or_none()
+            if not code_object:
+                return False
+            code_object.limit -= 1
+            await session.commit()
+            await session.refresh(code_object)
+            return True
