@@ -1,8 +1,9 @@
+from typing import AsyncGenerator
 from sqlalchemy import Column, Integer
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker
 
-from app.config import settings
+from app.core.config import settings
 
 
 class PreBase:
@@ -16,10 +17,12 @@ class PreBase:
     id = Column(Integer, primary_key=True)
 
 
-engine = create_async_engine(settings.DB_URL)
+engine = create_async_engine(settings.db.url)
 
 async_session_maker = sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
 )
 
 
