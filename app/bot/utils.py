@@ -1,6 +1,4 @@
-from datetime import datetime
 import os
-import qrtools
 import re
 import random
 import string
@@ -10,19 +8,14 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 from aiogram.types import ContentType, Message
 import openpyxl
-import segno
 from app.core.constants import (
     FMT_JPG,
-    MONTH,
     NOTIFICATION_TYPE,
     REGEX_QR_PATTERN,
 )
 from app.bot.create_bot import bot
-from app.bot.keyboards.buttons import NOTIFICATIONS_BTNS
-from app.core.config import QR_DIR
 from app.core.logging import logger
 from app.core.utils import encode_data
-from app.sale_codes.dao import Sale_CodesDAO
 from app.schedules.dao import SchedulesDAO
 from app.points.models import Points
 from app.users.dao import UsersDAO

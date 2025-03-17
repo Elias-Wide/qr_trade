@@ -1,17 +1,14 @@
-import base64
 import os
 
 from cryptography.fernet import Fernet
 from passlib.context import CryptContext
-import segno
-from pyzbar.pyzbar import decode
-from PIL import Image
 
-from app.core.config import STATIC_DIR, settings
+
+
+from app.core.config import settings
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# key = settings.auth.secret_key
 
 
 async def encode_data(data: str) -> str:
