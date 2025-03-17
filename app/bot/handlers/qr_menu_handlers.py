@@ -244,25 +244,29 @@ async def procces_add_point(
 ):
     """ОБработка найденного пункта, доавление в state_data."""
     logger()
-    state_data = await state.get_data()
-    point = await PointsDAO.get_by_attribute(
-        attr_name="point_id", attr_value=callback_data.point_id
-    )
-    state_data["points"][point.point_id] = point
-    await callback.message.edit_media(
-        media=await get_img(
-            POINT_SEARCH,
-            caption=await get_point_list_caption(state_data["points"]),
-        ),
-        reply_markup=await get_btns(
-            menu_name=POINT_SEARCH,
-            next_menu=CONFIRM_SEND,
-            btns_data=CONFIRM_SEND_BTNS,
-            previous_menu=QR_MENU,
-            level=2,
-        ),
-    )
-    await state.update_data(points=state_data["points"])
+    try:
+        state_data = await state.get_data()
+        point = await PointsDAO.get_by_attribute(
+            attr_name="point_id", attr_value=callback_data.point_id
+        )
+        state_data["points"][point.point_id] = point
+        await callback.message.edit_media(
+            media=await get_img(
+                POINT_SEARCH,
+                caption=await get_point_list_caption(state_data["points"]),
+            ),
+            reply_markup=await get_btns(
+                menu_name=POINT_SEARCH,
+                next_menu=CONFIRM_SEND,
+                btns_data=CONFIRM_SEND_BTNS,
+                previous_menu=QR_MENU,
+                level=2,
+            ),
+        )
+        await state.update_data(points=state_data["points"])
+    except Exception as error:
+        logger(error)
+        await callback.answer(text=CRITICAL_ERROR, show_alert=True)
 
 
 @code_router.message(
@@ -276,69 +280,73 @@ async def process_point_search(message: Message, state: FSMContext):
     Валидация пункта через фильтр непосредственно в хэндлере.
     """
     state_data = await state.get_data()
-    logger(state_data)
-    if len(state_data["points"]) > 3:
-        await message.answer_photo(
-            photo=await get_file(POINT_SEARCH),
-            caption=MAX_POINTS_LIST_MSG
-            + (
-                await get_point_list_caption(
-                    state_data["points"],
-                )
-            ),
-            reply_markup=await get_btns(
-                menu_name=POINT_SEARCH,
-                next_menu=CONFIRM_SEND,
-                btns_data=CONFIRM_SEND_BTNS,
-                previous_menu=QR_MENU,
-                level=2,
-            ),
-        )
-    else:
-        if message.text.isdigit():
-            point_filter = PointExistFilter()
-            point = (await point_filter(message))["model_obj"]
-            if not point:
-                await message.answer_photo(
-                    photo=await get_file(NOT_FOUND),
-                    caption=captions.not_found,
-                )
-            else:
-                state_data["points"][point.point_id] = point
-                await message.answer_photo(
-                    photo=await get_file(POINT_SEARCH),
-                    caption=await get_point_list_caption(
+    try:
+        if len(state_data["points"]) == 3:
+            await message.answer_photo(
+                photo=await get_file(POINT_SEARCH),
+                caption=MAX_POINTS_LIST_MSG
+                + (
+                    await get_point_list_caption(
                         state_data["points"],
-                    ),
-                    reply_markup=await get_btns(
-                        menu_name=POINT_SEARCH,
-                        next_menu=CONFIRM_SEND,
-                        btns_data=CONFIRM_SEND_BTNS,
-                        previous_menu=QR_MENU,
-                        level=2,
-                    ),
-                )
-                await state.update_data(points=state_data["points"])
+                    )
+                ),
+                reply_markup=await get_btns(
+                    menu_name=POINT_SEARCH,
+                    next_menu=CONFIRM_SEND,
+                    btns_data=CONFIRM_SEND_BTNS,
+                    previous_menu=QR_MENU,
+                    level=2,
+                ),
+            )
         else:
-            if len(message.text) >= 5:
-                points = await PointsDAO.search_by_addres(message.text)
-                if not points:
+            if message.text.isdigit():
+                point_filter = PointExistFilter()
+                point = (await point_filter(message))["model_obj"]
+                if not point:
                     await message.answer_photo(
                         photo=await get_file(NOT_FOUND),
                         caption=captions.not_found,
                     )
                 else:
-                    logger(len(state_data["points"]))
+                    state_data["points"][point.point_id] = point
                     await message.answer_photo(
                         photo=await get_file(POINT_SEARCH),
-                        caption=captions.choose_point,
-                        reply_markup=await get_point_list_kb(
-                            user_id=state_data["user_id"],
-                            next_menu=POINT_SEARCH,
-                            points_list=points,
-                            points_in_state=state_data["points"],
+                        caption=await get_point_list_caption(
+                            state_data["points"],
+                        ),
+                        reply_markup=await get_btns(
+                            menu_name=POINT_SEARCH,
+                            next_menu=CONFIRM_SEND,
+                            btns_data=CONFIRM_SEND_BTNS,
+                            previous_menu=QR_MENU,
+                            level=2,
                         ),
                     )
+                    await state.update_data(points=state_data["points"])
+            else:
+                if len(message.text) >= 5:
+                    points = await PointsDAO.search_by_addres(message.text)
+                    if not points:
+                        await message.answer_photo(
+                            photo=await get_file(NOT_FOUND),
+                            caption=captions.not_found,
+                        )
+                    else:
+                        logger(len(state_data["points"]))
+                        await message.answer_photo(
+                            photo=await get_file(POINT_SEARCH),
+                            caption=captions.choose_point,
+                            reply_markup=await get_point_list_kb(
+                                user_id=state_data["user_id"],
+                                next_menu=POINT_SEARCH,
+                                points_list=points,
+                                points_in_state=state_data["points"],
+                            ),
+                        )
+    except Exception as error:
+        logger(error)
+        await message.answer(text=CRITICAL_ERROR)
+
     await message.delete()
 
 

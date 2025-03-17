@@ -110,7 +110,6 @@ class AdminFilter(BaseFilter):
     """Класс фильтрации по наличию прав админа."""
 
     async def __call__(self, message: Message):
-        logger(message.from_user.id, settings.telegram.admin_id)
         if message.from_user.id == int(settings.telegram.admin_id):
             return True
         return False

@@ -11,7 +11,8 @@ from app.users.dao import UsersDAO
 async def send_order_notification() -> None:
     """Функция для уведомления пользователя о наличии заказов."""
     # timedeltas = в разработке
-    users_tg_id_list = await UsersDAO.get_telegram_id()
+    users_tg_id_list = await UsersDAO.get_telegram_id_for_trades()
+    logger(users_tg_id_list)
     for tg_id in users_tg_id_list:
         try:
             await bot.send_message(

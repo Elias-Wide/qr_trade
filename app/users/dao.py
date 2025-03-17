@@ -52,7 +52,7 @@ class UsersDAO(BaseDAO):
             )
 
     @classmethod
-    async def get_telegram_id(cls) -> list[int]:
+    async def get_telegram_id_for_trades(cls) -> set[int]:
         """
         Получить список id пользователей.
         Возвращает список telegram id пользователей,
@@ -91,4 +91,4 @@ class UsersDAO(BaseDAO):
                     )
                 )
             )
-            return get_users_id.all()
+            return set(get_users_id.all())

@@ -40,7 +40,7 @@ async def get_menucallback_data(
             attr_name="telegram_id", attr_value=callback.message.chat.id
         )
         callback_data.user_id = user.id
-    logger(callback_data)
+    logger()
     media, reply_markup = await get_menu_content(
         level=callback_data.level,
         menu_name=callback_data.menu_name,

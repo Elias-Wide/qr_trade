@@ -18,7 +18,6 @@ from app.core.constants import (
 )
 
 from app.bot.keyboards.calendar_btn import get_days_btns
-from app.bot.utils import get_schedule_caption
 from app.core.logging import logger
 from app.bot.filters import (
     BanFilter,
@@ -132,9 +131,7 @@ async def set_user_schedule(
         )
         logger(user_schedule)
         await callback.message.edit_media(
-            media=await get_img(
-                SCHEDULE, caption=await get_schedule_caption()
-            ),
+            media=await get_img(SCHEDULE),
             reply_markup=await get_days_btns(
                 user_id=callback_data.user_id,
                 level=callback_data.level,
@@ -186,9 +183,7 @@ async def procce_set_schedule(
                 user_schedule = sorted(user_schedule)
                 logger(user_schedule)
             await callback.message.edit_media(
-                media=await get_img(
-                    SCHEDULE, caption=await get_schedule_caption()
-                ),
+                media=await get_img(SCHEDULE),
                 reply_markup=await get_days_btns(
                     user_id=callback_data.user_id,
                     level=callback_data.level,

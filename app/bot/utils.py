@@ -165,15 +165,6 @@ async def get_notice_type(user_id: int) -> str:
     return caption.format("ВЫКЛ")
 
 
-async def get_schedule_caption() -> str:
-    now = datetime.now()
-    return (
-        f"<s>{MONTH[now.month-1]}</s>            "
-        f"<b>{MONTH[now.month]}</b>            "
-        f"<s>{MONTH[now.month + 1]}</s>\n\n"
-    )
-
-
 async def delete_file(path: str):
     """Удалить файл в заданной директории"""
     try:

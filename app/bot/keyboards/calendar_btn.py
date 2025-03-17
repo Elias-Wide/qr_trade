@@ -16,6 +16,7 @@ from app.core.constants import (
     DEFAULT_KEYBOARD_SIZE,
     MAIN_MENU,
     MAIN_MENU_COMMANDS,
+    MONTH,
 )
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
@@ -59,6 +60,24 @@ async def get_days_btns(
     """
     logger()
     kb_builder = InlineKeyboardBuilder()
+    btns = []
+    now = datetime.now()
+    for month_number in range(now.month - 1, now.month + 2):
+        text = f"{MONTH[month_number]}".lower()
+        logger(month_number, now.month)
+        if month_number == now.month:
+            text = text.upper()
+        btns.append(
+            InlineKeyboardButton(
+                text=text,
+                callback_data=MenuCallBack(
+                    level=level,
+                    menu_name=menu_name,
+                    user_id=user_id,
+                ).pack(),
+            ),
+        )
+    kb_builder.row(*btns, width=3)
     btns = []
     for menu, text in CALENDAR_BTNS:
         btns.append(

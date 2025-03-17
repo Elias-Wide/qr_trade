@@ -20,7 +20,6 @@ async def get_faq_menu(
         case 2:
             btns_data = None
             previous_menu = FAQ_MENU
-    print(menu_name, user_id, btns_data, level, previous_menu)
     return await get_image_and_kb(
         menu_name=menu_name,
         user_id=user_id,

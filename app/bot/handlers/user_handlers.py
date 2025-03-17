@@ -13,11 +13,6 @@ from app.bot.handlers.callbacks.main_menu import (
 )
 from app.bot.keyboards.buttons import MAIN_MENU_PAGES, QR_MENU
 from app.bot.keyboards.main_kb_builder import MenuCallBack
-from app.bot.scheduler import (
-    clear_user_schedule,
-    delete_old_sale_codes,
-    delete_old_trades,
-)
 from app.core.logging import logger
 
 
@@ -58,20 +53,7 @@ async def user_menu(
         await get_menucallback_data(callback, callback_data)
         await callback.answer()
     except Exception as error:
+        logger(error)
         await callback.answer(
             text="Критическая ошибка / перезапустите бота", show_alert=True
         )
-
-
-@user_router.message(Command("check_tgid"))
-async def process_check_command(
-    message: Message,
-) -> None:
-    """Обработка нажатия кнопки open_qr."""
-    logger()
-    try:
-        await clear_user_schedule()
-        await delete_old_sale_codes()
-        await delete_old_trades()
-    except Exception as error:
-        logger(error)

@@ -35,19 +35,23 @@ class UsersAdmin(ModelView, model=Users):
 class SchedulesAdmin(ModelView, model=Schedules):
     """Настрйоки страницы графика."""
 
-    column_list = [c.name for c in Schedules.__table__.c] + [Schedules.user]
+    column_list = [Schedules.user] + [c.name for c in Schedules.__table__.c]
     name = "Оповещение"
     name_plural = "Оповещения"
     can_delete = False
     column_searchable_list = [Schedules.user_id]
     column_sortable_list = [Schedules.notice_type]
     icon = "fa fa-bell"
+    can_edit = False
 
 
 class PointsAdmin(ModelView, model=Points):
     """Настройки страницы офисов."""
 
-    column_list = [c.name for c in Points.__table__.c] + [Points.managers]
+    column_list = [c.name for c in Points.__table__.c] + [
+        Points.region,
+        Points.managers,
+    ]
     name = "Офис"
     name_plural = "Офисы"
     can_delete = True

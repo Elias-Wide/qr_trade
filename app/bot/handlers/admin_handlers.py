@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import ContentType, Message
 from aiogram.fsm.state import default_state
 
+from app.bot.scheduler import send_order_notification
 from app.core.logging import logger
 from app.bot.filters import AdminFilter
 from app.bot.handlers.states import AdminStates
@@ -33,3 +34,15 @@ async def proccess_dwnld_file(message: Message, state: FSMContext):
     for point_data in point_list:
         await PointsDAO.create(point_data)
     await message.answer(text="Success!")
+
+
+@admin_router.message(Command("test_msg"))
+async def process_check_command(
+    message: Message,
+) -> None:
+    """Обработка нажатия кнопки open_qr."""
+    logger()
+    try:
+        await send_order_notification()
+    except Exception as error:
+        logger(error)

@@ -11,7 +11,6 @@ class Points(Base):
     """Модель офиса.
 
     Args:
-        name: короткое имя
         point_id: id офиса
         addres: полный адрес
         trades: созданные модели обмена кодами

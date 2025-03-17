@@ -19,4 +19,4 @@ class Schedules(Base):
     user = relationship("Users", back_populates="schedule")
 
     def __str__(self):
-        return f"График польззователя {self.user_id}"
+        return f"График пользователя {self.user_id}"
