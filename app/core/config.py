@@ -13,7 +13,7 @@ QR_DIR = STATIC_DIR / "qr"
 
 class ConfigBase(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file="main.env", env_file_encoding="utf-8", extra="ignore"
     )
 
 

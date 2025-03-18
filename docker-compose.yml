@@ -1,0 +1,21 @@
+services:
+  main_bot:
+    build:
+      context: .
+    env_file:
+      - main.env
+    restart: on-failure
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres_main
+
+  postgres_main:
+    image: postgres:latest
+    env_file:
+      - db.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
