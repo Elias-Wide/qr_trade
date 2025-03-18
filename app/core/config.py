@@ -45,7 +45,6 @@ class TelegramConfig(ConfigBase):
     admin_username: str
     admin_id: int
     webhook_host: str
-    webhook_mode: bool
 
 
 class DatabaseConfig(ConfigBase):
@@ -80,4 +79,4 @@ class Settings(BaseSettings):
         return cls()
 
 
-settings = Settings()
+settings = Settings.load()

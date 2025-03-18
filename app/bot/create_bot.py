@@ -5,14 +5,13 @@ from aiogram.enums import ParseMode
 
 from app.core.config import settings
 
-
 bot = Bot(
     token=settings.telegram.bot_token.get_secret_value(),
     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
 dp = Dispatcher()
-
-
+print(settings.db.url)
+print(settings.telegram.bot_token.get_secret_value())
 async def start_bot():
     try:
         await bot.send_message(settings.telegram.admin_id, f"Я запущен🥳.")
@@ -34,8 +33,3 @@ async def critical_message_to_admin(message: str):
         await bot.send_message(settings.telegram.admin_id, message)
     except:
         pass
-
-
-# async def download_file(file, destination):
-#     file_name =
-#     destination_file = await bot.download_file(file.file_id, os.path.join(os.getcwd(), file_name))

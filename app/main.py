@@ -81,13 +81,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-admin = Admin(
-    app=app,
-    engine=engine,
-    authentication_backend=authentication_backend,
-)
-
-
 @app.post("/webhook")
 async def webhook(request: Request) -> None:
     logging.info("Received webhook request")
@@ -96,13 +89,18 @@ async def webhook(request: Request) -> None:
     logging.info("Update processed")
 
 
-if __name__ == "__main__":
-    config = uvicorn.Config(
-        "main:app",
-        port=5000,
-    )
-    server = uvicorn.Server(config)
-    server.run()
+# if __name__ == "__main__":
+#     config = uvicorn.Config(
+#         "main:app",
+#         port=5000,
+#     )
+#     server = uvicorn.Server(config)
+#     server.run()
+admin = Admin(
+    app=app,
+    engine=engine,
+    authentication_backend=authentication_backend,
+)
 
 for view in admin_views:
     admin.add_view(view)
