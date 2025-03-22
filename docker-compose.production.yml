@@ -1,6 +1,6 @@
 services:
   main_bot:
-    image: eliaswide/qr_trade_bot
+    image: eliaswide/qr_bot
     env_file:
       - main.env
     restart: on-failure

@@ -43,7 +43,7 @@ def upgrade() -> None:
         ["id"],
         ondelete="CASCADE",
     )
-    op.create_foreign_key(None, "users", "points", ["point_id"], ["point_id"])
+    op.create_foreign_key(None, "users", "points", ["point_id"], ["id"])
     # ### end Alembic commands ###
 
 

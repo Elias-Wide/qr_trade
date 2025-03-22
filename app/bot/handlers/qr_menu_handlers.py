@@ -281,7 +281,7 @@ async def process_point_search(message: Message, state: FSMContext):
     """
     state_data = await state.get_data()
     try:
-        if len(state_data["points"]) == 3:
+        if len(state_data["points"]) == 10:
             await message.answer_photo(
                 photo=await get_file(POINT_SEARCH),
                 caption=MAX_POINTS_LIST_MSG
