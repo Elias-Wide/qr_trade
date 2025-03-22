@@ -1,8 +1,8 @@
-"""init_models_done
+"""update users
 
-Revision ID: dc8312f39b4d
-Revises: 
-Create Date: 2025-03-17 19:39:42.844773
+Revision ID: 0d43a615b78c
+Revises: 0a15eee1aeb2
+Create Date: 2025-03-22 14:36:45.735040
 
 """
 
@@ -14,8 +14,8 @@ import sqlalchemy_utils
 
 
 # revision identifiers, used by Alembic.
-revision: str = "dc8312f39b4d"
-down_revision: Union[str, None] = None
+revision: str = "0d43a615b78c"
+down_revision: Union[str, None] = "0a15eee1aeb2"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

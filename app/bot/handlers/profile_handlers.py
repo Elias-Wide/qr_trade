@@ -1,3 +1,5 @@
+from asyncio import sleep
+import asyncio
 from datetime import datetime
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -40,6 +42,7 @@ from app.bot.keyboards.main_kb_builder import get_btns
 from app.points.models import Points
 from app.schedules.dao import SchedulesDAO
 from app.users.dao import UsersDAO
+from app.users.models import Users
 
 
 profile_router = Router()
@@ -66,14 +69,14 @@ async def change_user_point(
     ProfileStates.change_point, F.text.isdigit(), PointExistFilter()
 )
 async def process_change_user_point(
-    message: Message, state: FSMContext, telegram_id: int, point_id: Points
+    message: Message, state: FSMContext, telegram_id: int, model_obj: Points
 ) -> None:
     """Смена пункта пользователя в меню профиля."""
-    logger()
+    logger(telegram_id, model_obj)
     user = await UsersDAO.get_by_attribute(
         attr_name="telegram_id", attr_value=telegram_id
     )
-    await UsersDAO.update(user, {"point_id": point_id})
+    await UsersDAO.update(user, {"point_id": model_obj.id})
     await message.delete()
     await state.clear()
     await procces_main_menu_comand(message, level=1, menu_name=PROFILE)

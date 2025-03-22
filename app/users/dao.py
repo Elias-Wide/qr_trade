@@ -29,13 +29,13 @@ class UsersDAO(BaseDAO):
             get_user = await session.execute(
                 select(
                     Users.__table__.columns,
-                    Points.point_id,
+                    Points.point_id.label("office_id"),
                     Points.addres,
                     Schedules.schedule,
                     Schedules.notice_type,
                 )
                 .join(Schedules, Schedules.user_id == Users.id, isouter=True)
-                .join(Points, Points.point_id == Users.point_id, isouter=True)
+                .join(Points, Points.id == Users.point_id, isouter=True)
                 .where(Users.id == user_id)
             )
         data = get_user.mappings().all()[0]
@@ -75,9 +75,13 @@ class UsersDAO(BaseDAO):
         async with async_session_maker() as session:
             today = datetime.now().date()
             get_users_id = await session.scalars(
-                select(Users.telegram_id)
+                select(Users.telegram_id, Points.id)
                 .join(Schedules, Schedules.user_id == Users.id, isouter=True)
-                .join(Trades, Users.point_id == Trades.point_id, isouter=True)
+                .join(
+                    Trades,
+                    Users.points.has(point_id=Trades.point_id),
+                    isouter=True,
+                )
                 .where(
                     and_(
                         Trades.id.isnot(None),

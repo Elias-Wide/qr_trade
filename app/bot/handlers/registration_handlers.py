@@ -30,6 +30,7 @@ from app.bot.handlers.states import RegistrationStates
 from app.bot.handlers.user_handlers import process_start_command
 from app.bot.keyboards.registration_kb import create_registration_kb
 from app.core.logging import logger
+from app.points.models import Points
 from app.schedules.dao import SchedulesDAO
 from app.users.dao import UsersDAO
 
@@ -120,8 +121,7 @@ async def ask_point_id(message: Message, state: FSMContext) -> None:
     RegistrationStates.point_id_question, F.text.isdigit(), PointExistFilter()
 )
 async def finish_registration(
-    message: Message,
-    state: FSMContext,
+    message: Message, state: FSMContext, model_obj: Points
 ) -> None:
     """
     Сохранение point в state.
@@ -131,7 +131,7 @@ async def finish_registration(
     """
     logger()
     await state.update_data(
-        point_id=int(message.text),
+        point_id=model_obj.id,
     )
     registration_data = await state.get_data()
     try:

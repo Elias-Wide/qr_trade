@@ -81,6 +81,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
 @app.post("/webhook")
 async def webhook(request: Request) -> None:
     logging.info("Received webhook request")

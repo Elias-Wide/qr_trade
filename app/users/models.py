@@ -26,7 +26,7 @@ class Users(Base):
     username = Column(String, nullable=False)
     ban = Column(BOOLEAN, default=False)
     manager_id = Column(Integer, unique=True, nullable=False)
-    point_id = Column(ForeignKey("points.point_id"), nullable=True)
+    point_id = Column(ForeignKey("points.id"), nullable=True)
     timezone = Column(Integer, default=MOSCOW_TZ)
     codes = relationship(
         "Sale_Codes", cascade="delete", back_populates="user"

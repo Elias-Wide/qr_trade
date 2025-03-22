@@ -1,3 +1,5 @@
 venv
 .git
 qr_trade.code-workspace
+db.env
+main.env

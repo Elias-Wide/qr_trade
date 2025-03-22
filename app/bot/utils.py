@@ -119,8 +119,8 @@ async def get_user_data(user_id: int) -> str:
         )
         n_type = f"Уведомления:  {user.notice_type}\n"
         return (
-            result + f"ID пункта: {user.point_id}\n" + n_type
-            if user.point_id != 1
+            result + f"ID пункта: {user.office_id}\n" + n_type
+            if user.office_id != 1
             else result + n_type
         )
     except Exception as error:
@@ -173,7 +173,7 @@ async def read_excel_file(message: Message):
     workbook = openpyxl.load_workbook(xlsx_file_in_buffer)
     sheet = workbook.active
     return [
-        {"point_id": row[0], "addres": row[1]}
+        {"point_id": row[0], "addres": row[1], "region_id": row[2]}
         for row in sheet.iter_rows(values_only=True)
     ]
 
