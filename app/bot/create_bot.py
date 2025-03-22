@@ -10,8 +10,6 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
 dp = Dispatcher()
-print(settings.db.url)
-print(settings.telegram.bot_token.get_secret_value())
 
 
 async def start_bot():

@@ -31,3 +31,4 @@ class AdminStates(StatesGroup):
     """Класс состояний для команд админа."""
 
     dwnld_points = State()
+    updt_points = State()

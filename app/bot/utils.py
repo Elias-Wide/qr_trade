@@ -167,13 +167,18 @@ async def delete_file(path: str):
 
 
 async def read_excel_file(message: Message):
-    """Обработка данных эксель файла."""
+    """Обработка данных эксель файла с данными офисов."""
 
     xlsx_file_in_buffer = await download_file_from_bot(message)
     workbook = openpyxl.load_workbook(xlsx_file_in_buffer)
     sheet = workbook.active
     return [
-        {"point_id": row[0], "addres": row[1], "region_id": row[2]}
+        {
+            "point_id": row[0],
+            "addres": row[1],
+            "region_id": row[2],
+            "name": row[3],
+        }
         for row in sheet.iter_rows(values_only=True)
     ]
 

@@ -110,7 +110,7 @@ async def get_point_list_kb(
     for point in points_list:
         if point.point_id in points_in_state:
             continue
-        text = f"ID {point.point_id} 🛍 {point.addres}"
+        text = f"🛍 {point.name}"
         btns.append(
             InlineKeyboardButton(
                 text=text,
