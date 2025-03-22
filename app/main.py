@@ -90,13 +90,6 @@ async def webhook(request: Request) -> None:
     logging.info("Update processed")
 
 
-# if __name__ == "__main__":
-#     config = uvicorn.Config(
-#         "main:app",
-#         port=5000,
-#     )
-#     server = uvicorn.Server(config)
-#     server.run()
 admin = Admin(
     app=app,
     engine=engine,
