@@ -100,7 +100,7 @@ class RegionsAdmin(ModelView, model=Regions):
     icon = "fa fa-map"
 
 
-class Acces_CodesAdmin(ModelView, model=Acces_Codes):
+class AccesCodesAdmin(ModelView, model=Acces_Codes):
     """Настройки страницы кодов доступа."""
 
     column_list = [c.name for c in Acces_Codes.__table__.c]
@@ -117,5 +117,5 @@ admin_views: tuple[ModelView] = (
     RegionsAdmin,
     Sale_CodesAdmin,
     TradesAdmin,
-    Acces_CodesAdmin,
+    AccesCodesAdmin,
 )
