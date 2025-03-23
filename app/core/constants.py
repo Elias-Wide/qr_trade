@@ -18,8 +18,8 @@ NOTICE = "notice"
 
 DELETED = "deleted"
 DELETE_CODE = "delete_code"
-POINT_LIST_KB_SIZE: int = 1
 DEFAULT_KEYBOARD_SIZE: int = 2
+EXPIRED: str = "expired"
 CALENDAR_KEYBOARD_SIZE: int = 7
 FMT_GIF: str = ".gif"
 FMT_PNG: str = ".png"
@@ -27,6 +27,7 @@ FMT_JPG: str = ".jpg"
 SEARCH_GIFS: tuple[str] = tuple(f"search_{n}" for n in range(5))
 MAIN_MENU: str = "main_menu"
 OPEN_QR = "open_qr"
+POINT_LIST_KB_SIZE: int = 1
 MAIN_MENU_COMMANDS: dict[str] = {
     "/start": "Перезапуск бота/открыть меню",
     "/open_qr": "Открыть раздел QR",

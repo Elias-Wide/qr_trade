@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TypeAlias
 
 from aiogram.types import (
@@ -9,8 +10,6 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.core.constants import (
     DEFAULT_KEYBOARD_SIZE,
-    DELETE_CODE,
-    DELETED,
     MONTH,
     POINT_LIST_KB_SIZE,
 )
@@ -19,13 +18,12 @@ from app.bot.keyboards.buttons import (
     BACK_BTN,
     CANCEL,
     CANCEL_SEARCH,
-    CHECK_QR,
-    CONFIRM_BTNS,
-    DELETE_QR_BTN,
+    DELETE_QR,
     QR_BTN_TYPE,
     QR_MENU,
     SEND_QR,
 )
+from app.core.logging import logger
 from app.points.models import Points
 from app.sale_codes.dao import Sale_CodesDAO
 from app.users.models import Users
@@ -55,15 +53,21 @@ async def get_qr_list_kb(
     Во втором случае объекта модели с таким атрибутом 'скипаются',
     т.к. нужны только объекты кодов, где загружено фото.
     """
+    logger(menu_name)
     kb_builder = InlineKeyboardBuilder()
     btns = []
     user_codes = await Sale_CodesDAO.get_actual_objs(
-        attr_name="user_id", attr_value=user_id, need_actual=True
+        attr_name="user_id", attr_value=user_id, need_actual=False
     )
     for code in user_codes:
         created_at = code.created_at
         created_at = f"{created_at.day} {MONTH[created_at.month]}"
         text = QR_BTN_TYPE[menu_name].format(code.client_id)
+        if code.created_at != datetime.now().date():
+            if menu_name == SEND_QR:
+                continue
+            elif menu_name == DELETE_QR:
+                text = text[:-1] + "⚠️"
         btns.append(
             InlineKeyboardButton(
                 text=text,

@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import ContentType, Message
 from aiogram.fsm.state import default_state
 
-from app.bot.scheduler import send_order_notification
+from app.bot.scheduler import expire_old_sale_codes, send_order_notification
 from app.core.logging import logger
 from app.bot.filters import AdminFilter
 from app.bot.handlers.states import AdminStates
@@ -61,12 +61,24 @@ async def proccess_dwnld_updt_file(message: Message, state: FSMContext):
 
 
 @admin_router.message(Command("test_msg"))
-async def process_check_command(
+async def process_test_msg_command(
     message: Message,
 ) -> None:
-    """Обработка нажатия кнопки open_qr."""
+    """Обработка команды test_msg."""
     logger()
     try:
         await send_order_notification()
+    except Exception as error:
+        logger(error)
+
+
+@admin_router.message(Command("test_exp"))
+async def process__command_test_exp(
+    message: Message,
+) -> None:
+    """Обработка команды test_exp."""
+    logger()
+    try:
+        await expire_old_sale_codes()
     except Exception as error:
         logger(error)

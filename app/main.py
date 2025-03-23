@@ -22,13 +22,13 @@ from app.bot.handlers.registration_handlers import registration_router
 from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.bot.scheduler import (
     clear_user_schedule,
-    delete_old_sale_codes,
+    expire_old_sale_codes,
     delete_old_trades,
     send_order_notification,
 )
 from app.core.config import settings
 from app.core.database import engine
-from app.users.constants import SCHEDULE_JOB_HOUR
+from app.users.constants import NOTIFICATION_TIME, SCHEDULE_JOB_HOUR
 
 WEBHOOK_PATH = f"/bot/{settings.telegram.bot_token.get_secret_value()}"
 WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
@@ -42,17 +42,7 @@ async def lifespan(app: FastAPI):
     scheduler.add_job(
         send_order_notification,
         trigger="cron",
-        hour=SCHEDULE_JOB_HOUR,
-    )
-    scheduler.add_job(
-        delete_old_sale_codes,
-        trigger="cron",
-        hour=SCHEDULE_JOB_HOUR,
-    )
-    scheduler.add_job(
-        delete_old_trades,
-        trigger="cron",
-        hour=SCHEDULE_JOB_HOUR,
+        hour=NOTIFICATION_TIME,
     )
     scheduler.add_job(
         clear_user_schedule,

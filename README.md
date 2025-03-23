@@ -59,6 +59,9 @@ pip install -r requirements.txt
 
 Локально запустить в режиме WEBHOOK не получится без установки ngrok, режим POLLING не предусмотрен. Установка наcтройка ngrok ( см. в интернет https://losst.pro/kak-polzovatsya-ngrok ) нужна для форвардинга порта localhost:8000 (FastAPI) в интернет с присвоением ему публичного динамического DNS имени.
 
+* для локальной работы программы необходимо создать базу данных PostgreSQL. Я использовал клиент PgAdmin (пример - https://metanit.com/sql/postgresql/1.2.php)
+* создаем только сам локальный сервер
+
 * в файле main.env:
 
 ```text

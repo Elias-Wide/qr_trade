@@ -1,4 +1,6 @@
-from sqlalchemy import insert, select
+from datetime import datetime
+from sqlalchemy import and_, insert, select
+from app.core.constants import EXPIRED
 from app.dao.base import BaseDAO, ModelType
 from app.core.database import async_session_maker
 from app.sale_codes.models import Sale_Codes
@@ -26,6 +28,9 @@ class TradesDAO(BaseDAO):
                     Trades.sale_code_id == Sale_Codes.id,
                     isouter=True,
                 )
-                .where(Trades.point_id == point_id)
+                .where(and_(
+                    Trades.point_id == point_id,
+                    Sale_Codes.created_at == datetime.now().date())
+                )
             )
             return get_objs.mappings().first()

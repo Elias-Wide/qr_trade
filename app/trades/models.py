@@ -20,8 +20,8 @@ class Trades(Base):
     """
 
     sale_code_id = Column(
-        ForeignKey("sale_codes.id", ondelete="CASCADE"),
-        nullable=False,
+        ForeignKey("sale_codes.id"),
+        nullable=True,
     )
     user_id = Column(ForeignKey("users.id"))
     point_id = Column(ForeignKey("points.point_id"), nullable=False)

@@ -76,7 +76,7 @@ class UsersDAO(BaseDAO):
             today = datetime.now().date()
             get_users_id = await session.scalars(
                 select(Users.telegram_id, Points.id)
-                .join(Schedules, Schedules.user_id == Users.id, isouter=True)
+                .join(Schedules, isouter=True)
                 .join(
                     Trades,
                     Users.points.has(point_id=Trades.point_id),
