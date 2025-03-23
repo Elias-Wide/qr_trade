@@ -166,14 +166,14 @@ async def process_check_qr(
     перебор трейдов в заданный офис, когда они закончатся - сообщение,
     что заказов на пункт пользователя нет.
     """
-    user = await UsersDAO.get_by_id(callback_data.user_id)
+    user = await UsersDAO.get_user_full_data(callback_data.user_id)
     callback_data.level = 2
     try:
         logger(callback_data)
         if callback_data.trade_id:
             await TradesDAO.delete_object(id=callback_data.trade_id)
             callback_data.trade_id = None
-            trade = await TradesDAO.get_trade_by_point(user.point_id)
+            trade = await TradesDAO.get_trade_by_point(user.office_id)
             if trade:
                 await callback.answer(text=NEXT_QR, show_alert=True)
                 media, reply_markup = await get_reply_for_trade(
@@ -182,7 +182,7 @@ async def process_check_qr(
             else:
                 media, reply_markup = await get_reply_no_trade(callback_data)
         else:
-            trade = await TradesDAO.get_trade_by_point(user.point_id)
+            trade = await TradesDAO.get_trade_by_point(user.office_id)
             logger(trade)
             if trade:
                 media, reply_markup = await get_reply_for_trade(
