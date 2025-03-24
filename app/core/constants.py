@@ -13,11 +13,11 @@ CONFIRM = (
     ("YES", "Да"),
     ("NO", "Нет"),
 )
-DATE_FORMAT = "%m.%d.%Y"
-NOTICE = "notice"
-
-DELETED = "deleted"
-DELETE_CODE = "delete_code"
+DATE_FORMAT: str = "%m.%d.%Y"
+NOTICE: str = "notice"
+CREATE = "create"
+DELETED: str = "deleted"
+DELETE_CODE: str = "delete_code"
 DEFAULT_KEYBOARD_SIZE: int = 2
 EXPIRED: str = "expired"
 CALENDAR_KEYBOARD_SIZE: int = 7
@@ -26,15 +26,23 @@ FMT_PNG: str = ".png"
 FMT_JPG: str = ".jpg"
 SEARCH_GIFS: tuple[str] = tuple(f"search_{n}" for n in range(5))
 MAIN_MENU: str = "main_menu"
-OPEN_QR = "open_qr"
+OPEN_QR: str = "open_qr"
 POINT_LIST_KB_SIZE: int = 1
 MAIN_MENU_COMMANDS: dict[str] = {
     "/start": "Перезапуск бота/открыть меню",
     "/open_qr": "Открыть раздел QR",
 }
 
-DAY = {0: "пн", 1: "вт", 2: "ср", 3: "чт", 4: "пт", 5: "сб", 6: "вс"}
-MONTH = {
+DAY: dict[int, str] = {
+    0: "пн",
+    1: "вт",
+    2: "ср",
+    3: "чт",
+    4: "пт",
+    5: "сб",
+    6: "вс",
+}
+MONTH: dict[int, str] = {
     1: "Январь",
     2: "Февраль",
     3: "Март",
@@ -79,7 +87,7 @@ INTRO_SURVEY_TEXT = (
     "\n😜\n"
 )
 MANAGER_ID, POINT_ID = "manager_id", "point_id"
-NEXT_QR = "Успешно ✅ Держи следующий QR 🧤"
+NEXT_QR: str = "Успешно ✅ Держи следующий QR 🧤"
 NO_CAPTION = ""
 NO_IMAGE: str = "no_image"
 NOT_FOUND = "not_found"
@@ -93,9 +101,9 @@ NOTIFICATION_TYPE = (
     ("always", "🔊 ВКЛ 🔊"),
     ("by_schedule", "По графику 🗓"),
 )
-NOTIFICATION_MSG_TEXT = "На Ваш пункт🛍 пришел заказ 📦"
+NOTIFICATION_MSG_TEXT: str = "На Ваш пункт🛍 пришел заказ 📦"
 INVALID_DATA_TYPE: str = "Неверный формат введенных данных!"
-INVALID_ID_MESSAGE = {
+INVALID_ID_MESSAGE: dict[str : dict[str:str]] = {
     MANAGER_ID: (
         "Введенный id менеджера уже кем-то занят.\n"
         "Если вы сменили телеграмм аккаунт - обратитесь "
@@ -112,14 +120,14 @@ REGISTRATION_DONE = (
 )
 
 REGISTRATION_CONFIRMED, REGISTRATION_CANCELED = dict(CONFIRM).keys()
-REGEX_QR_PATTERN = r"(^\d{6,12}_\d{5})"
-DELETE_ERROR = "Ошибка удаления."
-DWNLD_ERROR = "⚠️ Ошибка загрузки⚠️"
-SUCCESS_DELETE = "✅ QR код УСПЕШНО удален ✅"
-SUCCES_DNWLD = "⭐️ Код {} успешно загружен⭐️"
-SUCCESS_SENDING = "Заказы успешно отправлены 🤩"
-SUCCES_UPDATE = "⭐️ Код {} успешно обновлен ✅"
-TIMEZONE_RU = {
+REGEX_QR_PATTERN: str = r"(^\d{6,12}_\d{5})"
+DELETE_ERROR: str = "Ошибка удаления."
+DWNLD_ERROR: str = "⚠️ Ошибка загрузки⚠️"
+SUCCESS_DELETE: str = "✅ QR код УСПЕШНО удален ✅"
+SUCCES_DNWLD: str = "⭐️ Код {} успешно загружен⭐️"
+SUCCESS_SENDING: str = "Заказы успешно отправлены 🤩"
+SUCCES_UPDATE: str = "⭐️ Код {} успешно обновлен ✅"
+TIMEZONE_RU: dict[int, str] = {
     1: "Europe/London",
     2: "Europe/Kaliningrad",
     3: "Europe/Moscow",
@@ -133,4 +141,5 @@ TIMEZONE_RU = {
     11: "Asia/Magadan",
     12: "Asia/Kamchatka",
 }
-TYPE_POINT = "Введите ID вашего пункта"
+TYPE_POINT: str = "Введите ID вашего пункта"
+UPDATE = "update"

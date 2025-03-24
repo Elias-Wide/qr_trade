@@ -6,7 +6,7 @@ from app.core.logging import logger
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
 from app.points.models import Points
-from app.sale_codes.models import Sale_Codes
+from app.sale_codes.models import SaleCodes
 from app.schedules.models import Schedules
 from app.trades.models import Trades
 from app.users.models import Users
@@ -75,8 +75,9 @@ class UsersDAO(BaseDAO):
         async with async_session_maker() as session:
             today = datetime.now().date()
             get_users_id = await session.scalars(
-                select(Users.telegram_id, Points.id)
+                select(Users.telegram_id)
                 .join(Schedules, isouter=True)
+                .join(Points, Points.id == Users.point_id)
                 .join(
                     Trades,
                     Users.points.has(point_id=Trades.point_id),
@@ -85,14 +86,15 @@ class UsersDAO(BaseDAO):
                 .where(
                     and_(
                         Trades.id.isnot(None),
-                        or_(
-                            Schedules.notice_type == "always",
-                            and_(
-                                Schedules.notice_type == "by_schedule",
-                                any_(Schedules.schedule) == today,
-                            ),
+                        Trades.created_at == datetime.now().date(),
+                    ),
+                    or_(
+                        Schedules.notice_type == "always",
+                        and_(
+                            Schedules.notice_type == "by_schedule",
+                            any_(Schedules.schedule) == today,
                         ),
-                    )
+                    ),
                 )
             )
             return set(get_users_id.all())

@@ -25,7 +25,7 @@ from app.bot.keyboards.buttons import (
 )
 from app.core.logging import logger
 from app.points.models import Points
-from app.sale_codes.dao import Sale_CodesDAO
+from app.sale_codes.dao import SaleCodesDAO
 from app.users.models import Users
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
@@ -48,7 +48,7 @@ async def get_qr_list_kb(
     """
     Создание клавиатуры списка кодов пользователя.
     Применяется в меню удаления и отправки кодов.
-    В первом случае объекты модели Sale_Codes,
+    В первом случае объекты модели SaleCodes,
     где аттрибут file_name == 'deleted' помечаются доп. символами.
     Во втором случае объекта модели с таким атрибутом 'скипаются',
     т.к. нужны только объекты кодов, где загружено фото.
@@ -56,7 +56,7 @@ async def get_qr_list_kb(
     logger(menu_name)
     kb_builder = InlineKeyboardBuilder()
     btns = []
-    user_codes = await Sale_CodesDAO.get_actual_objs(
+    user_codes = await SaleCodesDAO.get_actual_objs(
         attr_name="user_id", attr_value=user_id, need_actual=False
     )
     for code in user_codes:

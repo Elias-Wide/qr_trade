@@ -3,15 +3,15 @@ from sqlalchemy import and_, func, insert, select
 from app.core.constants import EXPIRED, TIMEZONE_RU
 from app.dao.base import BaseDAO, ModelType
 from app.core.database import async_session_maker
-from app.sale_codes.models import Sale_Codes
+from app.sale_codes.models import SaleCodes
 from app.users.constants import MOSCOW_TZ
 from pytz import timezone
 
 
-class Sale_CodesDAO(BaseDAO):
+class SaleCodesDAO(BaseDAO):
     """Класс CRUD-операций с моделью обменов кодами."""
 
-    model = Sale_Codes
+    model = SaleCodes
 
     @classmethod
     async def create_code_or_update(
@@ -20,7 +20,7 @@ class Sale_CodesDAO(BaseDAO):
         client_id: str,
         encoded_value: str,
         user_tz: int = MOSCOW_TZ,
-    ) -> str:
+    ) -> dict[str]:
         """
         Создать или обновить объект кода.
         Передаются данные для создания объекта,
@@ -57,7 +57,7 @@ class Sale_CodesDAO(BaseDAO):
                 await session.commit()
                 await session.refresh(user_code)
                 answer = "update"
-            return answer
+            return {"code": user_code, "status": answer}
 
     @classmethod
     async def get_user_qr(cls, user_id: int, user_tz=MOSCOW_TZ):

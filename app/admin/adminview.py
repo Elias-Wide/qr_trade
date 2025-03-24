@@ -3,7 +3,7 @@ from app.acces_codes.models import Acces_Codes
 from app.core.constants import ADMIN_VIEW_PAGE_SIZE
 from app.points.models import Points
 from app.regions.models import Regions
-from app.sale_codes.models import Sale_Codes
+from app.sale_codes.models import SaleCodes
 from app.schedules.models import Schedules
 from app.trades.models import Trades
 from app.users.models import Users
@@ -28,6 +28,7 @@ class UsersAdmin(ModelView, model=Users):
         Users.username,
         Users.telegram_id,
         Users.point_id,
+        Users.manager_id,
     ]
     icon = "fa-solid fa-user"
 
@@ -60,14 +61,14 @@ class PointsAdmin(ModelView, model=Points):
     icon = "fa fa-house"
 
 
-class Sale_CodesAdmin(ModelView, model=Sale_Codes):
+class SaleCodesAdmin(ModelView, model=SaleCodes):
     """Настройки страницы кодов продаж."""
 
     name = "Код продажи"
     name_plural = "Коды продаж"
     can_delete = True
-    column_searchable_list = [Sale_Codes.client_id]
-    column_exclude_list = [Sale_Codes.encoded_value, Sale_Codes.trades]
+    column_searchable_list = [SaleCodes.client_id]
+    column_exclude_list = [SaleCodes.encoded_value, SaleCodes.trades]
     icon = "fa fa-star"
 
 
@@ -81,6 +82,7 @@ class TradesAdmin(ModelView, model=Trades):
     name = "Трейд"
     name_plural = "Трейды"
     can_delete = True
+    can_edit = False
     column_searchable_list = [Trades.user_id, Trades.point_id]
     icon = "fa fa-handshake"
 
@@ -115,7 +117,7 @@ admin_views: tuple[ModelView] = (
     SchedulesAdmin,
     PointsAdmin,
     RegionsAdmin,
-    Sale_CodesAdmin,
+    SaleCodesAdmin,
     TradesAdmin,
     AccesCodesAdmin,
 )

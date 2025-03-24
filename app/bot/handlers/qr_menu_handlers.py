@@ -1,3 +1,4 @@
+from datetime import datetime
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
@@ -5,6 +6,7 @@ from aiogram.types import CallbackQuery, ContentType, Message
 
 from app.bot.keyboards.banners import captions, get_file, get_img
 from app.core.constants import (
+    CREATE,
     CRITICAL_ERROR,
     DELETE_CODE,
     DELETE_ERROR,
@@ -14,6 +16,7 @@ from app.core.constants import (
     SUCCES_UPDATE,
     SUCCESS_DELETE,
     SUCCESS_SENDING,
+    UPDATE,
 )
 
 from app.bot.handlers.callbacks.qr_menu import (
@@ -48,7 +51,7 @@ from app.bot.keyboards.buttons import (
     QR_MENU,
 )
 from app.points.dao import PointsDAO
-from app.sale_codes.dao import Sale_CodesDAO
+from app.sale_codes.dao import SaleCodesDAO
 from app.trades.dao import TradesDAO
 from app.trades.models import Trades
 from app.users.dao import UsersDAO
@@ -60,8 +63,8 @@ code_router = Router()
 async def process_agreed_delete(
     callback: CallbackQuery, callback_data: MenuCallBack
 ):
-    """Обработка нажатий кнопок удаления Sale_Codes."""
-    deleted_obj = await Sale_CodesDAO.delete_object(id=callback_data.code_id)
+    """Обработка нажатий кнопок удаления SaleCodes."""
+    deleted_obj = await SaleCodesDAO.delete_object(id=callback_data.code_id)
     if deleted_obj:
         text = SUCCESS_DELETE
     else:
@@ -104,16 +107,29 @@ async def process_download_ok(
     client_id: str | None,
     encode_value: str | None,
 ) -> None:
-    """Обработки загрузки валидного изображения."""
+    """
+    Обработки загрузки валидного изображения qr кода.
+    Создает или обновляет запись модели SaleCodes,
+    такжк обновляет аттрибут created_at связанной записи модели
+    Trades, если такая есть в бд.
+    """
     user = await UsersDAO.get_by_attribute(
         "telegram_id", message.from_user.id
     )
-    answer = await Sale_CodesDAO.create_code_or_update(
+    answer = await SaleCodesDAO.create_code_or_update(
         user.id, client_id, encode_value
     )
-    if answer == "create":
+    if answer["status"] == CREATE:
         message_text = SUCCES_DNWLD.format(client_id)
-    elif answer == "update":
+    elif answer["status"] == UPDATE:
+        trade = await TradesDAO.get_by_attribute(
+            attr_name="sale_code_id", attr_value=answer["code"].id
+        )
+        logger(trade, answer["code"].id)
+        if trade:
+            await TradesDAO.update(
+                trade, {"created_at": datetime.now().date()}
+            )
         message_text = SUCCES_UPDATE.format(client_id)
     await message.answer(text=message_text)
     await process_start_command(message, state)
@@ -368,7 +384,7 @@ async def process_confirm_send(
     state_data = await state.get_data()
     logger(state_data)
     for point in state_data["points"].values():
-        await TradesDAO.create(
+        await TradesDAO.create_or_update_trade(
             {
                 "sale_code_id": state_data["code_id"],
                 "user_id": state_data["user_id"],

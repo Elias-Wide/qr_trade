@@ -10,7 +10,7 @@ from sqlalchemy.orm import relationship, backref
 
 from app.core.database import Base
 from app.users.constants import MOSCOW_TZ
-from app.sale_codes.models import Sale_Codes
+from app.sale_codes.models import SaleCodes
 
 
 class Trades(Base):
@@ -21,13 +21,12 @@ class Trades(Base):
 
     sale_code_id = Column(
         ForeignKey("sale_codes.id"),
-        nullable=True,
+        nullable=False,
     )
     user_id = Column(ForeignKey("users.id"))
     point_id = Column(ForeignKey("points.point_id"), nullable=False)
     users = relationship("Users", back_populates="trades")
     point = relationship("Points", back_populates="trades")
-
     created_at = Column(Date, default=datetime.now)
 
     __table_args__ = (

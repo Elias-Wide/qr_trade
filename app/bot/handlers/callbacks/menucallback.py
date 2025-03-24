@@ -9,7 +9,7 @@ class MenuCallBack(CallbackData, prefix="menu"):
     menu_name :: название меню
     user_id :: id пользователя в бд
     point_id :: id пункта пользователя (не pk в бд)
-    code_id :: id(pk) объекта Sale_Codes
+    code_id :: id(pk) объекта SaleCodes
     trade :: id(pk) объекта Trades
     day :: дата, переданная в строковом формате
     """

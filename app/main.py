@@ -22,13 +22,11 @@ from app.bot.handlers.registration_handlers import registration_router
 from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.bot.scheduler import (
     clear_user_schedule,
-    expire_old_sale_codes,
-    delete_old_trades,
     send_order_notification,
 )
 from app.core.config import settings
 from app.core.database import engine
-from app.users.constants import NOTIFICATION_TIME, SCHEDULE_JOB_HOUR
+from app.users.constants import NOTIFICATION_TIME
 
 WEBHOOK_PATH = f"/bot/{settings.telegram.bot_token.get_secret_value()}"
 WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
