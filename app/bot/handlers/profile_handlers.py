@@ -157,14 +157,14 @@ async def procce_set_schedule(
 ):
     """Обработка нажатий кнопок календаря."""
     user_schedule = (await state.get_data())["user_schedule"]
+    logger(user_schedule)
     if callback_data.menu_name == CONFIRM_SCHEDULE:
         logger(user_schedule)
         try:
-            if user_schedule:
-                await SchedulesDAO.set_schedule(
-                    user_id=callback_data.user_id,
-                    date_list=user_schedule,
-                )
+            await SchedulesDAO.set_schedule(
+                user_id=callback_data.user_id,
+                date_list=user_schedule,
+            )
             await state.clear()
             await callback.answer(
                 text="График успешно сохранен. Не забудьте включить уведомления по графику."

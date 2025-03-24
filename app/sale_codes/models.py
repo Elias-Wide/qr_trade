@@ -12,12 +12,13 @@ from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 
-class Sale_Codes(Base):
+class SaleCodes(Base):
     """
-    Модель Sale_Codes.
+    Модель SaleCodes.
     Коды подтверждения продаж.
     """
 
+    __tablename__ = "sale_codes"
     user_id = Column(
         ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )

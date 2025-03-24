@@ -1,7 +1,7 @@
-from app.core.constants import NOTIFICATION_MSG_TEXT
+from app.core.constants import EXPIRED, NOTIFICATION_MSG_TEXT
 from app.bot.create_bot import bot
 from app.core.logging import logger
-from app.sale_codes.dao import Sale_CodesDAO
+from app.sale_codes.dao import SaleCodesDAO
 from app.schedules.dao import SchedulesDAO
 from app.trades.dao import TradesDAO
 from app.trades.models import Trades
@@ -23,10 +23,12 @@ async def send_order_notification() -> None:
             logger(f"Пользователь {tg_id} заблокировал бота")
 
 
-async def delete_old_sale_codes() -> bool:
-    """Функция для очистки бд от старых данных Trades, Sale_Codes."""
+async def expire_old_sale_codes() -> bool:
+    """Функция для замены encoded_value модели SaleCodes на 'expired."""
     logger()
-    return await delete_old_db_objs(Sale_CodesDAO)
+    sale_codes = await SaleCodesDAO.get_multi()
+    for code in sale_codes:
+        await SaleCodesDAO.update(code, {"encoded_value": EXPIRED})
 
 
 async def delete_old_trades() -> bool:
@@ -34,7 +36,7 @@ async def delete_old_trades() -> bool:
     return await delete_old_db_objs(TradesDAO)
 
 
-async def delete_old_db_objs(modelDAO: TradesDAO | Sale_CodesDAO) -> bool:
+async def delete_old_db_objs(modelDAO: TradesDAO | SaleCodesDAO) -> bool:
     """Удалить старые трейды."""
     return await modelDAO.delete_old_objs()
 

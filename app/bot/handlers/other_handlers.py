@@ -2,9 +2,8 @@
 
 from aiogram import Router
 from aiogram.types import Message
-from aiogram.filters import CommandStart
 
-from app.bot.filters import BanFilter, UserExistFilter
+from app.bot.filters import BanFilter
 from app.core.config import settings
 
 echo_router = Router()

@@ -61,10 +61,10 @@ async def proccess_dwnld_updt_file(message: Message, state: FSMContext):
 
 
 @admin_router.message(Command("test_msg"))
-async def process_check_command(
+async def process_test_msg_command(
     message: Message,
 ) -> None:
-    """Обработка нажатия кнопки open_qr."""
+    """Обработка команды test_msg."""
     logger()
     try:
         await send_order_notification()

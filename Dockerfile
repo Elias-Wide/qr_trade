@@ -15,4 +15,3 @@ RUN apt-get update && apt-get install libzbar0 -y
 COPY . .
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000"]
-# CMD ["pip", "list"]

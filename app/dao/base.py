@@ -80,7 +80,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 return db_obj
             except Exception as error:
                 logger(error)
-                session.rollback()
+                await session.rollback()
 
     @classmethod
     async def delete_object(cls, **kwargs):
@@ -120,7 +120,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     ) -> list[ModelType]:
         """
         Получить  объекты моделей БД.
-        Возвращает объекты Sale_Codes или Trades.
+        Возвращает объекты SaleCodes или Trades.
         Опционально можно убрать фильтр актуальности,
         не будет сравниваться дата с текущим днем.
         """

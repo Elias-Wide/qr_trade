@@ -20,8 +20,8 @@ from app.bot.keyboards.banners import captions, get_img, get_qr_code_image
 from app.bot.keyboards.main_kb_builder import get_btns, get_image_and_kb
 from app.core.config import QR_DIR
 from app.core.logging import logger
-from app.sale_codes.dao import Sale_CodesDAO
-from app.sale_codes.models import Sale_Codes
+from app.sale_codes.dao import SaleCodesDAO
+from app.sale_codes.models import SaleCodes
 from app.trades.dao import TradesDAO
 from app.trades.models import Trades
 

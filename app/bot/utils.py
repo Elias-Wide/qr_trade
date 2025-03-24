@@ -8,6 +8,7 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 from aiogram.types import ContentType, Message
 import openpyxl
+
 from app.core.constants import (
     FMT_JPG,
     NOTIFICATION_TYPE,
