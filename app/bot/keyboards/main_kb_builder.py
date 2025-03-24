@@ -100,9 +100,8 @@ async def get_btns(
 
 
 admin_btn = InlineKeyboardButton(
-    text="Админ", url=f"tg://user?id={settings.telegram.admin_id}"
+    text="Поддержка📲", url="t.me/+_MbSWnXR3NEwNDcy"
 )
-
 
 async def get_image_and_kb(
     menu_name: str,
