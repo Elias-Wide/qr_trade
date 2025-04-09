@@ -1,4 +1,11 @@
-from sqlalchemy import BOOLEAN, BigInteger, Column, ForeignKey, Integer, String
+from sqlalchemy import (
+    BOOLEAN,
+    BigInteger,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+)
 from sqlalchemy.orm import relationship
 
 

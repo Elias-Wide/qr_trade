@@ -103,6 +103,7 @@ admin_btn = InlineKeyboardButton(
     text="Поддержка📲", url="t.me/+_MbSWnXR3NEwNDcy"
 )
 
+
 async def get_image_and_kb(
     menu_name: str,
     user_id: int,
