@@ -1,4 +1,4 @@
-from sqlalchemy import BOOLEAN, Column, ForeignKey, Integer, String
+from sqlalchemy import BOOLEAN, BigInteger, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 
@@ -22,7 +22,7 @@ class Users(Base):
         hashed_code: хэшированный код подтверждения
     """
 
-    telegram_id = Column(Integer, unique=True, nullable=False)
+    telegram_id = Column(BigInteger, unique=True, nullable=False)
     username = Column(String, nullable=False)
     ban = Column(BOOLEAN, default=False)
     manager_id = Column(Integer, unique=True, nullable=False)
